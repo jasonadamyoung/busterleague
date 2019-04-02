@@ -1,0 +1,36 @@
+<h2>Pitchers (<%= Pitcher.byteam(@team).count %>)</h2>
+
+<table class="table table-bordered ">
+  <thead>
+    <tr>
+        <th>POS</th>
+        <th>NAME</th>
+        <th>RANKVALUE</th>
+        <th>AGE</th>
+        <th>T</th>
+        <%- Stat.core(Stat::PITCHER).each do |stat| %>
+          <th><%= stat.upcase %></th>
+        <%- end -%>
+    </tr>
+    </thead>
+    <tbody>
+    <% @pitchers.each do |pitcher| %>
+        <tr>
+          <td><%= pitcher.position %></td>
+          <td><%= link_to("#{pitcher.fullname}", player_url(pitcher)) %></td>
+          <td><%= display_rankvalue(pitcher.rankvalue) %></td>
+          <td><%= pitcher.statline.age %></td>
+          <td><%= pitcher.statline.throws %></td>
+          <%- Stat.core(Stat::PITCHER).each do |stat| %>
+            <%- if stat == 'lops' %>
+              <td><%= ops_display(pitcher,'left')%></td>
+            <%- elsif stat == 'rops' -%>
+              <td><%= ops_display(pitcher,'right')%></td>
+            <%- else -%>
+              <td><%= pitcher.statline.send(stat) %></td>
+            <%- end -%>
+          <%- end -%>
+        </tr>
+    <% end %>
+    </tbody>
+</table>

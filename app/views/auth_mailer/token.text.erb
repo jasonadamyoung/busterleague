@@ -1,0 +1,7 @@
+Hi <%= @recipient.nickname %>,
+
+We are sending this confirmation email with a link to allow you to login on this device.
+
+To confirm your email address and login, please click the following link:
+
+<%= token_url(token: @recipient.token) %>

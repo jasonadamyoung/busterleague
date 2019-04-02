@@ -1,0 +1,19 @@
+// This is a manifest file that'll be compiled into including all the files listed below.
+// Add new JavaScript/Coffee code in separate files in this directory and they'll automatically
+// be included in the compiled file accessible from http://example.com/assets/application.js
+// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
+// the compiled file.
+//
+//= require jquery3
+//= require jquery_ujs
+//= require popper
+//= require bootstrap-sprockets
+//= require jquery.jqplot
+//= require jqplot-plugins/jqplot.dateAxisRenderer
+//= require jqplot-plugins/jqplot.highlighter
+//= require jqplot-plugins/jqplot.enhancedLegendRenderer
+//= require jqplot-plugins/jqplot.barRenderer
+//= require jqplot-plugins/jqplot.categoryAxisRenderer
+//= require jqplot-plugins/jqplot.pointLabels
+//= require alerts
+//= require dropzone

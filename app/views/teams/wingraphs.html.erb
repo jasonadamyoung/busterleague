@@ -1,0 +1,46 @@
+<% @page_title = "Winning Percentage Graphs" %>
+<div class="page-header" id="overview">
+  <h1><%= @page_title %></h1>
+  <p class="lead">After the first 7 games for each team</p>
+  <p><em>click the legend labels to toggle display of the given team</em></p>
+</div>
+
+<div class="page-header">
+  <h1>American League</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>East Division</h3>
+    <%- win_pct_plot_data = Team.american.east.win_pct_plot_data %>
+    <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => 'american_east'})%>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>West Division</h3>
+    <%- win_pct_plot_data = Team.american.west.win_pct_plot_data %>
+    <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => 'american_west'})%>
+  </div>
+</div>
+
+<div class="page-header">
+  <h1>National League</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>East Division</h3>
+    <%- win_pct_plot_data = Team.national.east.win_pct_plot_data %>
+    <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => 'national_east'})%>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>West Division</h3>
+    <%- win_pct_plot_data = Team.national.west.win_pct_plot_data %>
+    <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => 'national_west'})%>
+  </div>
+</div>

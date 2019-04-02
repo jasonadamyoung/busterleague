@@ -1,0 +1,9 @@
+session_token: '123456789012345678901234567890'
+location: 'busterleague'
+email_bcc_address: 'use_local_settings'
+email_from_address: 'use_local_settings'
+email_from_name:  'use_local_settings'
+urlwriter_host: 'use_local_settings'
+upload_hash_key: 'use_local_settings'
+redis_url: 'redis://localhost:6379/0'
+redis_enabled: true
