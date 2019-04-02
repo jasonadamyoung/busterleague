@@ -33,3 +33,6 @@
 
 # Ignore database configuration
 /config/database.yml
+
+# Ignore local settings
+/config/settings.local.yml

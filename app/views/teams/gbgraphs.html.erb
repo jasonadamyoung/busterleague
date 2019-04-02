@@ -1,0 +1,45 @@
+<% @page_title = "Games back over Time" %>
+<div class="page-header" id="overview">
+  <h1><%= @page_title %></h1>
+  <p><em>click the legend labels to toggle display of the given team</em></p>
+</div>
+
+<div class="page-header">
+  <h1>American League</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>East Division</h3>
+    <%- gb_plot_data = Team.american.east.gb_plot_data %>
+    <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'american_east'})%>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>West Division</h3>
+    <%- gb_plot_data = Team.american.west.gb_plot_data %>
+    <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'american_west'})%>
+  </div>
+</div>
+
+<div class="page-header">
+  <h1>National League</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>East Division</h3>
+    <%- gb_plot_data = Team.national.east.gb_plot_data %>
+    <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'national_east'})%>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h3>West Division</h3>
+    <%- gb_plot_data = Team.national.west.gb_plot_data %>
+    <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'national_west'})%>
+  </div>
+</div>

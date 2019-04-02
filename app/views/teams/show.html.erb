@@ -1,0 +1,73 @@
+<% @page_title = "#{@team.name}" %>
+
+<div class="page-header" id="overview">
+  <h1><%= @page_title %></h1>
+</div>
+
+  <div class="page-header">
+    <h1>Stats and Graphs</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <%- date_stat = DateStat.new(:date => @date, :team => @team)%>
+  		  <tr><td>W-L</td><td><%= display_wl([date_stat.wins,date_stat.losses]) %></td></tr>
+  		  <tr><td>Winning %</td> <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td></tr>
+  		  <tr><td>Games Back</td><td><%= display_gb(date_stat.gb) %></td></tr>
+  		  <tr><td>L10</td> <td><%= date_stat.last_ten %></td></tr>
+  		  <tr><td>Streak</td> <td><%= date_stat.streak %></td></tr>
+  		  <tr><td>Runs</td><td><%= date_stat.rf %></td></tr>
+  		  <tr><td>Opponent Runs</td> <td><%= date_stat.ra %></td></tr>
+  		  <tr><td>Expected Winning %</td><td><%= number_with_precision(date_stat.expected_pct,:precision => 3)%></td></tr>
+  		  <tr><td>Expected W-L</td> <td><%= display_wl(date_stat.expected_wl) %></td></tr>
+  		  <tr><td>Home</td> <td><%= display_wl(date_stat.home_wl) %></td></tr>
+  		  <tr><td>Road</td>	<td><%= display_wl(date_stat.road_wl) %></td></tr>
+  		  <tr><td>versus Human Teams</td>	<td><%= display_wl(date_stat.human_wl) %></td></tr>
+  		  <tr><td>versus Computer Teams</td><td><%= display_wl(date_stat.computer_wl) %></td></tr>
+  		  <tr><td>versus Winners</td><td><%= display_wl(date_stat.winners_wl) %></td></tr>
+  		  <tr><td>versus Losers</td><td><%= display_wl(date_stat.losers_wl) %></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-md-9">
+      <h3>Winning % vs. Expected Winning %</h3>
+      <p><em>click the legend labels to toggle display of the given item</em></p>
+      <%- win_pct_plot_data = @team.win_pct_plot_data %>
+      <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => @team.abbrev})%>
+    </div>
+
+
+  </div>
+
+  <div class="page-header">
+    <h1>Game Results</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+    <table class="table table-bordered table-striped">
+    <thead>
+      <th>Date</th>
+      <th>Opponent</th>
+      <th>Win/Loss</th>
+      <th>Score</th>
+      <th>Innings</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      <%- @team.games.order("date DESC").each do |game| -%>
+        <tr>
+          <td><%= link_to(game.date.strftime("%b %d"), boxscore_path(game.boxscore))%></td>
+          <td><%= (game.home? ? 'vs.' : '@')%> <%= link_to(game.opponent.name, team_path(game.opponent))%></td>
+          <td><%= (game.win? ? 'W' : 'L')%></td>
+          <td><%= display_score(game.score)%></td>
+          <td><%= game.total_innings %></td>
+        </tr>
+      <%- end -%>
+    </tbody>
+  </table>
+  </div>
+</div>

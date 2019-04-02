@@ -1,14 +1,13 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.5.3'
+ruby '2.5.5'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.2'
+gem 'rails', '~> 5.2.3'
 # Use postgres as the database for Active Record
 gem 'pg'
-# Use Puma as the app server
-gem 'puma', '~> 3.11'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -36,12 +35,77 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
+# ui framework
+gem 'bootstrap', '~> 4.2'
+
+gem 'jquery-rails'
+gem 'jquery-ui-rails'
+gem 'jquery-migrate-rails'
+gem 'outfielding-jqplot-rails'
+gem 'jquery-tablesorter'
+gem 'jquery-tokeninput-rails'
+
+# in place editing
+gem "best_in_place"
+# move to font-awesome
+gem "font-awesome-rails"
+
+# configuration
+gem 'config'
+
+# better uri parsing
+# gem 'addressable'
+
+# bootstrappy forms
+gem 'simple_form'
+
+# http retrieval
+gem 'rest-client'
+
+# pagination
+gem 'kaminari'
+
+# exception handling
+gem 'rollbar'
+
+# background jobs
+gem 'sidekiq'
+
+# mobile device detection
+gem 'mobile-fu'
+
+# terse logging
+gem 'lograge'
+
+# caching
+#gem 'redis-rails'
+
+# slack integration
+gem "slack-notifier"
+
+# scripts
+gem 'thor'
+
+# uploads
+gem 'rubyzip'
+gem 'paperclip'
+gem 'dropzonejs-rails'
+
+# mathn is removed in ruby 2.5
+gem 'mathn'
+
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 end
 
 group :development do
+  gem 'httplog'
+  gem 'pry-rails'
+  gem "better_errors"
+  gem 'binding_of_caller'
+  
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
@@ -58,5 +122,3 @@ group :test do
   gem 'chromedriver-helper'
 end
 
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

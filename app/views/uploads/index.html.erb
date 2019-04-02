@@ -1,0 +1,10 @@
+<% @page_title = "Recent DMB Export Uploads" %>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= render(:partial => 'filelist' )%>
+  </div>
+</div>
+
+<%= render(:partial => 'file_upload_form' )%>
+<%= javascript_include_tag('upload_dropzone')%>
