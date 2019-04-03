@@ -1,3 +1,5 @@
+web_reports_url: 'https://busterleague.org/dmbcurrent/'
+game_results_page: 'orggr.htm'
 session_token: '123456789012345678901234567890'
 location: 'busterleague'
 email_bcc_address: 'use_local_settings'

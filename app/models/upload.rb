@@ -69,7 +69,7 @@ class Upload < ApplicationRecord
   end
 
   def extract_zip
-    unzip_to = "#{Rails.root}/public/dmbweb"
+    unzip_to = "#{Rails.root}/public/dmbcurrent"
     Zip::File.open(self.archivefile.path) do |zip_file|
       zip_file.each do |f|
         # remove "Web" from file name

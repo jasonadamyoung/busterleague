@@ -55,9 +55,9 @@ class Boxscore < ApplicationRecord
   # Temperature: 62, Sky: clear, Wind: in from center at 4 MPH.
 
 
-  def self.download_boxscore_list
+  def self.download_boxscore_list(web_reports_url,game_results_page)
     results_list = []
-    game_results_url = "#{Settings.web_reports_url}/#{Settings.game_results_page}"
+    game_results_url = "#{web_reports_url}/#{game_results_page}"
     response = RestClient.get(game_results_url)
     if(!response.code == 200)
       return nil
@@ -73,20 +73,20 @@ class Boxscore < ApplicationRecord
     results_list
   end
 
-  def self.get_all
+  def self.get_all(web_reports_url = Settings.web_reports_url,game_results_page=Settings.game_results_page)
     # boxscore_name = self.results_list.first
     processed = 0
-    self.download_boxscore_list.each do |boxscore_name|
-      boxscore = Boxscore.get_and_create(boxscore_name)
+    self.download_boxscore_list(web_reports_url,game_results_page).each do |boxscore_name|
+      boxscore = Boxscore.get_and_create(web_reports_url,boxscore_name)
       processed +=1
     end
     processed
   end
 
-  def self.get_and_create(boxscore_name)
+  def self.get_and_create(web_reports_url,boxscore_name)
     if(!boxscore = Boxscore.where(name: boxscore_name).first)
       boxscore = Boxscore.new(:name => boxscore_name)
-      boxscore_url = "#{Settings.web_reports_url}/#{boxscore_name}.htm"
+      boxscore_url = "#{web_reports_url}/#{boxscore_name}.htm"
       response = RestClient.get(boxscore_url)
       if(!response.code == 200)
         return nil
