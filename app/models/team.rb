@@ -26,8 +26,8 @@ class Team < ApplicationRecord
     (owner_id != Owner.computer_id)
   end
 
-  def wins_minus_losses(through_date)
-    record_for_date = self.records.where(date: through_date).first
+  def wins_minus_losses(season,through_date)
+    record_for_date = self.records.where(season: season).where(date: through_date).first
     if(record_for_date)
       record_for_date.wins_minus_losses
     else
@@ -54,9 +54,7 @@ class Team < ApplicationRecord
   def self.standings(options = {})
 
     league = options[:league]
-    if(Settings.location != 'auction')
-      division = options[:division]
-    end
+    division = options[:division]
 
     date = options[:date] || Game.latest_date
 

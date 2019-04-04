@@ -13,14 +13,14 @@ class Game < ApplicationRecord
   scope :losses, -> { where(:win => false) }
   scope :home, -> { where(:home => true) }
   scope :away, -> { where(:home => false) }
-  scope :through_date, lambda {|date| where("date <= ?",date)}
+  scope :through_season_date, lambda {|season,date| where(season: season).where("date <= ?",date)}
 
   def self.rebuild
      self.connection.execute("TRUNCATE table #{table_name};")
      game_count = 0
      Boxscore.all.each do |boxscore|
        # home team's game
-       home_game = self.new(:boxscore_id => boxscore.id, :date => boxscore.date)
+       home_game = self.new(:boxscore_id => boxscore.id, :date => boxscore.date, :season => boxscore.season)
        home_game.team_id = boxscore.home_team_id
        home_game.home = true
        home_game.opponent_id = boxscore.away_team_id
@@ -49,11 +49,11 @@ class Game < ApplicationRecord
      game_count
   end
 
-  def self.earliest_date
+  def self.earliest_date(season = Settings.current_season)
     self.minimum(:date)
   end
 
-  def self.latest_date
+  def self.latest_date(season = Settings.current_season)
     self.maximum(:date)
   end
 

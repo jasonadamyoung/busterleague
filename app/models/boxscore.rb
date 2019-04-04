@@ -134,6 +134,7 @@ class Boxscore < ApplicationRecord
   def process_date_teams_ballpark(dataline)
     (linedate,teams,ballpark) = dataline.split(', ')
     self.date = Date.strptime(linedate, '%m/%d/%Y')
+    self.season = self.date.year
 
     if(matcher = teams.match(%r{(?<away>\w+)\d\d-(?<home>\w+)\d\d}))
       self.home_team_id =  Team.where(abbrev: matcher[:home].upcase).first.id
@@ -201,6 +202,7 @@ class Boxscore < ApplicationRecord
   def away_innings
     self.stats[self.away_team_id][:innings].unshift(self.away_team_id)
   end
+
 
 
 

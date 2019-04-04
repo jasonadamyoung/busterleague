@@ -5,12 +5,13 @@
 
 class DateStat
 
-  attr_accessor :date, :team, :record_for_date
+  attr_accessor :date, :team, :record_for_date, :season
 
   def initialize(options = {})
-    self.date = options[:date] || Game.latest_date
+    self.season = options[:season] || Settings.current_season
+    self.date = options[:date] || Game.latest_date(self.season)
     self.team = options[:team]
-    self.record_for_date = self.team.records.where(date: self.date).first
+    self.record_for_date = self.team.records.where(season: season).where(date: self.date).first
   end
 
   def streak
@@ -50,7 +51,7 @@ class DateStat
   end
 
   def last_ten
-    gameslist = team.games.through_date(self.date).order("date DESC").limit(10)
+    gameslist = team.games.through_season_date(self.season,self.date).order("date DESC").limit(10)
     last_wins = 0; last_losses = 0;
     gameslist.each do |game|
       if(game.win?)
@@ -108,7 +109,7 @@ class DateStat
   def records_by_opponent(forceupdate = false)
     if(!@records_by_opponent or forceupdate)
       @records_by_opponent = {}
-      games = team.games.through_date(date)
+      games = team.games.through_season_date(season,date)
       games.each do |g|
         @records_by_opponent[g.opponent_id] ||= {:wins => 0, :losses => 0}
         if(g.win?)
@@ -138,12 +139,12 @@ class DateStat
 
 
   def winning_teams
-    Record.winners.on_date(date).map(&:team)
+    Record.winners.on_season_date(season,date).map(&:team)
   end
 
 
   def losing_teams
-    Record.losers.on_date(date).map(&:team)
+    Record.losers.on_season_date(season,date).map(&:team)
   end
 
 end

@@ -3,6 +3,7 @@ class InitialSchema < ActiveRecord::Migration[5.2]
   create_table "boxscores", force: :cascade do |t|
     t.string  "name",            limit: 255
     t.date    "date"
+    t.integer "season",          limit: 4
     t.string  "ballpark",        limit: 255
     t.integer "home_team_id",    limit: 4
     t.integer "away_team_id",    limit: 4
@@ -16,10 +17,12 @@ class InitialSchema < ActiveRecord::Migration[5.2]
 
   add_index "boxscores", ["name"], name: "name_ndx", unique: true
   add_index "boxscores", ["date"], name: "boxscore_date_ndx", unique: false
+  add_index "boxscores", ["season"], name: "boxscore_season_ndx", unique: false
 
   create_table "games", force: :cascade do |t|
     t.integer "boxscore_id",   limit: 4
     t.date    "date"
+    t.integer "season",        limit: 4
     t.boolean "home"
     t.integer "team_id",       limit: 4
     t.integer "opponent_id",   limit: 4
@@ -31,9 +34,11 @@ class InitialSchema < ActiveRecord::Migration[5.2]
 
   add_index "games", ["team_id", "opponent_id", "win"], name: "team_win_ndx"
   add_index "games", ["date"], name: "game_date_ndx", unique: false
+  add_index "games", ["season"], name: "game_season_ndx", unique: false
 
   create_table "innings", force: :cascade do |t|
     t.integer "boxscore_id",   limit: 4
+    t.integer "season",        limit: 4
     t.integer "team_id",       limit: 4
     t.integer "inning",        limit: 4
     t.integer "runs",          limit: 4
@@ -78,6 +83,7 @@ class InitialSchema < ActiveRecord::Migration[5.2]
 
   create_table "records", force: :cascade do |t|
     t.date    "date"
+    t.integer "season",            limit: 4
     t.integer "games",             limit: 4
     t.integer "team_id",           limit: 4
     t.integer "wins",              limit: 4
@@ -97,7 +103,7 @@ class InitialSchema < ActiveRecord::Migration[5.2]
     t.integer "road_ra",           limit: 4
   end
 
-  add_index "records", ["date", "team_id"], name: "records_ndx", unique: true
+  add_index "records", ["date", "season", "team_id"], name: "records_ndx", unique: true
 
   create_table "teams", force: :cascade do |t|
     t.integer  "owner_id",   limit: 4

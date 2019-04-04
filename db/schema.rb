@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
   create_table "boxscores", force: :cascade do |t|
     t.string "name", limit: 255
     t.date "date"
+    t.integer "season"
     t.string "ballpark", limit: 255
     t.integer "home_team_id"
     t.integer "away_team_id"
@@ -29,11 +30,13 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.text "content"
     t.index ["date"], name: "boxscore_date_ndx"
     t.index ["name"], name: "name_ndx", unique: true
+    t.index ["season"], name: "boxscore_season_ndx"
   end
 
   create_table "games", force: :cascade do |t|
     t.integer "boxscore_id"
     t.date "date"
+    t.integer "season"
     t.boolean "home"
     t.integer "team_id"
     t.integer "opponent_id"
@@ -42,11 +45,13 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.integer "opponent_runs"
     t.integer "total_innings"
     t.index ["date"], name: "game_date_ndx"
+    t.index ["season"], name: "game_season_ndx"
     t.index ["team_id", "opponent_id", "win"], name: "team_win_ndx"
   end
 
   create_table "innings", force: :cascade do |t|
     t.integer "boxscore_id"
+    t.integer "season"
     t.integer "team_id"
     t.integer "inning"
     t.integer "runs"

@@ -5,6 +5,7 @@
 
 class Inning < ApplicationRecord
   belongs_to :team
+  belongs_to :boxscore
     
   def self.rebuild
     self.connection.execute("TRUNCATE table #{table_name};")
@@ -15,7 +16,7 @@ class Inning < ApplicationRecord
       away_innings = boxscore.away_innings
       for i in (1..boxscore.total_innings)
         if(home_innings[i])
-          create_data = {:team_id => boxscore.home_team_id, :inning => i, :runs => home_innings[i]}
+          create_data = {:team_id => boxscore.home_team_id, :inning => i, :runs => home_innings[i], :season => boxscore.season}
           if(away_innings[i])
             create_data[:opponent_runs] = away_innings[i]
           end
@@ -24,7 +25,7 @@ class Inning < ApplicationRecord
         end
 
         if(away_innings[i])
-          create_data = {:team_id => boxscore.away_team_id, :inning => i, :runs => away_innings[i]}
+          create_data = {:team_id => boxscore.away_team_id, :inning => i, :runs => away_innings[i], :season => boxscore.season}
           if(home_innings[i])
             create_data[:opponent_runs] = home_innings[i]
           end

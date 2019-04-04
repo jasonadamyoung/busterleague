@@ -9,3 +9,4 @@ urlwriter_host: 'use_local_settings'
 upload_hash_key: 'use_local_settings'
 redis_url: 'redis://localhost:6379/0'
 redis_enabled: true
+current_season: '2018'
