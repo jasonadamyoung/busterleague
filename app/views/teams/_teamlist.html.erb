@@ -21,7 +21,7 @@
   </thead>
   <tbody>
     <%- teamlist.each do |team| -%>
-    <%- date_stat = DateStat.new(:date => @date, :team => team)%>
+    <%- date_stat = DateStat.new(:date => @date, :team => team, :season => @season)%>
   	  <%- if (team.is_human?) -%>
         <tr class='shaded'>
       <%- else -%>

@@ -12,12 +12,14 @@ class Record < ApplicationRecord
   scope :losers, -> { where("wins / games <= .5") }
   scope :on_date, lambda {|date| where("date = ?",date)}
   scope :on_season_date, lambda {|season,date| where(season: season).where("date = ?",date)}
+  scope :for_season, lambda {|season| where(season: season)}
+
 
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses
   end
 
-  def self.create_or_update_records(season = Settings.current_season)
+  def self.create_or_update_records(season)
     for date in (Game.earliest_date(season)..Game.latest_date(season)) do
       Team.all.each do |team|
         record = self.create_or_update_for_team_and_date(season,team,date)
@@ -81,8 +83,8 @@ class Record < ApplicationRecord
     record_for_date
   end
 
-  def self.rebuild
-    self.create_or_update_records
+  def self.rebuild(season)
+    self.create_or_update_records(season)
   end
 
 

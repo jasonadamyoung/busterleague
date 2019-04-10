@@ -69,11 +69,20 @@ class Upload < ApplicationRecord
   end
 
   def extract_zip
-    unzip_to = "#{Rails.root}/public/dmbcurrent"
+    # does the unzip file have a year in it? unzip that to a season dir
+    if(self.archivefile_file_name =~ %r{\D*(\d{4})})
+      season = $1
+    else
+      season = Game.current_season
+    end
+    unzip_to = "#{Rails.root}/public/dmbweb/#{season}"
+    Dir.mkdir(unzip_to) unless Dir.exist?(unzip_to) 
     Zip::File.open(self.archivefile.path) do |zip_file|
       zip_file.each do |f|
         # remove "Web" from file name
         if(f.name =~ %r{^Web/(.*)})
+          output_fname = $1
+        elsif(f.name =~ %r{^#{season}/(.*)})
           output_fname = $1
         else
           output_fname = f.name

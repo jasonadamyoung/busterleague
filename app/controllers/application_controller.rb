@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   include AuthenticationSystem
   has_mobile_fu false
 
-  before_action :check_for_rebuild_in_progress, :set_date
+  before_action :check_for_rebuild_in_progress, :check_for_season, :set_date
   before_action :signin_optional
   helper_method :home_url
   helper_method :home_path
@@ -27,10 +27,39 @@ class ApplicationController < ActionController::Base
       begin
         @date = Date.parse(params[:date])
       rescue
-        @date = Game.latest_date
+        @date = Game.latest_date(@season)
       end
     else
-      @date = Game.latest_date
+      @date = Game.latest_date(@season)
+    end
+  end
+
+  def check_for_season
+    if(!params[:season].nil?)
+      if(Game.allowed_seasons.include?(params[:season].to_i))
+        @season = params[:season].to_i
+      else
+        @season = Game.current_season
+      end
+      cookies[:season] = {:value => @season}
+    elsif(!cookies[:season].nil?)
+      if(Game.allowed_seasons.include?(cookies[:season].to_i))
+        @season = cookies[:season]
+      else
+        @cookies[:season] = nil
+        @season = Game.current_season
+      end      
+    else
+      @season = Game.current_season
+    end
+    return true
+  end  
+
+  def set_season
+    if(params[:season] and Game.pluck(:season).include?(params[:season].to_i))
+      @season = params[:season].to_i
+    else
+      @season = Settings.current_season
     end
   end
 

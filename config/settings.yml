@@ -1,4 +1,4 @@
-web_reports_url: 'https://busterleague.org/dmbcurrent/'
+web_reports_base_url: 'https://busterleague.org/dmbweb/'
 game_results_page: 'orggr.htm'
 session_token: '123456789012345678901234567890'
 location: 'busterleague'
@@ -9,4 +9,3 @@ urlwriter_host: 'use_local_settings'
 upload_hash_key: 'use_local_settings'
 redis_url: 'redis://localhost:6379/0'
 redis_enabled: true
-current_season: '2018'

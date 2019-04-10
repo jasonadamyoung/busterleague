@@ -93,6 +93,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
 
   create_table "records", force: :cascade do |t|
     t.date "date"
+    t.integer "season"
     t.integer "games"
     t.integer "team_id"
     t.integer "wins"
@@ -110,7 +111,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.integer "home_ra"
     t.integer "road_rf"
     t.integer "road_ra"
-    t.index ["date", "team_id"], name: "records_ndx", unique: true
+    t.index ["date", "season", "team_id"], name: "records_ndx", unique: true
   end
 
   create_table "teams", force: :cascade do |t|

@@ -73,17 +73,23 @@ class Boxscore < ApplicationRecord
     results_list
   end
 
-  def self.get_all(web_reports_url = Settings.web_reports_url,game_results_page=Settings.game_results_page)
+  def self.get_all(season = Game.current_season)
+    #build url from
+    web_reports_url = "#{Settings.web_reports_base_url}/#{season}"
+    self.get_all_from_url(web_reports_url,Settings.game_results_page,season) 
+  end
+
+  def self.get_all_from_url(web_reports_url,game_results_page,season)
     # boxscore_name = self.results_list.first
     processed = 0
     self.download_boxscore_list(web_reports_url,game_results_page).each do |boxscore_name|
-      boxscore = Boxscore.get_and_create(web_reports_url,boxscore_name)
+      boxscore = Boxscore.get_and_create(web_reports_url,boxscore_name,season)
       processed +=1
     end
     processed
   end
 
-  def self.get_and_create(web_reports_url,boxscore_name)
+  def self.get_and_create(web_reports_url,boxscore_name,season)
     if(!boxscore = Boxscore.where(name: boxscore_name).first)
       boxscore = Boxscore.new(:name => boxscore_name)
       boxscore_url = "#{web_reports_url}/#{boxscore_name}.htm"
@@ -93,7 +99,7 @@ class Boxscore < ApplicationRecord
       end
       htmldata = response.to_str
       boxscore.content = content_array(htmldata)
-      boxscore.process_content
+      boxscore.process_content(season)
       boxscore.save!
     else
       # todo update?
@@ -118,10 +124,10 @@ class Boxscore < ApplicationRecord
     array_content
   end
 
-  def process_content
+  def process_content(season)
     array_content = self.content.dup
     # first line
-    process_date_teams_ballpark(array_content.shift)
+    process_date_teams_ballpark(array_content.shift,season)
     linescore_block = []
     while((array_content.first =~ %r{AB  R  H BI}).nil?)
       line = array_content.shift
@@ -131,10 +137,14 @@ class Boxscore < ApplicationRecord
     process_innings_totals(linescore_block)
   end
 
-  def process_date_teams_ballpark(dataline)
+  def process_date_teams_ballpark(dataline,season)
     (linedate,teams,ballpark) = dataline.split(', ')
     self.date = Date.strptime(linedate, '%m/%d/%Y')
-    self.season = self.date.year
+    if(!season.blank?)
+      self.season = season
+    else
+      self.season = self.date.year
+    end
 
     if(matcher = teams.match(%r{(?<away>\w+)\d\d-(?<home>\w+)\d\d}))
       self.home_team_id =  Team.where(abbrev: matcher[:home].upcase).first.id
@@ -202,8 +212,6 @@ class Boxscore < ApplicationRecord
   def away_innings
     self.stats[self.away_team_id][:innings].unshift(self.away_team_id)
   end
-
-
 
 
 end
