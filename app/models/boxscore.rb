@@ -91,7 +91,7 @@ class Boxscore < ApplicationRecord
   end
 
   def self.get_and_create(web_reports_url,boxscore_name,season)
-    if(!boxscore = Boxscore.where(name: boxscore_name).first)
+    if(!boxscore = Boxscore.where(season: season).where(name: boxscore_name).first)
       boxscore = Boxscore.new(:name => boxscore_name)
       boxscore_url = "#{web_reports_url}/#{boxscore_name}.htm"
       response = RestClient.get(boxscore_url)
