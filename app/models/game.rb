@@ -27,7 +27,7 @@ class Game < ApplicationRecord
   end
 
   def self.available_seasons
-    self.distinct.pluck(:season)
+    self.distinct.pluck(:season).sort.reverse
   end
 
   def self.earliest_date(season)
