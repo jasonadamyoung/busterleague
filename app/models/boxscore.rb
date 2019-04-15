@@ -12,6 +12,7 @@ class Boxscore < ApplicationRecord
   belongs_to :winning_team, :class_name => 'Team'
   has_many :games
   has_many :innings
+  after_create :create_games, :create_innings
 
   # 2011040500000
   # 4/5/2011, Cle11-Bal11, Oriole Park at Camden Yards
@@ -140,15 +141,13 @@ class Boxscore < ApplicationRecord
   def process_date_teams_ballpark(dataline,season)
     (linedate,teams,ballpark) = dataline.split(', ')
     self.date = Date.strptime(linedate, '%m/%d/%Y')
-    if(!season.blank?)
-      self.season = season
-    else
-      self.season = self.date.year
-    end
+    self.season = season
 
     if(matcher = teams.match(%r{(?<away>\w+)\d\d-(?<home>\w+)\d\d}))
-      self.home_team_id =  Team.where(abbrev: matcher[:home].upcase).first.id
-      self.away_team_id =  Team.where(abbrev: matcher[:away].upcase).first.id
+      home_abbrev = Team.abbreviation_transmogrifier(matcher[:home])
+      away_abbrev = Team.abbreviation_transmogrifier(matcher[:away])
+      self.home_team_id =  Team.where(abbrev: home_abbrev).first.id
+      self.away_team_id =  Team.where(abbrev: away_abbrev).first.id
     end
 
     self.ballpark = ballpark
@@ -212,6 +211,53 @@ class Boxscore < ApplicationRecord
   def away_innings
     self.stats[self.away_team_id][:innings].unshift(self.away_team_id)
   end
+
+  def create_games
+    # home team's game
+    home_game = Game.new(:boxscore_id => self.id, :date => self.date, :season => self.season)
+    home_game.team_id = self.home_team_id
+    home_game.home = true
+    home_game.opponent_id = self.away_team_id
+    home_game.win = (self.winning_team_id == self.home_team_id)
+    home_game.runs = self.home_runs
+    home_game.opponent_runs = self.away_runs
+    home_game.total_innings = self.total_innings
+    home_game.save!
+
+    # away team's game
+    away_game = Game.new(:boxscore_id => self.id, :date => self.date, :season => self.season)
+    away_game.team_id = self.away_team_id
+    away_game.home = false
+    away_game.opponent_id = self.home_team_id
+    away_game.win = (self.winning_team_id == self.away_team_id)
+    away_game.runs = self.away_runs
+    away_game.opponent_runs = self.home_runs
+    away_game.total_innings = self.total_innings
+    away_game.save!
+  end
+
+  def create_innings
+    home_innings = self.home_innings
+    away_innings = self.away_innings
+    for i in (1..self.total_innings)
+      if(home_innings[i])
+        create_data = {:team_id => self.home_team_id, :inning => i, :runs => home_innings[i], :season => self.season}
+        if(away_innings[i])
+          create_data[:opponent_runs] = away_innings[i]
+        end
+        self.innings.create(create_data)
+      end
+
+      if(away_innings[i])
+        create_data = {:team_id => self.away_team_id, :inning => i, :runs => away_innings[i], :season => self.season}
+        if(home_innings[i])
+          create_data[:opponent_runs] = home_innings[i]
+        end
+        self.innings.create(create_data)
+      end
+    end
+  end
+
 
 
 end

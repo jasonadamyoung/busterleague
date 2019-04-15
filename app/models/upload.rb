@@ -71,7 +71,7 @@ class Upload < ApplicationRecord
   def extract_zip
     # does the unzip file have a year in it? unzip that to a season dir
     if(self.archivefile_file_name =~ %r{\D*(\d{4})})
-      season = $1
+      season = $1.to_i
     else
       season = Game.current_season
     end
@@ -79,9 +79,10 @@ class Upload < ApplicationRecord
     Dir.mkdir(unzip_to) unless Dir.exist?(unzip_to) 
     Zip::File.open(self.archivefile.path) do |zip_file|
       zip_file.each do |f|
-        # remove "Web" from file name
+        # remove "Web" from file name - ongoing season files are in a "Web" directory
         if(f.name =~ %r{^Web/(.*)})
           output_fname = $1
+        # season summary files are in a "YYYY" directory
         elsif(f.name =~ %r{^#{season}/(.*)})
           output_fname = $1
         else
@@ -91,17 +92,16 @@ class Upload < ApplicationRecord
         zip_file.extract(f, fpath) { true }
       end
     end
+    return season
   end
 
   def unzip_and_process
     self.update_attribute(:processing_status, PROCESSING_STARTED)
     # unzip
-    self.extract_zip
+    season = self.extract_zip
     # process
-    results = {}
-    rebuilder = Rebuild.start('all')
-    self.update_attribute(:rebuild_id, rebuilder.id)
-    rebuilder.run_all_and_finish
+    Boxscore.get_all(season)
+    Record.rebuild(season)
     self.update_attributes(processing_status: PROCESSED)
     SlackIt.post(message: "A new upload has been processed: #{self.archivefile_file_name}")
   end

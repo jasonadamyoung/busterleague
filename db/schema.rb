@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.integer "runs"
     t.integer "opponent_runs"
     t.integer "total_innings"
+    t.index ["boxscore_id", "home"], name: "boxscore_game_ndx", unique: true
     t.index ["date"], name: "game_date_ndx"
     t.index ["season"], name: "game_season_ndx"
     t.index ["team_id", "opponent_id", "win"], name: "team_win_ndx"
@@ -72,23 +73,6 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_owners_on_email", unique: true
-  end
-
-  create_table "rebuilds", force: :cascade do |t|
-    t.string "group", limit: 255
-    t.string "single_model", limit: 255
-    t.string "single_action", limit: 255
-    t.boolean "in_progress"
-    t.datetime "started"
-    t.datetime "finished"
-    t.float "run_time"
-    t.string "current_model", limit: 255
-    t.string "current_action", limit: 255
-    t.datetime "current_start"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text "rebuild_results"
-    t.index ["created_at"], name: "created_ndx"
   end
 
   create_table "records", force: :cascade do |t|

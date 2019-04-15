@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   include AuthenticationSystem
   has_mobile_fu false
 
-  before_action :check_for_rebuild_in_progress, :check_for_season, :set_date
+  before_action :check_for_season, :set_date
   before_action :signin_optional
   helper_method :home_url
   helper_method :home_path
@@ -62,16 +62,6 @@ class ApplicationController < ActionController::Base
       @season = Settings.current_season
     end
   end
-
-  def check_for_rebuild_in_progress
-    if(rebuild = Rebuild.latest)
-      if(rebuild.in_progress?)
-        flash.now[:warning] = 'The Busterleague stats are currently being rebuilt. Refresh the site in a few minutes.'
-      end
-    end
-    true
-  end
-
 
   def home_url
     root_url

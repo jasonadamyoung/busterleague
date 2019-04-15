@@ -32,6 +32,7 @@ class InitialSchema < ActiveRecord::Migration[5.2]
     t.integer "total_innings", limit: 4
   end
 
+  add_index "games", ["boxscore_id","home"], name: "boxscore_game_ndx", unique: true
   add_index "games", ["team_id", "opponent_id", "win"], name: "team_win_ndx"
   add_index "games", ["date"], name: "game_date_ndx", unique: false
   add_index "games", ["season"], name: "game_season_ndx", unique: false
@@ -62,24 +63,6 @@ class InitialSchema < ActiveRecord::Migration[5.2]
   end
 
   add_index "owners", ["email"], name: "index_owners_on_email", unique: true
-
-  create_table "rebuilds", force: :cascade do |t|
-    t.string   "group",          limit: 255
-    t.string   "single_model",   limit: 255
-    t.string   "single_action",  limit: 255
-    t.boolean  "in_progress"
-    t.datetime "started"
-    t.datetime "finished"
-    t.float    "run_time",       limit: 24
-    t.string   "current_model",  limit: 255
-    t.string   "current_action", limit: 255
-    t.datetime "current_start"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text "rebuild_results", limit: 16777215
-  end
-
-  add_index "rebuilds", ["created_at"], name: "created_ndx"
 
   create_table "records", force: :cascade do |t|
     t.date    "date"
