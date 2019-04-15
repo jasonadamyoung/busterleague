@@ -24,7 +24,11 @@ class Game < ApplicationRecord
 
   def self.allowed_seasons
     ALLOWED_SEASONS.to_a
-  end   
+  end
+
+  def self.available_seasons
+    self.distinct.pluck(:season)
+  end
 
   def self.earliest_date(season)
     self.where(season: season).minimum(:date)
