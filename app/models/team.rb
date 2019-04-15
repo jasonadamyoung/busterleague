@@ -94,4 +94,19 @@ class Team < ApplicationRecord
     {:labels => labels,:data => data}
   end
 
+  def self.abbreviation_transmogrifier(abbrev)
+    case abbrev.upcase
+    when 'CHA'
+      'CWS'
+    when 'CHN'
+      'CHC'
+    when 'NYN'
+      'NYM'
+    when 'NYA'
+      'NYY'
+    else
+      abbrev.upcase
+    end
+  end
+
 end
