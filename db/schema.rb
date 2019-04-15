@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.text "stats"
     t.text "content"
     t.index ["date"], name: "boxscore_date_ndx"
-    t.index ["name"], name: "name_ndx", unique: true
+    t.index ["name", "season"], name: "name_ndx", unique: true
     t.index ["season"], name: "boxscore_season_ndx"
   end
 

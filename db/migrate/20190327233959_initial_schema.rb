@@ -15,7 +15,7 @@ class InitialSchema < ActiveRecord::Migration[5.2]
     t.text    "content",         limit: 65535
   end
 
-  add_index "boxscores", ["name"], name: "name_ndx", unique: true
+  add_index "boxscores", ["name", "season"], name: "name_ndx", unique: true
   add_index "boxscores", ["date"], name: "boxscore_date_ndx", unique: false
   add_index "boxscores", ["season"], name: "boxscore_season_ndx", unique: false
 
