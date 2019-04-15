@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
   create_table "boxscores", force: :cascade do |t|
     t.string "name", limit: 255
     t.date "date"
+    t.integer "season"
     t.string "ballpark", limit: 255
     t.integer "home_team_id"
     t.integer "away_team_id"
@@ -29,11 +30,13 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.text "content"
     t.index ["date"], name: "boxscore_date_ndx"
     t.index ["name"], name: "name_ndx", unique: true
+    t.index ["season"], name: "boxscore_season_ndx"
   end
 
   create_table "games", force: :cascade do |t|
     t.integer "boxscore_id"
     t.date "date"
+    t.integer "season"
     t.boolean "home"
     t.integer "team_id"
     t.integer "opponent_id"
@@ -41,12 +44,15 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.integer "runs"
     t.integer "opponent_runs"
     t.integer "total_innings"
+    t.index ["boxscore_id", "home"], name: "boxscore_game_ndx", unique: true
     t.index ["date"], name: "game_date_ndx"
+    t.index ["season"], name: "game_season_ndx"
     t.index ["team_id", "opponent_id", "win"], name: "team_win_ndx"
   end
 
   create_table "innings", force: :cascade do |t|
     t.integer "boxscore_id"
+    t.integer "season"
     t.integer "team_id"
     t.integer "inning"
     t.integer "runs"
@@ -69,25 +75,9 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.index ["email"], name: "index_owners_on_email", unique: true
   end
 
-  create_table "rebuilds", force: :cascade do |t|
-    t.string "group", limit: 255
-    t.string "single_model", limit: 255
-    t.string "single_action", limit: 255
-    t.boolean "in_progress"
-    t.datetime "started"
-    t.datetime "finished"
-    t.float "run_time"
-    t.string "current_model", limit: 255
-    t.string "current_action", limit: 255
-    t.datetime "current_start"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text "rebuild_results"
-    t.index ["created_at"], name: "created_ndx"
-  end
-
   create_table "records", force: :cascade do |t|
     t.date "date"
+    t.integer "season"
     t.integer "games"
     t.integer "team_id"
     t.integer "wins"
@@ -105,7 +95,7 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.integer "home_ra"
     t.integer "road_rf"
     t.integer "road_ra"
-    t.index ["date", "team_id"], name: "records_ndx", unique: true
+    t.index ["date", "season", "team_id"], name: "records_ndx", unique: true
   end
 
   create_table "teams", force: :cascade do |t|

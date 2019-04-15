@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
 
   get '/dmb', to: "welcome#dmb", :as => 'dmbexport'
+  get '/ss', to: "welcome#ss", :as => 'setseason'
 
   get '/logout' => 'sessions#end', :as => 'logout'
   match '/login' => 'sessions#start', via: [:get,:post], :as => 'login'

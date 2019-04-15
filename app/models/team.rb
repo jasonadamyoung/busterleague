@@ -26,8 +26,8 @@ class Team < ApplicationRecord
     (owner_id != Owner.computer_id)
   end
 
-  def wins_minus_losses(through_date)
-    record_for_date = self.records.where(date: through_date).first
+  def wins_minus_losses(season,through_date)
+    record_for_date = self.records.for_season(season).where(date: through_date).first
     if(record_for_date)
       record_for_date.wins_minus_losses
     else
@@ -35,10 +35,10 @@ class Team < ApplicationRecord
     end
   end
 
-  def win_pct_plot_data
+  def win_pct_plot_data(season)
     win_pcts = []
     x_pcts = []
-    self.records.where('games > 0').order('date ASC').each do |record|
+    self.records.for_season(season).where('games > 0').order('date ASC').each do |record|
       win_pcts << [record.date,(record.wins / record.games).to_f]
       exponent = ((record.rf + record.ra) / record.games )**0.287
       x_pcts << [record.date, ((record.rf**(exponent)) / ( (record.rf**(exponent)) + (record.ra**(exponent)) )).to_f]
@@ -52,27 +52,25 @@ class Team < ApplicationRecord
 
 
   def self.standings(options = {})
-
     league = options[:league]
-    if(Settings.location != 'auction')
-      division = options[:division]
-    end
-
-    date = options[:date] || Game.latest_date
+    division = options[:division]
+    season = options[:season] || Game.current_season
+    date = options[:date] || Game.latest_date(season)
+  
 
     teamlist = Team.where(:league => league).where(:division => division).load.to_a
-    teamlist.sort!{|a,b| b.wins_minus_losses(date) <=> a.wins_minus_losses(date) }
+    teamlist.sort!{|a,b| b.wins_minus_losses(season,date) <=> a.wins_minus_losses(season,date) }
     teamlist
   end
 
-  def self.win_pct_plot_data
+  def self.win_pct_plot_data(season)
     labels = []
     data = []
       teamslist = self.order(:name)
       teamslist.each do |team|
         labels << team.name
         win_pcts = []
-        team.records.where('games >= 7').order('date ASC').each do |record|
+        team.records.for_season(season).where('games >= 7').order('date ASC').each do |record|
           win_pcts << [record.date,(record.wins / record.games).to_f]
         end
         data << win_pcts
@@ -81,19 +79,34 @@ class Team < ApplicationRecord
   end
 
 
-  def self.gb_plot_data
+  def self.gb_plot_data(season)
     labels = []
     data = []
       teamslist = self.order(:name).to_a
       teamslist.each do |team|
         labels << team.name
         gbs = []
-        team.records.where('games >= 0').order('date ASC').each do |record|
+        team.records.for_season(season).where('games >= 0').order('date ASC').each do |record|
           gbs << [record.date,0-record.gb]
         end
         data << gbs
       end
     {:labels => labels,:data => data}
+  end
+
+  def self.abbreviation_transmogrifier(abbrev)
+    case abbrev.upcase
+    when 'CHA'
+      'CWS'
+    when 'CHN'
+      'CHC'
+    when 'NYN'
+      'NYM'
+    when 'NYA'
+      'NYY'
+    else
+      abbrev.upcase
+    end
   end
 
 end

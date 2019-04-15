@@ -1,4 +1,4 @@
-<% @page_title = "#{@team.name}" %>
+<% @page_title = "#{@team.name} - #{@season} Season" %>
 
 <div class="page-header" id="overview">
   <h1><%= @page_title %></h1>
@@ -11,7 +11,7 @@
     <div class="col-md-3">
       <table class="table table-bordered table-striped">
         <tbody>
-          <%- date_stat = DateStat.new(:date => @date, :team => @team)%>
+          <%- date_stat = DateStat.new(:date => @date, :team => @team, :season => @season)%>
   		  <tr><td>W-L</td><td><%= display_wl([date_stat.wins,date_stat.losses]) %></td></tr>
   		  <tr><td>Winning %</td> <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td></tr>
   		  <tr><td>Games Back</td><td><%= display_gb(date_stat.gb) %></td></tr>
@@ -34,7 +34,7 @@
     <div class="col-md-9">
       <h3>Winning % vs. Expected Winning %</h3>
       <p><em>click the legend labels to toggle display of the given item</em></p>
-      <%- win_pct_plot_data = @team.win_pct_plot_data %>
+      <%- win_pct_plot_data = @team.win_pct_plot_data(@season) %>
       <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => @team.abbrev})%>
     </div>
 
@@ -58,7 +58,7 @@
       </tr>
     </thead>
     <tbody>
-      <%- @team.games.order("date DESC").each do |game| -%>
+      <%- @team.games.for_season(@season).order("date DESC").each do |game| -%>
         <tr>
           <td><%= link_to(game.date.strftime("%b %d"), boxscore_path(game.boxscore))%></td>
           <td><%= (game.home? ? 'vs.' : '@')%> <%= link_to(game.opponent.name, team_path(game.opponent))%></td>

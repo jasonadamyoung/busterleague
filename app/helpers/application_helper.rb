@@ -38,9 +38,21 @@ module ApplicationHelper
     nav_item(path,'Teams')
   end
 
+  def setseason_nav_item(season)
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:season] = season
+    dropdown_item_class = (season == @season) ? 'dropdown-item active' : 'dropdown-item'
+    link_to(season,setseason_path(get_params),class: dropdown_item_class).html_safe
+  end
+     
   def team_nav_dropdown_item(team)
     path = team_path(team)
     nav_dropdown_item(path,team.name)
+  end
+
+  def dmbweb_url
+    "#{Settings.web_reports_base_url}/#{@season}"
   end
 
  

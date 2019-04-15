@@ -1,4 +1,4 @@
-web_reports_url: 'https://busterleague.org/dmbcurrent/'
+web_reports_base_url: 'https://busterleague.org/dmbweb/'
 game_results_page: 'orggr.htm'
 session_token: '123456789012345678901234567890'
 location: 'busterleague'

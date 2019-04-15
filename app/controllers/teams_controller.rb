@@ -4,14 +4,9 @@
 # see LICENSE file
 
 class TeamsController < ApplicationController
-  skip_before_action :check_for_rebuild_in_progress,  only: [:index]
 
   def index
-    if(@rebuild = Rebuild.latest and @rebuild.in_progress?)
-      return render :template => 'welcome/rebuild_in_progress'
-    else
-      @teams = Team.all
-    end
+    @teams = Team.all
   end
 
   def show
