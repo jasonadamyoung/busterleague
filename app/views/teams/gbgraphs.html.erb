@@ -11,7 +11,7 @@
 <div class="row">
   <div class="col-md-12">
     <h3>East Division</h3>
-    <%- gb_plot_data = Team.american.east.gb_plot_data %>
+    <%- gb_plot_data = Team.american.east.gb_plot_data(@season) %>
     <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'american_east'})%>
   </div>
 </div>
@@ -19,7 +19,7 @@
 <div class="row">
   <div class="col-md-12">
     <h3>West Division</h3>
-    <%- gb_plot_data = Team.american.west.gb_plot_data %>
+    <%- gb_plot_data = Team.american.west.gb_plot_data(@season) %>
     <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'american_west'})%>
   </div>
 </div>
@@ -31,7 +31,7 @@
 <div class="row">
   <div class="col-md-12">
     <h3>East Division</h3>
-    <%- gb_plot_data = Team.national.east.gb_plot_data %>
+    <%- gb_plot_data = Team.national.east.gb_plot_data(@season) %>
     <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'national_east'})%>
   </div>
 </div>
@@ -39,7 +39,7 @@
 <div class="row">
   <div class="col-md-12">
     <h3>West Division</h3>
-    <%- gb_plot_data = Team.national.west.gb_plot_data %>
+    <%- gb_plot_data = Team.national.west.gb_plot_data(@season) %>
     <%= render(:partial => 'gb_plot', :locals => {:data => gb_plot_data[:data], :labels => gb_plot_data[:labels], :plotlabel => 'national_west'})%>
   </div>
 </div>

@@ -63,14 +63,14 @@ class Team < ApplicationRecord
     teamlist
   end
 
-  def self.win_pct_plot_data
+  def self.win_pct_plot_data(season)
     labels = []
     data = []
       teamslist = self.order(:name)
       teamslist.each do |team|
         labels << team.name
         win_pcts = []
-        team.records.where('games >= 7').order('date ASC').each do |record|
+        team.records.for_season(season).where('games >= 7').order('date ASC').each do |record|
           win_pcts << [record.date,(record.wins / record.games).to_f]
         end
         data << win_pcts
@@ -79,14 +79,14 @@ class Team < ApplicationRecord
   end
 
 
-  def self.gb_plot_data
+  def self.gb_plot_data(season)
     labels = []
     data = []
       teamslist = self.order(:name).to_a
       teamslist.each do |team|
         labels << team.name
         gbs = []
-        team.records.where('games >= 0').order('date ASC').each do |record|
+        team.records.for_season(season).where('games >= 0').order('date ASC').each do |record|
           gbs << [record.date,0-record.gb]
         end
         data << gbs
