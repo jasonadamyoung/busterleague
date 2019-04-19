@@ -221,6 +221,10 @@ class Boxscore < ApplicationRecord
     home_game.win = (self.winning_team_id == self.home_team_id)
     home_game.runs = self.home_runs
     home_game.opponent_runs = self.away_runs
+    home_game.hits = self.stats[self.home_team_id][:hits]
+    home_game.opponent_hits = self.stats[self.away_team_id][:hits]  
+    home_game.errs = self.stats[self.home_team_id][:errors]
+    home_game.opponent_errs = self.stats[self.away_team_id][:errors]  
     home_game.total_innings = self.total_innings
     home_game.save!
 
@@ -232,6 +236,10 @@ class Boxscore < ApplicationRecord
     away_game.win = (self.winning_team_id == self.away_team_id)
     away_game.runs = self.away_runs
     away_game.opponent_runs = self.home_runs
+    away_game.hits = self.stats[self.away_team_id][:hits]
+    away_game.opponent_hits = self.stats[self.home_team_id][:hits]  
+    away_game.errs = self.stats[self.away_team_id][:errors]
+    away_game.opponent_errs = self.stats[self.home_team_id][:errors]      
     away_game.total_innings = self.total_innings
     away_game.save!
   end

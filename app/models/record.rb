@@ -8,8 +8,8 @@ class Record < ApplicationRecord
   
   before_save :set_win_minus_losses
 
-  scope :winners, -> { where("wins / games > .5") }
-  scope :losers, -> { where("wins / games <= .5") }
+  scope :winners, -> { where("wins / games::float > .5") }
+  scope :losers, -> { where("wins / games::float <= .5") }
   scope :on_date, lambda {|date| where("date = ?",date)}
   scope :on_season_date, lambda {|season,date| where(season: season).where("date = ?",date)}
   scope :for_season, lambda {|season| where(season: season)}
