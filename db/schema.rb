@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_27_233959) do
+ActiveRecord::Schema.define(version: 2019_04_19_155252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,10 @@ ActiveRecord::Schema.define(version: 2019_03_27_233959) do
     t.integer "runs"
     t.integer "opponent_runs"
     t.integer "total_innings"
+    t.integer "hits"
+    t.integer "opponent_hits"
+    t.integer "errs"
+    t.integer "opponent_errs"
     t.index ["boxscore_id", "home"], name: "boxscore_game_ndx", unique: true
     t.index ["date"], name: "game_date_ndx"
     t.index ["season"], name: "game_season_ndx"

@@ -15,6 +15,13 @@ class Game < ApplicationRecord
   scope :away, -> { where(:home => false) }
   scope :for_season, lambda {|season| where(season: season)}
   scope :through_season_date, lambda {|season,date| where(season: season).where("date <= ?",date)}
+  scope :zero_hits, -> { where(:hits => 0) }
+  scope :zero_errors, -> { where(:errs => 0) }
+  scope :opponent_zero_hits, -> { where(:opponent_hits => 0) }
+  scope :opponent_zero_errors, -> { where(:opponent_errs => 0) }
+  scope :no_hitters, -> { wins.opponent_zero_hits }
+  scope :perfects, -> { wins.opponent_zero_hits.zero_errors }
+
 
   ALLOWED_SEASONS = 1999..2018
 
