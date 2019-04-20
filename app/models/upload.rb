@@ -32,19 +32,20 @@ class Upload < ApplicationRecord
   belongs_to :owner
 
   after_create :check_for_processing
+  
+  def season
+    if(self.archivefile_file_name =~ %r{\D*(\d{4})})
+      $1.to_i
+    else
+      Game.current_season
+    end
+  end
+
 
   def check_for_processing
-    if(!self.class.check_for_any_queued_or_started)
-      puts "#{self.class.largest_upload_id} :: #{self.id}"
-      largest_upload_id = self.class.largest_upload_id
-      if(largest_upload_id == self.id)
-        if(Settings.redis_enabled)
-          # let the processing be manual post-create if we aren't backgrounding
-          self.queue_unzip_and_process
-        end
-      else
-        self.update_attribute(:processing_status, WILL_NOT_PROCESS)
-      end
+    if(Settings.redis_enabled)
+      # let the processing be manual post-create if we aren't backgrounding
+      self.queue_unzip_and_process
     end
     true
   end
@@ -69,13 +70,7 @@ class Upload < ApplicationRecord
   end
 
   def extract_zip
-    # does the unzip file have a year in it? unzip that to a season dir
-    if(self.archivefile_file_name =~ %r{\D*(\d{4})})
-      season = $1.to_i
-    else
-      season = Game.current_season
-    end
-    unzip_to = "#{Rails.root}/public/dmbweb/#{season}"
+    unzip_to = "#{Rails.root}/public/dmbweb/#{self.season}"
     Dir.mkdir(unzip_to) unless Dir.exist?(unzip_to) 
     Zip::File.open(self.archivefile.path) do |zip_file|
       zip_file.each do |f|
@@ -83,7 +78,7 @@ class Upload < ApplicationRecord
         if(f.name =~ %r{^Web/(.*)})
           output_fname = $1
         # season summary files are in a "YYYY" directory
-        elsif(f.name =~ %r{^#{season}/(.*)})
+        elsif(f.name =~ %r{^#{self.season}/(.*)})
           output_fname = $1
         else
           output_fname = f.name
@@ -92,27 +87,18 @@ class Upload < ApplicationRecord
         zip_file.extract(f, fpath) { true }
       end
     end
-    return season
+    true
   end
 
   def unzip_and_process
     self.update_attribute(:processing_status, PROCESSING_STARTED)
     # unzip
-    season = self.extract_zip
+    self.extract_zip
     # process
-    Boxscore.get_all(season)
-    Record.rebuild(season)
+    Boxscore.get_all(self.season)
+    Record.rebuild(self.season)
     self.update_attributes(processing_status: PROCESSED)
     SlackIt.post(message: "A new upload has been processed: #{self.archivefile_file_name}")
-  end
-
-  # the largest archive file is the latest one
-  def self.largest_upload_id
-    self.order("archivefile_file_size DESC").pluck(:id).first
-  end
-
-  def self.check_for_any_queued_or_started
-    self.where(processing_status: [PROCESSING_QUEUED, PROCESSING_STARTED]).count >= 1
   end
 
 
