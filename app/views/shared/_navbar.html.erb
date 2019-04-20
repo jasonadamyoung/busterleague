@@ -87,6 +87,10 @@
 
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
 						<%= team_nav_dropdown_item(@currentowner.teams.first) -%>
+						<%- if @currentowner.is_admin? -%>
+							<div class="dropdown-divider"></div>
+							<%= nav_dropdown_item(uploads_path,'Uploads') %>
+						<%- end -%>
 						<div class="dropdown-divider"></div>
 						<%= nav_dropdown_item(logout_path,'Log Out') %>
 					</div>
