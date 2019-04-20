@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   resources :games, :only => [:show, :index]
   resources :boxscores, :only => [:show, :index]
-  resources :uploads, :only => [:new,:create]
+  resources :uploads, :only => [:index,:create]
 
 
   get '/dmb', to: "welcome#dmb", :as => 'dmbexport'
@@ -28,7 +28,5 @@ Rails.application.routes.draw do
   match '/login' => 'sessions#start', via: [:get,:post], :as => 'login'
   get '/notice' => 'sessions#notice', :as => 'notice'
   get '/token/:token' => 'sessions#token', :as => 'token'
-
-  get '/:controller(/:action(/:id))'
 
 end
