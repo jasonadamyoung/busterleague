@@ -47,7 +47,7 @@ class Record < ApplicationRecord
           teamlist = Team.where(:league => league).where(:division => division).load
           records = {}
           teamlist.each do |team|
-            records[team] = team.records.on_date(date).first
+            records[team] = team.records.on_season_date(season,date).first
           end
 
           maxwml = records.values.map(&:wins_minus_losses).max
