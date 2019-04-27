@@ -14,6 +14,7 @@ class BoxscoreParser
   attr_accessor :home_pitching_data
   attr_accessor :substitution_data
   attr_accessor :batting_data
+  attr_accessor :injury_data
   attr_accessor :gwrbi_data
   attr_accessor :temperature_data
   
@@ -27,6 +28,7 @@ class BoxscoreParser
     self.home_pitching_data = []
     self.substitution_data = []
     self.batting_data = []
+    self.injury_data = []
     self.gwrbi_data = []
     self.temperature_data = []
     self.process_parts
@@ -104,13 +106,19 @@ class BoxscoreParser
 
     batting_data_block = []
     # batting_data
-    while(!(array_content.first =~ %r{^[a-zA-Z\s]+:}))
+    while(!(array_content.first =~ %r{^[a-zA-Z\s]+:}) and !(array_content.first =~ %r{injured}))
       line = array_content.shift      
       batting_data_block << line unless line.strip.empty?
     end
 
     batting_data_block.join(' ').split('.').each do |batting_data_item|
       self.batting_data << batting_data_item.strip unless batting_data_item.strip.empty?
+    end
+
+    # injury data
+    while(array_content.first =~ %r{injured})
+      line = array_content.shift      
+      self.injury_data << line unless line.strip.empty?
     end
 
     # GWRBI
