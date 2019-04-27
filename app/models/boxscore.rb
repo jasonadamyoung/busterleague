@@ -105,6 +105,11 @@ class Boxscore < ApplicationRecord
     self.away_team_stats["innings"]
   end
 
+  def parsed_content
+    bp = BoxscoreParser.new(self.content)
+    bp
+  end
+
   def create_games
     # home team's game
     home_game = Game.new(:boxscore_id => self.id, :date => self.date, :season => self.season)
