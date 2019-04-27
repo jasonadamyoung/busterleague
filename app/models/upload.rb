@@ -95,7 +95,7 @@ class Upload < ApplicationRecord
     # unzip
     self.extract_zip
     # process
-    Boxscore.get_all(self.season)
+    Boxscore.download_and_process_for_season(self.season)
     Record.rebuild(self.season)
     self.update_attributes(processing_status: PROCESSED)
     SlackIt.post(message: "A new upload has been processed: #{self.archivefile_file_name}")
