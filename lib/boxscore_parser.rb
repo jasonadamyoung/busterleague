@@ -184,8 +184,8 @@ class BoxscoreParser
      returndata[:total_innings] = total_innings
      returndata[:home_runs] = home_team_stats["runs"]
      returndata[:away_runs] = away_team_stats["runs"]
-     returndata[:home_team] = home_team_stats
-     returndata[:away_team] = away_team_stats
+     returndata[:home_team_stats] = home_team_stats
+     returndata[:away_team_stats] = away_team_stats
 
      returndata
   end

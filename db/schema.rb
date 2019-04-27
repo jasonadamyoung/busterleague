@@ -23,24 +23,19 @@ ActiveRecord::Schema.define(version: 2019_04_26_234841) do
     t.integer "home_team_id"
     t.integer "away_team_id"
     t.integer "winning_team_id"
-    t.text "content"
-    t.index ["date"], name: "boxscore_date_ndx"
-    t.index ["name", "season"], name: "name_ndx", unique: true
-    t.index ["season"], name: "boxscore_season_ndx"
-  end
-
-  create_table "boxstats", force: :cascade do |t|
-    t.integer "boxscore_id"
     t.integer "home_runs"
     t.integer "away_runs"
     t.integer "total_innings"
-    t.jsonb "home_team"
-    t.jsonb "away_team"
-    t.jsonb "home_batting"
-    t.jsonb "home_pitching"
-    t.jsonb "away_batting"
-    t.jsonb "away_pitching"
-    t.index ["boxscore_id"], name: "boxstat_boxscore_ndx", unique: true
+    t.text "content"
+    t.jsonb "home_team_stats"
+    t.jsonb "away_team_stats"
+    t.jsonb "home_batting_stats"
+    t.jsonb "home_pitching_stats"
+    t.jsonb "away_batting_stats"
+    t.jsonb "away_pitching_stats"
+    t.index ["date"], name: "boxscore_date_ndx"
+    t.index ["name", "season"], name: "name_ndx", unique: true
+    t.index ["season"], name: "boxscore_season_ndx"
   end
 
   create_table "games", force: :cascade do |t|

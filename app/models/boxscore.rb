@@ -4,14 +4,13 @@
 # see LICENSE file
 
 class Boxscore < ApplicationRecord
-  require 'pp'
+  include ActiveModel::AttributeAssignment
   serialize :content
   belongs_to :home_team, :class_name => 'Team'
   belongs_to :away_team, :class_name => 'Team'
   belongs_to :winning_team, :class_name => 'Team'
   has_many :games
   has_many :innings
-  has_one :boxstat
   # after_create :create_games, :create_innings
 
   def self.download_and_process_for_season(season = Game.current_season)
@@ -87,7 +86,7 @@ class Boxscore < ApplicationRecord
         boxscore.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:away_team])).first.id
         boxstatdata = bp.innings_totals
         boxscore.winning_team_id = ((boxstatdata[:home_runs] > boxstatdata[:away_runs]) ? boxscore.home_team_id : boxscore.away_team_id)
-        boxscore.build_boxstat(boxstatdata)
+        boxscore.assign_attributes(boxstatdata)
         boxscore.save!
         return true
       else
@@ -98,21 +97,28 @@ class Boxscore < ApplicationRecord
     end   
   end
 
+  def home_innings
+    self.home_team_stats["innings"]
+  end
+
+  def away_innings
+    self.away_team_stats["innings"]
+  end
+
   def create_games
-    boxstat = self.boxstat
     # home team's game
     home_game = Game.new(:boxscore_id => self.id, :date => self.date, :season => self.season)
     home_game.team_id = self.home_team_id
     home_game.home = true
     home_game.opponent_id = self.away_team_id
     home_game.win = (self.winning_team_id == self.home_team_id)
-    home_game.runs = boxstat.home_runs
-    home_game.opponent_runs = boxstat.away_runs
-    home_game.hits = boxstat.home_team["hits"]
-    home_game.opponent_hits = boxstat.away_team["hits"]  
-    home_game.errs = boxstat.home_team["errors"]
-    home_game.opponent_errs = boxstat.away_team["errors"]  
-    home_game.total_innings = boxstat.total_innings
+    home_game.runs = self.home_runs
+    home_game.opponent_runs = self.away_runs
+    home_game.hits = self.home_team_stats["hits"]
+    home_game.opponent_hits = self.away_team_stats["hits"]  
+    home_game.errs = self.home_team_stats["errors"]
+    home_game.opponent_errs = self.away_team_stats["errors"]  
+    home_game.total_innings = self.total_innings
     home_game.save!
 
     # away team's game
@@ -121,21 +127,20 @@ class Boxscore < ApplicationRecord
     away_game.home = false
     away_game.opponent_id = self.home_team_id
     away_game.win = (self.winning_team_id == self.away_team_id)
-    away_game.runs = boxstat.away_runs
-    away_game.opponent_runs = boxstat.home_runs
-    away_game.hits = boxstat.away_team["hits"]
-    away_game.opponent_hits = boxstat.home_team["hits"]  
-    away_game.errs = boxstat.away_team["errors"]
-    away_game.opponent_errs = boxstat.home_team["errors"]      
-    away_game.total_innings = boxstat.total_innings
+    away_game.runs = self.away_runs
+    away_game.opponent_runs = self.home_runs
+    away_game.hits = self.away_team_stats["hits"]
+    away_game.opponent_hits = self.home_team_stats["hits"]  
+    away_game.errs = self.away_team_stats["errors"]
+    away_game.opponent_errs = self.home_team_stats["errors"]      
+    away_game.total_innings = self.total_innings
     away_game.save!
   end
 
   def create_innings
-    boxstat = self.boxstat
-    home_innings = boxstat.home_innings
-    away_innings = boxstat.away_innings
-    for i in (1..boxstat.total_innings)
+    home_innings = self.home_innings
+    away_innings = self.away_innings
+    for i in (1..self.total_innings)
       if(home_innings[i])
         create_data = {:team_id => self.home_team_id, :inning => i, :runs => home_innings[i], :season => self.season}
         if(away_innings[i])
