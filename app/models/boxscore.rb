@@ -11,7 +11,7 @@ class Boxscore < ApplicationRecord
   belongs_to :winning_team, :class_name => 'Team'
   has_many :games
   has_many :innings
-  # after_create :create_games, :create_innings
+  after_create :create_games, :create_innings
 
   def self.download_and_process_for_season(season = Game.current_season)
     web_reports_url = "#{Settings.web_reports_base_url}/#{season}"
