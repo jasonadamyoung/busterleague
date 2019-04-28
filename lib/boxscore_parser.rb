@@ -106,7 +106,7 @@ class BoxscoreParser
 
     batting_data_block = []
     # batting_data
-    while(!(array_content.first =~ %r{^[a-zA-Z\s]+:}) and !(array_content.first =~ %r{injured}))
+    while(!(array_content.first =~ %r{^[a-zA-Z\s]+:}) and !(array_content.first =~ %r{injured}) and !array_content.first.nil?)
       line = array_content.shift      
       batting_data_block << line unless line.strip.empty?
     end
@@ -197,6 +197,10 @@ class BoxscoreParser
 
      returndata
   end
+
+
+
+
 
 
 end
