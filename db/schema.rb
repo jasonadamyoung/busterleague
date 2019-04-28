@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_19_155252) do
+ActiveRecord::Schema.define(version: 2019_04_26_234841) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,8 +26,13 @@ ActiveRecord::Schema.define(version: 2019_04_19_155252) do
     t.integer "home_runs"
     t.integer "away_runs"
     t.integer "total_innings"
-    t.text "stats"
     t.text "content"
+    t.jsonb "home_team_stats"
+    t.jsonb "away_team_stats"
+    t.jsonb "home_batting_stats"
+    t.jsonb "home_pitching_stats"
+    t.jsonb "away_batting_stats"
+    t.jsonb "away_pitching_stats"
     t.index ["date"], name: "boxscore_date_ndx"
     t.index ["name", "season"], name: "name_ndx", unique: true
     t.index ["season"], name: "boxscore_season_ndx"
