@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
   helper_method :home_url
   helper_method :home_path
   helper_method :humanize_bytes
+  helper_method :web_reports_url
+
 
   TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE', 'yes','YES','y','Y']
   FALSE_VALUES = [false, 0, '0', 'f', 'F', 'false', 'FALSE','no','NO','n','N']
@@ -83,5 +85,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def web_reports_url
+    "#{Settings.web_reports_base_url}/#{@season}"
+  end
 
 end
