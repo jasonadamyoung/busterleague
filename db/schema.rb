@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_26_234841) do
+ActiveRecord::Schema.define(version: 2019_05_06_234341) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,7 @@ ActiveRecord::Schema.define(version: 2019_04_26_234841) do
     t.string "division", limit: 4, default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "web_team_id", limit: 2
     t.index ["name"], name: "index_teams_on_name", unique: true
   end
 

@@ -109,4 +109,17 @@ class Team < ApplicationRecord
     end
   end
 
+  def roster_url(season)
+    base_url = "#{Settings.web_reports_base_url}/#{season}"
+    "#{base_url}/tm#{self.web_team_id}_tmroster.htm"
+  end
+
+  def get_roster_html(season)
+    response = RestClient.get(self.roster_url(season))
+    if(!response.code == 200)
+      return nil
+    end
+    response.to_str
+  end
+
 end
