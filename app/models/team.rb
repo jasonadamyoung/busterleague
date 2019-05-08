@@ -9,6 +9,7 @@ class Team < ApplicationRecord
   has_many :records
   has_many :games
   has_many :innings
+  has_many :rosters
 
 
   scope :human, lambda { where("owner_id <> #{Owner.computer_id}")}
@@ -120,6 +121,33 @@ class Team < ApplicationRecord
       return nil
     end
     response.to_str
+  end
+
+  def create_rosters(season)
+    rp = RosterParser.new(self.get_roster_html(season))
+    rp.roster.each do |hashkey,player_details|
+      if(!(roster = self.rosters.where(season: season).where(name: player_details['name']).first))
+        roster = self.rosters.create(season: season,
+                                     name: player_details['name'],
+                                     age: player_details['age'], 
+                                     position: player_details['position'], 
+                                     bats: player_details['bats'],
+                                     throws: player_details['throws'],
+                                     contract_data: player_details)
+      else
+        roster.update_attributes(age: player_details['age'], 
+                                  position: player_details['position'], 
+                                  bats: player_details['bats'],
+                                  throws: player_details['throws'],
+                                  contract_data: player_details)
+      end
+    end
+  end
+
+  def self.create_rosters(season)
+    Team.all.each do |t|
+      t.create_rosters(season)
+    end
   end
 
 end

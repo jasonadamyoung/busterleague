@@ -4,18 +4,30 @@
 # see LICENSE file
 
 
-class RosterParser
-  include ParserUtils
+class BattingRegisterParser
 
   attr_accessor :htmlcontent
   attr_accessor :htmldoc
   attr_accessor :tables
-  attr_accessor :roster
 
-  BATTING_TABLE = 0
-  PITCHING_TABLE = 1
-  FIELDING_TABLE = 2
-  CONTRACT_TABLE = 3
+
+
+
+  # Name	Team	P	Age	AVG	OBP	SPC	AB	H	2B	3B	HR	R	RBI	HBP	BB	K	SB	CS
+  # Name	Team	P	Age	GS	PA	SH	SF	GDP	OPS	RC	RC27	ISO	TAVG	SEC	EBH	TB
+  # Name	Team	P	Age	PA/G	AB/G	BIP	IPAVG	TBW	TBW/PA	TBWH	TBWH/PA	K/BB
+  # Left
+  # Name	Team	P	Age	AVG	OBP	SPC	OPS	AB	H	2B	3B	HR	RBI	BB	K
+  # Right
+  # Name	Team	P	Age	AVG	OBP	SPC	OPS	AB	H	2B	3B	HR	RBI	BB	K
+
+  PRIMARY_TABLE = 0
+  SECONDARY_TABLE = 1
+  ANALYTICAL_TABLE = 2
+  LHP_TABLE = 3
+  RHP_TABLE = 4
+
+
 
 
   def initialize(htmlcontent)
@@ -28,9 +40,9 @@ class RosterParser
     self.process_contract_table
   end
 
-  def process_contract_table
+  def process_primary_table
     self.roster = {}
-    contract_table = self.tables[CONTRACT_TABLE]
+    primary_table = self.tables[CONTRACT_TABLE]
     rows = contract_table.search('tr')
     # attributes
     # S	Name	P	Bats	T	Age	%Act	%Dis	Salary	Year
@@ -48,8 +60,7 @@ class RosterParser
       player_details['percent_active'] =  cells[6].text.strip.to_i
       player_details['percent_disabled'] =  cells[7].text.strip.to_i
       player_details['salary'] =  cells[8].text.strip.to_i
-      hashkey = keyme(player_details['name'],player_details['position'])
-      roster[hashkey] = player_details
+      roster[player_details['name']] = player_details
     end
   end
 
@@ -64,6 +75,5 @@ class RosterParser
   def process_fielding_table
     # TODO
   end
-
-
+  
 end
