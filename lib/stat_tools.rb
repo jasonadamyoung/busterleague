@@ -8,7 +8,8 @@ class StatTools
   BATTING_STAT_HEADERS = {
       "name" => {cast: 'string'},
       "flag" => {cast: 'string'},
-      "position" => {cast: 'string'},
+      "team" => {cast: 'string'},
+      "p" => {cast: 'string'},
       "age" => {cast: 'integer'},
       "avg" => {cast: 'float'},        
       "obp" => {cast: 'float'},      
@@ -72,5 +73,7 @@ class StatTools
       "r_bb" => {cast: 'integer'},
       "r_k" => {cast: 'integer'}
   }
+
+
 
 end

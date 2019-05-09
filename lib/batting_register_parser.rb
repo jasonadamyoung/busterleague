@@ -5,10 +5,12 @@
 
 
 class BattingRegisterParser
+  include ParserUtils
 
   attr_accessor :htmlcontent
   attr_accessor :htmldoc
   attr_accessor :tables
+  attr_accessor :processed_tables
 
 
 
@@ -27,53 +29,69 @@ class BattingRegisterParser
   LHP_TABLE = 3
   RHP_TABLE = 4
 
-
-
-
   def initialize(htmlcontent)
     self.htmldoc = Nokogiri::HTML(htmlcontent)
     self.tables = self.htmldoc.search('table')
-    self.process_tables 
+    self.process_tables
   end
 
   def process_tables
-    self.process_contract_table
-  end
+    self.processed_tables = []
+    tables_to_process = [{table_id: PRIMARY_TABLE, ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
+     {table_id: SECONDARY_TABLE, ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
+     {table_id: ANALYTICAL_TABLE, ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
+     {table_id: LHP_TABLE, ignore_header_rows: 2, ignore_footer_rows: 0, prefix: 'l_'},
+     {table_id: RHP_TABLE, ignore_header_rows: 2, ignore_footer_rows: 0, prefix: 'r_'}]
 
-  def process_primary_table
-    self.roster = {}
-    primary_table = self.tables[CONTRACT_TABLE]
-    rows = contract_table.search('tr')
-    # attributes
-    # S	Name	P	Bats	T	Age	%Act	%Dis	Salary	Year
-    # ignore first three (header) and last (total) rows
-    rows[3..-2].each do |row|
-      cells = row.search('td')
-      player_details = {}
-      status = cells[0].text.strip
-      player_details['status'] = (status == 'f') ? 'farmed' : 'active'
-      player_details['name'] = cells[1].text.strip
-      player_details['position'] = cells[2].text.strip.downcase
-      player_details['bats'] = cells[3].text.strip.downcase
-      player_details['throws'] = cells[4].text.strip.upcase
-      player_details['age'] = cells[5].text.strip.to_i
-      player_details['percent_active'] =  cells[6].text.strip.to_i
-      player_details['percent_disabled'] =  cells[7].text.strip.to_i
-      player_details['salary'] =  cells[8].text.strip.to_i
-      roster[player_details['name']] = player_details
+    tables_to_process.each do |pt|
+      self.processed_tables[pt[:table_id]] = self.process_table(table: self.tables[pt[:table_id]],
+                                                              ignore_header_rows: pt[:ignore_header_rows],
+                                                              ignore_footer_rows: pt[:ignore_footer_rows],
+                                                              prefix: pt[:prefix])
     end
   end
 
-  def process_batting_table
-    # TODO
+  def process_table(options = {})
+    returnhash = {}
+    ignore_header_rows = options[:ignore_header_rows]
+    ignore_footer_rows = options[:ignore_footer_rows]
+    table = options[:table]
+    prefix = options[:prefix].nil? ? '' : options[:prefix]
+
+    rows = table.search('tr')
+    header_cells = rows[ignore_header_rows].search('td').map{|c| convert_field(c.text.strip,prefix)}   
+    rows[(ignore_header_rows+1)..((ignore_footer_rows+1)*-1)].each do |row|
+      cells = row.search('td')
+      player_details = {}
+      cells.each_with_index do |table_cell,index|
+        label = header_cells[index]
+        if(label == 'name')
+          name = table_cell.text.strip
+          if(name.last == '#' or name.last == '*')
+            player_details['flag'] = name.last
+            player_details['name'] = name[0..-2]
+          else
+            player_details['name'] = name
+          end
+        elsif(StatTools::BATTING_STAT_HEADERS[label])
+          case StatTools::BATTING_STAT_HEADERS[label][:cast]
+          when 'float'
+            caster = 'to_f'
+          when 'integer'
+            caster = 'to_i'
+          else
+            caster = 'to_s'
+          end
+          player_details[label] = table_cell.text.strip.downcase.send(caster)
+        else
+          player_details[label] = table_cell.text.strip.downcase
+        end
+      end
+      hashkey = keyme(player_details['name'],player_details['p'],player_details['team'])
+      returnhash[hashkey] = player_details
+    end
+    returnhash
   end
 
-  def process_pitching_table
-    # TODO
-  end
-
-  def process_fielding_table
-    # TODO
-  end
   
 end
