@@ -41,6 +41,7 @@ class RosterParser
       status = cells[0].text.strip
       player_details['status'] = (status == 'f') ? 'farmed' : 'active'
       player_details['name'] = cells[1].text.strip
+      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = cells[2].text.strip.downcase
       player_details['bats'] = cells[3].text.strip.downcase
       player_details['throws'] = cells[4].text.strip.upcase
@@ -49,7 +50,7 @@ class RosterParser
       player_details['percent_disabled'] =  cells[7].text.strip.to_i
       player_details['salary'] =  cells[8].text.strip.to_i
       hashkey = keyme(player_details['name'],player_details['position'])
-      roster[hashkey] = player_details
+      self.roster[hashkey] = player_details
     end
   end
 

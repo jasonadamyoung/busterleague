@@ -23,8 +23,9 @@ class Game < ApplicationRecord
   scope :perfects, -> { wins.opponent_zero_hits.zero_errors }
 
 
-  ALLOWED_SEASONS = 1999..2018
-
+  ALLOWED_SEASONS = (2000..2018)
+  FIRST_SEASON = 2000
+  
   def self.current_season
     Date.today.year - 1
   end
@@ -45,8 +46,13 @@ class Game < ApplicationRecord
     self.where(season: season).maximum(:date)
   end
 
+  def self.dump_data
+    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
+  end
+
+
   def self.rebuild_all
-    self.connection.execute("TRUNCATE table #{table_name};")
+    self.dump_data
     Boxscore.find_each do |boxscore|
       boxscore.create_games
     end

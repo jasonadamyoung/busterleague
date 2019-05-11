@@ -6,9 +6,13 @@
 class Inning < ApplicationRecord
   belongs_to :team
   belongs_to :boxscore
-    
+  
+  def self.dump_data
+    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
+  end
+
   def self.rebuild_all
-    self.connection.execute("TRUNCATE table #{table_name};")
+    self.dump_data
     boxscores = Boxscore.all
     Boxscore.all.each do |boxscore|
       boxscore.create_innings

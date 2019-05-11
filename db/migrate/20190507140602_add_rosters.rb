@@ -6,6 +6,7 @@ class AddRosters < ActiveRecord::Migration[5.2]
       t.integer   "season",      limit: 2, null: false
       t.integer   "team_id",     limit: 2, null: false
       t.string    "name",        limit: 255, default: "", null: false
+      t.string    "end_name",    limit: 255, default: "", null: false
       t.integer   "age",         limit: 2, null: false
       t.string    "position",    limit: 2,   default: "", null: false
       t.string    "bats",        limit: 3,   default: "", null: false

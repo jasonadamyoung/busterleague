@@ -20,6 +20,19 @@ class BoxscoreParser
   attr_accessor :gwrbi_data
   attr_accessor :weather_data
 
+  attr_accessor :innings_totals
+  attr_accessor :date_teams_ballpark
+
+  attr_accessor :game_stat_data_hash
+  attr_accessor :home_ab_data_hash
+  attr_accessor :away_ab_data_hash
+  attr_accessor :home_pitching_data_hash
+  attr_accessor :away_pitching_data_hash
+
+  attr_accessor :batting_stats
+  attr_accessor :pitching_stats
+
+
   
   def initialize(content)
     self.content = content
@@ -37,6 +50,7 @@ class BoxscoreParser
     self.gwrbi_data = []
     self.weather_data = []
     self.process_parts
+    self.process_data
     self    
   end
 
@@ -158,7 +172,18 @@ class BoxscoreParser
 
   end
 
-  def date_teams_ballpark
+  def process_data
+    self.process_date_teams_ballpark
+    self.process_innings_totals
+    self.process_game_stat_data_hash
+    self.process_ab_data_hash
+    self.process_pitching_data_hash
+    self.process_batting_stats
+    self.process_pitching_stats
+  end
+
+
+  def process_date_teams_ballpark
     returndata = {}
     (linedate,teams,ballpark) = self.date_teams_ballpark_data.split(', ')
     returndata[:date] = Date.strptime(linedate, '%m/%d/%Y')
@@ -169,10 +194,10 @@ class BoxscoreParser
       returndata[:away_team] = matcher[:away]
     end
 
-    returndata
+    self.date_teams_ballpark = returndata
   end
   
-  def innings_totals
+  def process_innings_totals
     home_team_stats = {}
     away_team_stats = {}
     away_data =  self.innings_totals_data[1].gsub('x','-1').split(%r{\s+}).select{|item| (item.to_i.to_s == item || item.to_f.to_s == item)}
@@ -218,10 +243,10 @@ class BoxscoreParser
      returndata[:home_team_stats] = home_team_stats
      returndata[:away_team_stats] = away_team_stats
 
-     returndata
+     self.innings_totals = returndata
   end
 
-  def game_stat_data_hash
+  def process_game_stat_data_hash
     game_stat_data_hash = {'batting' => {}, 'pitching' => {}, 'fielding' => {}}
     self.game_stat_data.each do |batstat|
       (stat,names) = batstat.split('-')
@@ -243,7 +268,7 @@ class BoxscoreParser
         # stat category
         if(['wp','hb','balk'].include?(stat))
           category = 'pitching'
-        elsif(['pb','e'].include?(stat))
+        elsif(['pb','e','ci'].include?(stat))
           category = 'fielding'
         else
           category = 'batting'
@@ -256,7 +281,7 @@ class BoxscoreParser
         end
       end
     end
-    game_stat_data_hash
+    self.game_stat_data_hash = game_stat_data_hash
   end
 
   def game_stat_data_stats
@@ -269,6 +294,11 @@ class BoxscoreParser
     game_stat_data_stats.uniq
   end
 
+
+  def process_ab_data_hash
+    self.home_ab_data_hash = self.ab_data_hash('home')
+    self.away_ab_data_hash = self.ab_data_hash('away')
+  end
 
   def ab_data_hash(home_or_away)
     ab_data_hash = {}
@@ -291,11 +321,11 @@ class BoxscoreParser
     ab_data_hash
   end
 
-  def batting_stats
+  def process_batting_stats
     batting_stats = {}
     batting_stats[:home_batting_stats] = self.ab_data_hash('home')
     batting_stats[:away_batting_stats] = self.ab_data_hash('away')
-    batting_stats[:uh_oh_stats] = {}
+    batting_stats[:unknown_batting_stats] = {}
 
     self.game_stat_data_hash['batting'].each do |name,game_stat_data|
       if(batting_stats[:home_batting_stats][name])
@@ -303,12 +333,16 @@ class BoxscoreParser
       elsif(batting_stats[:away_batting_stats][name])
         batting_stats[:away_batting_stats][name].merge!(game_stat_data)
       else
-        batting_stats[:uh_oh_stats][name] = game_stat_data
+        batting_stats[:unknown_batting_stats][name] = game_stat_data
       end
     end
-    batting_stats
+    self.batting_stats = batting_stats
   end
 
+  def process_pitching_data_hash
+    self.home_pitching_data_hash = self.pitching_data_hash('home')
+    self.away_pitching_data_hash = self.pitching_data_hash('away')
+  end
 
   def pitching_data_hash(home_or_away)
     pitching_data_hash = {}
@@ -342,11 +376,11 @@ class BoxscoreParser
     pitching_data_hash
   end
 
-  def pitching_stats
+  def process_pitching_stats
     pitching_stats = {}
     pitching_stats[:home_pitching_stats] = self.pitching_data_hash('home')
     pitching_stats[:away_pitching_stats] = self.pitching_data_hash('away')
-    pitching_stats[:uh_oh_stats] = {}
+    pitching_stats[:unknown_pitching_stats] = {}
 
     self.game_stat_data_hash['pitching'].each do |name,game_stat_data|
       if(pitching_stats[:home_pitching_stats][name])
@@ -354,11 +388,11 @@ class BoxscoreParser
       elsif(pitching_stats[:away_pitching_stats][name])
         pitching_stats[:away_pitching_stats][name].merge!(game_stat_data)
       else
-        pitching_stats[:uh_oh_stats][name] = game_stat_data
+        pitching_stats[:unknown_pitching_stats][name] = game_stat_data
       end
     end
   
-    pitching_stats
+    self.pitching_stats = pitching_stats
   end
 
 end

@@ -138,6 +138,7 @@ class Team < ApplicationRecord
       if(!(roster = self.rosters.where(season: season).where(name: player_details['name']).first))
         roster = self.rosters.create(season: season,
                                      name: player_details['name'],
+                                     end_name: player_details['end_name'],
                                      age: player_details['age'], 
                                      position: player_details['position'], 
                                      bats: player_details['bats'],
