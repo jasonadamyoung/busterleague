@@ -186,12 +186,12 @@ class BoxscoreParser
   def process_date_teams_ballpark
     returndata = {}
     (linedate,teams,ballpark) = self.date_teams_ballpark_data.split(', ')
-    returndata[:date] = Date.strptime(linedate, '%m/%d/%Y')
-    returndata[:ballpark] = ballpark
+    returndata['date'] = Date.strptime(linedate, '%m/%d/%Y')
+    returndata['ballpark'] = ballpark
 
     if(matcher = teams.match(%r{(?<away>\w+)\d\d-(?<home>\w+)\d\d}))
-      returndata[:home_team] = matcher[:home]
-      returndata[:away_team] = matcher[:away]
+      returndata['home_team'] = matcher[:home]
+      returndata['away_team'] = matcher[:away]
     end
 
     self.date_teams_ballpark = returndata
@@ -237,11 +237,11 @@ class BoxscoreParser
       home_team_stats["dp"]) = home_data.map{|stat| stat.to_i}
 
      returndata = {}
-     returndata[:total_innings] = total_innings
-     returndata[:home_runs] = home_team_stats["runs"]
-     returndata[:away_runs] = away_team_stats["runs"]
-     returndata[:home_team_stats] = home_team_stats
-     returndata[:away_team_stats] = away_team_stats
+     returndata['total_innings'] = total_innings
+     returndata['home_runs'] = home_team_stats["runs"]
+     returndata['away_runs'] = away_team_stats["runs"]
+     returndata['home_team_stats'] = home_team_stats
+     returndata['away_team_stats'] = away_team_stats
 
      self.innings_totals = returndata
   end

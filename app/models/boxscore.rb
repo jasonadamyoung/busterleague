@@ -104,16 +104,21 @@ class Boxscore < ApplicationRecord
         boxscore.content = array_content
         bp = BoxscoreParser.new(boxscore.content)
         dtb_data = bp.date_teams_ballpark
-        boxscore.date = dtb_data[:date]
-        boxscore.ballpark = dtb_data[:ballpark]
-        boxscore.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:home_team])).first.id
-        boxscore.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:away_team])).first.id
+        boxscore.date = dtb_data['date']
+        boxscore.ballpark = dtb_data['ballpark']
+        boxscore.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['home_team'])).first.id
+        boxscore.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['away_team'])).first.id
         boxscore.game_stats = {}
         innings_totals = bp.innings_totals
+        boxscore.home_runs = bp.innings_totals['home_runs']
+        boxscore.away_runs = bp.innings_totals['away_runs']
+        boxscore.total_innings = bp.innings_totals['total_innings']
+        
+
         boxscore.game_stats['innings_totals'] = innings_totals
         boxscore.game_stats['batting_stats'] = bp.batting_stats
         boxscore.game_stats['pitching_stats'] = bp.pitching_stats
-        boxscore.winning_team_id = ((innings_totals[:home_runs] > innings_totals[:away_runs]) ? boxscore.home_team_id : boxscore.away_team_id)
+        boxscore.winning_team_id = ((innings_totals['home_runs'] > innings_totals['away_runs']) ? boxscore.home_team_id : boxscore.away_team_id)
         boxscore.save!
         return true
       else
@@ -171,10 +176,6 @@ class Boxscore < ApplicationRecord
     self.game_stats['pitching_stats']['away_pitching_stats']
   end
 
-  def total_innings
-    self.game_stats['innings_totals']['total_innings']
-  end 
-
   def parsed_content
     if(@bsp.nil?)
       @bsp = BoxscoreParser.new(self.content)
@@ -220,18 +221,19 @@ class Boxscore < ApplicationRecord
     home_innings = self.home_innings
     away_innings = self.away_innings
     for i in (1..self.total_innings)
-      if(home_innings[i])
-        create_data = {:team_id => self.home_team_id, :inning => i, :runs => home_innings[i], :season => self.season}
-        if(away_innings[i])
-          create_data[:opponent_runs] = away_innings[i]
+      innings_offset = i-1
+      if(home_innings[innings_offset])
+        create_data = {:team_id => self.home_team_id, :inning => i, :runs => home_innings[innings_offset], :season => self.season}
+        if(away_innings[innings_offset])
+          create_data[:opponent_runs] = away_innings[innings_offset]
         end
         self.innings.create(create_data)
       end
 
-      if(away_innings[i])
-        create_data = {:team_id => self.away_team_id, :inning => i, :runs => away_innings[i], :season => self.season}
-        if(home_innings[i])
-          create_data[:opponent_runs] = home_innings[i]
+      if(away_innings[innings_offset])
+        create_data = {:team_id => self.away_team_id, :inning => i, :runs => away_innings[innings_offset], :season => self.season}
+        if(home_innings[innings_offset])
+          create_data[:opponent_runs] = home_innings[innings_offset]
         end
         self.innings.create(create_data)
       end
