@@ -13,6 +13,8 @@ class Boxscore < ApplicationRecord
   has_many :innings
   after_create :create_games, :create_innings
 
+  scope :for_season, lambda {|season| where(season: season)}
+
   def self.download_and_process_for_season(season = Game.current_season)
     web_reports_url = "#{Settings.web_reports_base_url}/#{season}"
     all_boxscores = self.download_boxscores_for_season(season)
@@ -85,8 +87,14 @@ class Boxscore < ApplicationRecord
         boxscore.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:home_team])).first.id
         boxscore.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:away_team])).first.id
         boxstatdata = bp.innings_totals
+        batting_stats = bp.batting_stats
+        batting_stats.delete(:uh_oh_stats)
+        pitching_stats = bp.pitching_stats
+        pitching_stats.delete(:uh_oh_stats)
         boxscore.winning_team_id = ((boxstatdata[:home_runs] > boxstatdata[:away_runs]) ? boxscore.home_team_id : boxscore.away_team_id)
         boxscore.assign_attributes(boxstatdata)
+        boxscore.assign_attributes(batting_stats)
+        boxscore.assign_attributes(pitching_stats)
         boxscore.save!
         return true
       else
@@ -95,6 +103,20 @@ class Boxscore < ApplicationRecord
     else
       return false
     end   
+  end
+
+  def update_boxscore_stats
+    bp = BoxscoreParser.new(self.content)
+    boxstatdata = bp.innings_totals
+    batting_stats = bp.batting_stats
+    batting_stats.delete(:uh_oh_stats)
+    pitching_stats = bp.pitching_stats
+    pitching_stats.delete(:uh_oh_stats)
+    self.winning_team_id = ((boxstatdata[:home_runs] > boxstatdata[:away_runs]) ? self.home_team_id : self.away_team_id)
+    self.assign_attributes(boxstatdata)
+    self.assign_attributes(batting_stats)
+    self.assign_attributes(pitching_stats)
+    self.save!
   end
 
   def home_innings
