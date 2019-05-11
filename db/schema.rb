@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(version: 2019_05_07_184027) do
     t.integer "r_k"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "season", "team_id"], name: "batstat_ndx", unique: true
   end
 
   create_table "boxscores", force: :cascade do |t|
@@ -195,7 +196,7 @@ ActiveRecord::Schema.define(version: 2019_05_07_184027) do
     t.jsonb "fielding_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "season", "team_id"], name: "roster_ndx", unique: true
+    t.index ["name", "position", "age", "season", "team_id"], name: "roster_ndx", unique: true
   end
 
   create_table "teams", force: :cascade do |t|

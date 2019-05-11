@@ -18,7 +18,7 @@ class AddRosters < ActiveRecord::Migration[5.2]
       t.datetime "updated_at",                          null: false
     end
 
-    add_index "rosters", ["name","season","team_id"], name: "roster_ndx", unique: true
+    add_index "rosters", ["name","position","age","season","team_id"], name: "roster_ndx", unique: true
 
   end
 end

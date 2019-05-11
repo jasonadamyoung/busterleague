@@ -5,6 +5,8 @@
 
 class BattingStat < ApplicationRecord
 
+  # belongs_to :player
+  # belongs_to :team
 
   def self.register_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"

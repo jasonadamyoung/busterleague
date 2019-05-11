@@ -5,7 +5,7 @@
 
 module ParserUtils
   def keyme(name,*others)
-    ([name] + others).join(':').downcase.gsub(/[[:space:]]/, '')
+    Digest::MD5.hexdigest(([name] + others).join(':').downcase.gsub(/[[:space:]]/, ''))
   end
 
   def convert_field(field,prefix = '')

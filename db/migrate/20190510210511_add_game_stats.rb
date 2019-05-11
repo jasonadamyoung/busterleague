@@ -1,17 +1,14 @@
-class AddPlayerStats < ActiveRecord::Migration[5.2]
+class AddGameStats < ActiveRecord::Migration[5.2]
   def change
 
-    create_table "batting_stats", force: :cascade do |t|
+    create_table "game_batting_stats", force: :cascade do |t|
+      t.integer   "boxscore_id", limit: 2
       t.integer   "player_id",   limit: 2
       t.integer   "season",      limit: 2, null: false
       t.integer   "team_id",     limit: 2, null: false
+      t.integer   "location",    limit: 2, null: false
       t.string    "name",        limit: 255, default: "", null: false
-      t.string    "flag",        limit: 1,   default: "", null: false
       t.string    "position",    limit: 2,   default: "", null: false
-      t.integer   "age",         limit: 2, null: false
-      t.float     "avg"        
-      t.float     "obp"
-      t.float     "spc"
       t.integer   "ab"
       t.integer   "h"
       t.integer   "2b"
@@ -74,6 +71,7 @@ class AddPlayerStats < ActiveRecord::Migration[5.2]
       t.datetime "updated_at",                          null: false
     end
 
+    add_index "batting_stats", ["name","season","team_id"], name: "batstat_ndx", unique: true
 
 
   end

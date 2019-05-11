@@ -10,10 +10,7 @@ class BattingRegisterParser
   attr_accessor :htmlcontent
   attr_accessor :htmldoc
   attr_accessor :tables
-  attr_accessor :processed_tables
-
-
-
+  attr_accessor :batting_data
 
   # Name	Team	P	Age	AVG	OBP	SPC	AB	H	2B	3B	HR	R	RBI	HBP	BB	K	SB	CS
   # Name	Team	P	Age	GS	PA	SH	SF	GDP	OPS	RC	RC27	ISO	TAVG	SEC	EBH	TB
@@ -32,11 +29,11 @@ class BattingRegisterParser
   def initialize(htmlcontent)
     self.htmldoc = Nokogiri::HTML(htmlcontent)
     self.tables = self.htmldoc.search('table')
+    self.batting_data = {}
     self.process_tables
   end
 
   def process_tables
-    self.processed_tables = []
     tables_to_process = [{table_id: PRIMARY_TABLE, ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
      {table_id: SECONDARY_TABLE, ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
      {table_id: ANALYTICAL_TABLE, ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
@@ -44,10 +41,17 @@ class BattingRegisterParser
      {table_id: RHP_TABLE, ignore_header_rows: 2, ignore_footer_rows: 0, prefix: 'r_'}]
 
     tables_to_process.each do |pt|
-      self.processed_tables[pt[:table_id]] = self.process_table(table: self.tables[pt[:table_id]],
-                                                              ignore_header_rows: pt[:ignore_header_rows],
-                                                              ignore_footer_rows: pt[:ignore_footer_rows],
-                                                              prefix: pt[:prefix])
+      processed_data = self.process_table(table: self.tables[pt[:table_id]],
+                                          ignore_header_rows: pt[:ignore_header_rows],
+                                          ignore_footer_rows: pt[:ignore_footer_rows],
+                                          prefix: pt[:prefix])
+      processed_data.each do |key,tabledata|
+        if(self.batting_data[key])
+          self.batting_data[key] = self.batting_data[key].merge(tabledata)
+        else
+          self.batting_data[key] = tabledata
+        end
+      end
     end
   end
 
@@ -65,7 +69,12 @@ class BattingRegisterParser
       player_details = {}
       cells.each_with_index do |table_cell,index|
         label = header_cells[index]
-        if(label == 'name')
+        if(label == 'team')
+          # skip blank team rows
+          if table_cell.text.strip.empty? 
+            next
+          end 
+        elsif(label == 'name')
           name = table_cell.text.strip
           if(name.last == '#' or name.last == '*')
             player_details['flag'] = name.last

@@ -115,16 +115,25 @@ class Team < ApplicationRecord
     "#{base_url}/tm#{self.web_team_id}_tmroster.htm"
   end
 
-  def get_roster_html(season)
-    response = RestClient.get(self.roster_url(season))
+  def batting_url(season)
+    base_url = "#{Settings.web_reports_base_url}/#{season}"
+    "#{base_url}/tm#{self.web_team_id}_tmbat.htm"
+  end
+
+
+  def get_html(url)
+    response = RestClient.get(url)
     if(!response.code == 200)
       return nil
     end
     response.to_str
   end
 
+
+
+
   def create_rosters(season)
-    rp = RosterParser.new(self.get_roster_html(season))
+    rp = RosterParser.new(self.get_html(self.roster_url(season)))
     rp.roster.each do |hashkey,player_details|
       if(!(roster = self.rosters.where(season: season).where(name: player_details['name']).first))
         roster = self.rosters.create(season: season,
