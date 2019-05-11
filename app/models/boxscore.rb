@@ -171,6 +171,10 @@ class Boxscore < ApplicationRecord
     self.game_stats['pitching_stats']['away_pitching_stats']
   end
 
+  def total_innings
+    self.game_stats['innings_totals']['total_innings']
+  end 
+
   def parsed_content
     if(@bsp.nil?)
       @bsp = BoxscoreParser.new(self.content)
