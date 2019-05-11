@@ -91,15 +91,20 @@ class Upload < ApplicationRecord
   end
 
   def unzip_and_process
-    self.update_attribute(:processing_status, PROCESSING_STARTED)
     # unzip
     self.extract_zip
     # process
+    self.process_upload_data
+  end
+
+  def process_upload_data
+    self.update_attribute(:processing_status, PROCESSING_STARTED)
+    SlackIt.post(message: "Starting processing for : #{self.archivefile_file_name}")
+    Team.create_rosters(self.season)
     Boxscore.download_and_process_for_season(self.season)
     Record.rebuild(self.season)
     self.update_attributes(processing_status: PROCESSED)
-    SlackIt.post(message: "A new upload has been processed: #{self.archivefile_file_name}")
+    SlackIt.post(message: "An upload has been processed: #{self.archivefile_file_name}")
   end
-
 
 end

@@ -51,9 +51,7 @@ module ApplicationHelper
     nav_dropdown_item(path,team.name)
   end
 
-  def dmbweb_url
-    "#{Settings.web_reports_base_url}/#{@season}"
-  end
+
 
  
 end

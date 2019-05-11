@@ -11,7 +11,31 @@ class Boxscore < ApplicationRecord
   belongs_to :winning_team, :class_name => 'Team'
   has_many :games
   has_many :innings
-  after_create :create_games, :create_innings
+  has_many :game_batting_stats
+  has_many :game_pitching_stats
+  after_create :create_games, :create_innings, :create_game_batting_stats, :create_game_pitching_stats
+
+  scope :for_season, lambda {|season| where(season: season)}
+  scope :by_team_id, lambda {|team_id| where("home_team_id = #{team_id} or away_team_id = #{team_id}")}
+
+  def self.team_test_set(limit = 5)
+    return_set = []
+    Team.pluck(:id).each do |team_id|
+      self.by_team_id(team_id).limit(limit).scoping do
+        return_set += self.all
+      end
+    end
+    return_set.uniq
+  end
+         
+  def self.dump_data
+    Game.dump_data
+    Inning.dump_data
+    GameBattingStat.dump_data
+    GamePitchingStat.dump_data
+    Record.dump_data
+    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
+  end
 
   def self.download_and_process_for_season(season = Game.current_season)
     web_reports_url = "#{Settings.web_reports_base_url}/#{season}"
@@ -84,9 +108,12 @@ class Boxscore < ApplicationRecord
         boxscore.ballpark = dtb_data[:ballpark]
         boxscore.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:home_team])).first.id
         boxscore.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data[:away_team])).first.id
-        boxstatdata = bp.innings_totals
-        boxscore.winning_team_id = ((boxstatdata[:home_runs] > boxstatdata[:away_runs]) ? boxscore.home_team_id : boxscore.away_team_id)
-        boxscore.assign_attributes(boxstatdata)
+        boxscore.game_stats = {}
+        innings_totals = bp.innings_totals
+        boxscore.game_stats['innings_totals'] = innings_totals
+        boxscore.game_stats['batting_stats'] = bp.batting_stats
+        boxscore.game_stats['pitching_stats'] = bp.pitching_stats
+        boxscore.winning_team_id = ((innings_totals[:home_runs] > innings_totals[:away_runs]) ? boxscore.home_team_id : boxscore.away_team_id)
         boxscore.save!
         return true
       else
@@ -97,6 +124,29 @@ class Boxscore < ApplicationRecord
     end   
   end
 
+  def update_boxscore_stats
+    bp = self.parsed_content
+    self.game_stats = {}
+    self.game_stats['innings_totals'] = bp.innings_totals
+    self.game_stats['batting_stats'] = bp.batting_stats
+    self.game_stats['pitching_stats'] = bp.pitching_stats
+    self.save!
+  end
+
+  def self.update_boxscore_stats
+    self.find_each do |boxscore|
+      boxscore.update_boxscore_stats
+    end
+  end
+
+  def home_team_stats
+    self.game_stats['innings_totals']['home_team_stats']
+  end
+
+  def away_team_stats
+    self.game_stats['innings_totals']['away_team_stats']
+  end
+
   def home_innings
     self.home_team_stats["innings"]
   end
@@ -105,9 +155,27 @@ class Boxscore < ApplicationRecord
     self.away_team_stats["innings"]
   end
 
+  def home_batting_stats
+    self.game_stats['batting_stats']['home_batting_stats']
+  end
+
+  def away_batting_stats
+    self.game_stats['batting_stats']['away_batting_stats']
+  end
+
+  def home_pitching_stats
+    self.game_stats['pitching_stats']['home_pitching_stats']
+  end
+
+  def away_pitching_stats
+    self.game_stats['pitching_stats']['away_pitching_stats']
+  end
+
   def parsed_content
-    bp = BoxscoreParser.new(self.content)
-    bp
+    if(@bsp.nil?)
+      @bsp = BoxscoreParser.new(self.content)
+    end
+    @bsp
   end
 
   def create_games
@@ -140,6 +208,8 @@ class Boxscore < ApplicationRecord
     away_game.opponent_errs = self.home_team_stats["errors"]      
     away_game.total_innings = self.total_innings
     away_game.save!
+
+    true
   end
 
   def create_innings
@@ -162,8 +232,66 @@ class Boxscore < ApplicationRecord
         self.innings.create(create_data)
       end
     end
+    true
   end
 
+  def create_game_batting_stats
+    home_players = Roster.match_team_season_names(self.home_team_id,self.season,self.home_batting_stats,false)
+    away_players = Roster.match_team_season_names(self.away_team_id,self.season,self.away_batting_stats,false)
 
+    self.home_batting_stats.each do |name,stats|
+      gbs = self.game_batting_stats.new
+      gbs[:player_id] = home_players[name]
+      gbs[:name] = name
+      gbs[:season] = self.season
+      gbs[:team_id] = self.home_team_id
+      gbs[:opposing_team_id] = self.away_team_id
+      gbs[:location] = GameBattingStat::LOCATION_HOME
+      gbs.assign_attributes(stats)
+      gbs.save!
+    end
 
+    self.away_batting_stats.each do |name,stats|
+      gbs = self.game_batting_stats.new
+      gbs[:player_id] = away_players[name]
+      gbs[:name] = name
+      gbs[:season] = self.season
+      gbs[:team_id] = self.away_team_id
+      gbs[:opposing_team_id] = self.home_team_id
+      gbs[:location] = GameBattingStat::LOCATION_AWAY
+      gbs.assign_attributes(stats)
+      gbs.save!
+    end
+    true
+  end
+
+  def create_game_pitching_stats
+    home_players = Roster.match_team_season_names(self.home_team_id,self.season,self.home_pitching_stats,true)
+    away_players = Roster.match_team_season_names(self.away_team_id,self.season,self.away_pitching_stats,true)
+
+    self.home_pitching_stats.each do |name,stats|
+      gps = self.game_pitching_stats.new
+      gps[:player_id] = home_players[name]
+      gps[:name] = name
+      gps[:season] = self.season
+      gps[:team_id] = self.home_team_id
+      gps[:opposing_team_id] = self.away_team_id
+      gps[:location] = GamePitchingStat::LOCATION_HOME
+      gps.assign_attributes(stats)
+      gps.save!
+    end
+
+    self.away_pitching_stats.each do |name,stats|
+      gps = self.game_pitching_stats.new
+      gps[:player_id] = away_players[name]
+      gps[:name] = name
+      gps[:season] = self.season
+      gps[:team_id] = self.away_team_id
+      gps[:opposing_team_id] = self.home_team_id
+      gps[:location] = GamePitchingStat::LOCATION_AWAY
+      gps.assign_attributes(stats)
+      gps.save!
+    end
+    true
+  end
 end
