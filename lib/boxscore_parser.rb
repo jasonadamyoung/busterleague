@@ -76,10 +76,10 @@ class BoxscoreParser
     at_bat_block.each do |line|
       (away_string,home_string) = [line[0..37],line[42..-1]]
       # ignore summary line
-      if(! away_string.strip.empty?)
+      if(!away_string.nil? and !away_string.strip.empty?)
         self.away_at_bat_data << away_string
       end
-      if(!home_string.strip.empty?)
+      if(!home_string.nil? and !home_string.strip.empty?)
         self.home_at_bat_data << home_string.rstrip
       end
     end
@@ -135,7 +135,7 @@ class BoxscoreParser
       self.game_stat_data << game_stat_data_item.strip unless game_stat_data_item.strip.empty?
     end
 
-    while(!array_content.first.nil?)
+    while(!array_content.first.nil? and !(array_content.first == self.date_teams_ballpark_data))
       # injury data
       while(array_content.first =~ %r{injured})
         line = array_content.shift      
@@ -161,7 +161,7 @@ class BoxscoreParser
 
       # Weather
       if(array_content.first =~ %r{^Temperature:} or array_content.first =~ %r{^Rain})
-        while(!array_content.first.nil? and !array_content.first.empty?)
+        while(!array_content.first.nil? and !array_content.first.empty? and !(array_content.first == self.date_teams_ballpark_data))
           self.weather_data << array_content.shift
         end
       end

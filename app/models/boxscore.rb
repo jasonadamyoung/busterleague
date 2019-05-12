@@ -13,10 +13,24 @@ class Boxscore < ApplicationRecord
   has_many :innings
   has_many :game_batting_stats
   has_many :game_pitching_stats
-  after_create :create_games, :create_innings, :create_game_batting_stats, :create_game_pitching_stats
 
   scope :for_season, lambda {|season| where(season: season)}
   scope :by_team_id, lambda {|team_id| where("home_team_id = #{team_id} or away_team_id = #{team_id}")}
+  scope :waiting_for_data_records, -> {where(data_records_created: false)}
+
+  def self.create_data_records_for_season(season)
+    self.waiting_for_data_records.for_season(season).each do |bs|
+      bs.create_data_records
+    end
+  end
+
+  def create_data_records
+    self.create_games
+    self.create_innings
+    self.create_game_batting_stats
+    self.create_game_pitching_stats
+    self.update_attribute(:data_records_created, true)
+  end     
 
   def self.team_test_set(limit = 5)
     return_set = []
@@ -37,16 +51,16 @@ class Boxscore < ApplicationRecord
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
 
-  def self.download_and_process_for_season(season = Game.current_season)
+  def self.download_and_store_for_season(season = Game.current_season)
     web_reports_url = "#{Settings.web_reports_base_url}/#{season}"
     all_boxscores = self.download_boxscores_for_season(season)
-    processed = 0
+    stored = 0
     all_boxscores.each do |boxscore_name|
       if(Boxscore.get_and_create(web_reports_url,boxscore_name,season))
-          processed +=1
+        stored +=1
       end
     end
-    {total: all_boxscores.size, processed:  processed}
+    {total: all_boxscores.size, stored:  stored}
   end
 
   def self.download_boxscores_for_season(season)
