@@ -5,6 +5,32 @@
 </div>
 
   <div class="page-header">
+    <h1>Roster</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Position</th>
+        </tr>
+      </thead>
+      <tbody>
+          <%- @team.rosters.for_season(@season).includes(:player).each do |rp| %>
+          <tr>
+            <td><%= player_link(rp.player) -%></td>
+            <td><%= rp.age -%></td>
+            <td><%= rp.position -%></td>
+          </tr>
+          <%- end -%>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page-header">
     <h1>Stats and Graphs</h1>
   </div>
   <div class="row">
@@ -49,12 +75,12 @@
     <div class="col-md-12">
     <table class="table table-bordered table-striped">
     <thead>
+      <tr>
       <th>Date</th>
       <th>Opponent</th>
       <th>Win/Loss</th>
       <th>Score</th>
       <th>Innings</th>
-
       </tr>
     </thead>
     <tbody>
