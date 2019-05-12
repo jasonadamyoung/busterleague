@@ -5,7 +5,8 @@
 
 class GamePitchingStat < ApplicationRecord
 
-  # belongs_to :player
+  belongs_to :roster, optional: true
+  has_one :player, through: :roster
   belongs_to :team
   belongs_to :opposing_team, :class_name => 'Team'
   belongs_to :boxscore

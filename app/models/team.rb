@@ -10,6 +10,9 @@ class Team < ApplicationRecord
   has_many :games
   has_many :innings
   has_many :rosters
+  has_many :game_batting_stats
+  has_many :game_pitching_stats
+  has_many :batting_stats
 
 
   scope :human, lambda { where("owner_id <> #{Owner.computer_id}")}
@@ -129,11 +132,60 @@ class Team < ApplicationRecord
     response.to_str
   end
 
+  def roster_parser(season)
+    RosterParser.new(self.get_html(self.roster_url(season)))
+  end
+
+  def batting_register_parser(season)
+    BattingRegisterParser.new(self.get_html(self.batting_url(season)))
+  end
+
+
+  def update_batting_stats_for_season(season)
+    allowed_attributes = BattingStat.column_names
+    batting_data = self.batting_register_parser(season).batting_data
+    # get the names out
+    name_hash = {}
+    batting_data.each do |key,stats|
+      next if stats['name'] == 'Total'
+      next if stats['name'] == 'Pitchers'
+      name_hash[stats['name']] = stats['p']
+    end
+
+    name_matcher =  Roster.match_team_season_names(self.id,season,name_hash,false)
+    batting_data.each do |hashkey,stats|
+      name = stats['name']
+      roster_id = name_matcher[name] || 0
+      season = season
+      if(!(batting_stat = self.batting_stats.where(season: season).where(roster_id: roster_id).where(name: name).first))
+        batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name)
+        stats.each do |name,value|
+          name = 'position' if(name == 'p') # relabel
+          if(allowed_attributes.include?(name))
+            batting_stat[name] = value
+          end
+        end
+        batting_stat.save!
+      else
+        stats.each do |name,value|
+          name = 'position' if(name == 'p') # relabel
+          if(allowed_attributes.include?(name))
+            batting_stat[name] = value
+          end
+        end
+        batting_stat.save!
+      end
+    end
+    batting_data
+  end
 
 
 
-  def create_rosters(season)
-    rp = RosterParser.new(self.get_html(self.roster_url(season)))
+
+
+
+  def create_or_update_rosters_for_season(season)
+    rp = self.roster_parser(season)
     rp.roster.each do |hashkey,player_details|
       if(!(roster = self.rosters.where(season: season).where(name: player_details['name']).first))
         roster = self.rosters.create(season: season,
@@ -154,10 +206,17 @@ class Team < ApplicationRecord
     end
   end
 
-  def self.create_rosters(season)
+  def self.create_or_update_rosters_for_season(season)
     Team.all.each do |t|
-      t.create_rosters(season)
+      t.create_or_update_rosters_for_season(season)
     end
   end
+
+
+  def self.update_batting_stats_for_season(season)
+    Team.all.each do |t|
+      t.update_batting_stats_for_season(season)
+    end
+  end    
 
 end
