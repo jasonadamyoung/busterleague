@@ -6,7 +6,7 @@
 class Roster < ApplicationRecord
 
   belongs_to :team
-  belongs_to :player
+  belongs_to :player, optional: true
 
 
   after_create :create_or_update_player
