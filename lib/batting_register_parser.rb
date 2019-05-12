@@ -95,6 +95,8 @@ class BattingRegisterParser
         else
           player_details[label] = table_cell.text.strip.downcase
         end
+        # &nbsp remover
+        player_details[label] = '' if(player_details[label] == '&nbsp')
       end
       hashkey = keyme(player_details['name'],player_details['p'],player_details['team'])
       returnhash[hashkey] = player_details

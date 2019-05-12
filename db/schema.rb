@@ -10,19 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_11_145856) do
+ActiveRecord::Schema.define(version: 2019_05_12_162812) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "batting_stats", force: :cascade do |t|
-    t.integer "player_id", limit: 2
+    t.integer "roster_id", limit: 2, null: false
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
     t.string "flag", limit: 1, default: "", null: false
     t.string "position", limit: 2, default: "", null: false
-    t.integer "age", limit: 2, null: false
     t.float "avg"
     t.float "obp"
     t.float "spc"
@@ -86,7 +85,7 @@ ActiveRecord::Schema.define(version: 2019_05_11_145856) do
     t.integer "r_k"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "season", "team_id"], name: "batstat_ndx", unique: true
+    t.index ["roster_id", "name", "season", "team_id"], name: "batstat_ndx", unique: true
   end
 
   create_table "boxscores", force: :cascade do |t|
@@ -109,7 +108,7 @@ ActiveRecord::Schema.define(version: 2019_05_11_145856) do
 
   create_table "game_batting_stats", force: :cascade do |t|
     t.integer "boxscore_id", limit: 2
-    t.integer "player_id", limit: 2
+    t.integer "roster_id", limit: 2
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.integer "opposing_team_id", limit: 2, null: false
@@ -142,7 +141,7 @@ ActiveRecord::Schema.define(version: 2019_05_11_145856) do
 
   create_table "game_pitching_stats", force: :cascade do |t|
     t.integer "boxscore_id", limit: 2
-    t.integer "player_id", limit: 2
+    t.integer "roster_id", limit: 2
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.integer "opposing_team_id", limit: 2, null: false

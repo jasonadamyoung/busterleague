@@ -5,8 +5,15 @@
 
 class BattingStat < ApplicationRecord
 
-  # belongs_to :player
-  # belongs_to :team
+  belongs_to :roster, optional: true
+  has_one :player, through: :roster
+  belongs_to :team
+
+  scope :for_season, lambda {|season| where(season: season)}
+
+  def self.dump_data
+    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
+  end
 
   def self.register_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
