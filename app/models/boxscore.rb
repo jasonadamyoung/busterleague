@@ -243,8 +243,8 @@ class Boxscore < ApplicationRecord
 
 
   def create_game_batting_stats
-    home_players = Roster.match_team_season_names(self.home_team_id,self.season,Roster.map_stats_to_name_hash(self.home_batting_stats),false)
-    away_players = Roster.match_team_season_names(self.away_team_id,self.season,Roster.map_stats_to_name_hash(self.away_batting_stats),false)
+    home_players = Roster.match_team_season_names(self.home_team_id,self.season,Roster.map_stats_to_name_hash(self.home_batting_stats))
+    away_players = Roster.match_team_season_names(self.away_team_id,self.season,Roster.map_stats_to_name_hash(self.away_batting_stats))
 
     self.home_batting_stats.each do |name,stats|
       gbs = self.game_batting_stats.new
@@ -273,8 +273,8 @@ class Boxscore < ApplicationRecord
   end
 
   def create_game_pitching_stats
-    home_players = Roster.match_team_season_names(self.home_team_id,self.season,Roster.map_stats_to_name_hash(self.home_pitching_stats,true),true)
-    away_players = Roster.match_team_season_names(self.away_team_id,self.season,Roster.map_stats_to_name_hash(self.away_pitching_stats,true),true)
+    home_players = Roster.match_team_season_names(self.home_team_id,self.season,Roster.map_stats_to_name_hash(self.home_pitching_stats,true))
+    away_players = Roster.match_team_season_names(self.away_team_id,self.season,Roster.map_stats_to_name_hash(self.away_pitching_stats,true))
 
     self.home_pitching_stats.each do |name,stats|
       gps = self.game_pitching_stats.new

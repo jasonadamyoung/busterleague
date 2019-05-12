@@ -350,7 +350,7 @@ class BoxscoreParser
     pitching_data.shift # ignore header row`
     pitching_data.each do |dataline|
       data_hash = {}
-      (name_and_action,stats) = [dataline[0..32].strip,dataline[33..-1].split(%r{\s+})]
+      (name_and_action,stats) = [dataline[0..30].strip,dataline[31..-1].strip.split(%r{\s+})]
       if(position = (name_and_action =~ %r{([A-Z]{1,2})\s+([\d-]+)}))
         action = $1.downcase
         data_hash[action] = 1

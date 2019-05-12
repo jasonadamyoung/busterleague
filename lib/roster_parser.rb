@@ -28,6 +28,18 @@ class RosterParser
     self.process_contract_table
   end
 
+  def name_fixer(name)
+    case name
+    when 'Valeri delosSantos'
+      'Valerio de los Santos'
+    when 'Paul LoDuca'
+      'Paul Lo Duca'
+    else
+      name
+    end
+  end
+
+
   def process_contract_table
     self.roster = {}
     contract_table = self.tables[CONTRACT_TABLE]
@@ -40,7 +52,7 @@ class RosterParser
       player_details = {}
       status = cells[0].text.strip
       player_details['status'] = (status == 'f') ? 'farmed' : 'active'
-      player_details['name'] = cells[1].text.strip
+      player_details['name'] = name_fixer(cells[1].text.strip)
       player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = cells[2].text.strip.downcase
       player_details['bats'] = cells[3].text.strip.downcase

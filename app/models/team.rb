@@ -140,9 +140,7 @@ class Team < ApplicationRecord
     BattingRegisterParser.new(self.get_html(self.batting_url(season)))
   end
 
-
-  def update_batting_stats_for_season(season)
-    allowed_attributes = BattingStat.column_names
+  def batting_data_roster_matcher(season)
     batting_data = self.batting_register_parser(season).batting_data
     # get the names out
     name_hash = {}
@@ -152,7 +150,14 @@ class Team < ApplicationRecord
       name_hash[stats['name']] = stats['p']
     end
 
-    name_matcher =  Roster.match_team_season_names(self.id,season,name_hash,false)
+    Roster.match_team_season_names(self.id,season,name_hash)
+  end
+
+
+  def update_batting_stats_for_season(season)
+    allowed_attributes = BattingStat.column_names
+    batting_data = self.batting_register_parser(season).batting_data
+    name_matcher = batting_data_roster_matcher(season)
     batting_data.each do |hashkey,stats|
       name = stats['name']
       roster_id = name_matcher[name] || 0
