@@ -63,6 +63,10 @@ class Player < ApplicationRecord
     end
   end
 
+  def fullname
+    name
+  end
+
 
 
 end

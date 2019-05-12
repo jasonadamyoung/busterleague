@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_12_162812) do
+ActiveRecord::Schema.define(version: 2019_05_12_230255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(version: 2019_05_12_162812) do
     t.integer "total_innings"
     t.text "content"
     t.jsonb "game_stats"
+    t.boolean "data_records_created", default: false, null: false
     t.index ["date"], name: "boxscore_date_ndx"
     t.index ["name", "season"], name: "name_ndx", unique: true
     t.index ["season"], name: "boxscore_season_ndx"

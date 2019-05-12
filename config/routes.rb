@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :players, :only => [:show, :index]
+  
   resources :games, :only => [:show, :index]
   resources :boxscores, :only => [:show, :index]
   resources :uploads, :only => [:index,:create]
