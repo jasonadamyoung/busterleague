@@ -6,7 +6,8 @@
 class Roster < ApplicationRecord
 
   belongs_to :team
-  # belongs_to :player
+  belongs_to :player
+
 
   after_create :create_or_update_player
 
@@ -18,7 +19,7 @@ class Roster < ApplicationRecord
   def self.dump_data
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
-  
+
   def self.position_list
     self.group(:position).count
   end
@@ -37,9 +38,9 @@ class Roster < ApplicationRecord
     self.update_attribute(:player_id, player.id)
   end
 
-  def self.match_team_season_names(team_id,season,stats_hash,is_pitching)
+  def self.match_team_season_names(team_id,season,names_hash,is_pitching)
     match_data = {}
-    stats_hash.each do |name,stats|
+    names_hash.each do |name,position|
       namefinder = self.idiotic_shorthand_name_translations(name.dup)
       (lastname,startswith) = namefinder.split(',')
       if(lastname.last =~ %r{[A-Z]})
@@ -52,19 +53,19 @@ class Roster < ApplicationRecord
       player_finder = self.where(season: season).where(team_id: team_id).where("end_name ILIKE '%#{end_name}%'")
       if(is_pitching)
         player_finder = player_finder.pitchers
-      elsif(stats['position'] == 'p')
+      elsif(position == 'p')
         player_finder = player_finder.pitchers
       end
       if(found_players = player_finder.all)
         if(found_players.size == 1)
-          match_data[name] = found_players[0].player_id
+          match_data[name] = found_players[0].id
         elsif(found_players.size > 1)
           # found more than one
           found_player_id = -1
-          found_players.each do |player|
+          found_players.each do |roster_player|
             matcher = Regexp.new("^#{startswith}")
-            if(player.name =~ matcher)
-              found_player_id = player.id
+            if(roster_player.name =~ matcher)
+              found_player_id = roster_player.id
             end
           end
           match_data[name] = found_player_id
@@ -88,5 +89,24 @@ class Roster < ApplicationRecord
     end
   end
 
+  def self.map_stats_to_name_hash(stats,is_pitching = false)
+    name_hash = {}
+    if(is_pitching)
+      stats.keys.each do |name|
+        name_hash[name] = 'p'
+      end
+    else
+      stats.each do |name,stats|
+        if(stats['position'])
+          name_hash[name] = stats['position']
+        elsif(stats['p'])
+          name_hash[name] = stats['p']
+        else
+          name_hash[name] = 'b'
+        end
+      end
+    end
+    name_hash
+  end
 
 end
