@@ -21,7 +21,7 @@ class Boxscore < ApplicationRecord
   def self.create_data_records_for_season(season,post_to_slack=true)
     self.waiting_for_data_records.for_season(season).find_each(batch_size: 100) do |bs|
       bs.create_data_records
-      SlackIt.post(message: "... Processing data records created for Season: #{self.season}")
+      SlackIt.post(message: "... Processing data records created for Season: #{season}")
       GC.start
     end
   end
