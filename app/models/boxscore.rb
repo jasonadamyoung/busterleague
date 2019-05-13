@@ -19,10 +19,14 @@ class Boxscore < ApplicationRecord
   scope :waiting_for_data_records, -> {where(data_records_created: false)}
 
   def self.create_data_records_for_season(season,post_to_slack=true)
+    processed_count = 0
     self.waiting_for_data_records.for_season(season).find_each(batch_size: 100) do |bs|
       bs.create_data_records
-      SlackIt.post(message: "... Processing data records created for Season: #{season}")
-      GC.start
+      processed_count += 1
+      if(processed_count % 100 == 0)
+        SlackIt.post(message: "... Processed 100 data records created for Season: #{season}")
+        GC.start
+      end
     end
   end
 
