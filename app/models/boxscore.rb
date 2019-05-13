@@ -25,7 +25,7 @@ class Boxscore < ApplicationRecord
       bs.create_data_records
       processed_count += 1
       if(processed_count % 100 == 0)
-        SlackIt.post(message: "... Created data records for #{processed_count} of #{total_count)} boxscores within Season: #{season}")
+        SlackIt.post(message: "... Created data records for #{processed_count} of #{total_count} boxscores within Season: #{season}")
       end
     end
   end
