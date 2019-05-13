@@ -18,9 +18,11 @@ class Boxscore < ApplicationRecord
   scope :by_team_id, lambda {|team_id| where("home_team_id = #{team_id} or away_team_id = #{team_id}")}
   scope :waiting_for_data_records, -> {where(data_records_created: false)}
 
-  def self.create_data_records_for_season(season)
-    self.waiting_for_data_records.for_season(season).each do |bs|
+  def self.create_data_records_for_season(season,post_to_slack=true)
+    self.waiting_for_data_records.for_season(season).find_each(batch_size: 100) do |bs|
       bs.create_data_records
+      SlackIt.post(message: "... Processing data records created for Season: #{self.season}")
+      GC.start
     end
   end
 
