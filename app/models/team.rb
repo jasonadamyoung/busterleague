@@ -13,6 +13,7 @@ class Team < ApplicationRecord
   has_many :game_batting_stats
   has_many :game_pitching_stats
   has_many :batting_stats
+  has_many :transaction_logs
 
 
   scope :human, lambda { where("owner_id <> #{Owner.computer_id}")}
@@ -184,36 +185,45 @@ class Team < ApplicationRecord
     batting_data
   end
 
-
-
-
-
-
   def create_or_update_rosters_for_season(season)
     rp = self.roster_parser(season)
     rp.roster.each do |hashkey,player_details|
-      if(!(roster = self.rosters.where(season: season).where(name: player_details['name']).first))
-        roster = self.rosters.create(season: season,
-                                     name: player_details['name'],
-                                     end_name: player_details['end_name'],
-                                     age: player_details['age'], 
-                                     position: player_details['position'], 
-                                     bats: player_details['bats'],
-                                     throws: player_details['throws'],
-                                     contract_data: player_details)
-      else
-        roster.update_attributes(age: player_details['age'], 
-                                  position: player_details['position'], 
-                                  bats: player_details['bats'],
-                                  throws: player_details['throws'],
-                                  contract_data: player_details)
+      Roster.create_or_update_roster_player_for_season_by_team(season,self,player_details)
+    end
+  end
+
+  def create_or_update_traded_rosters_for_season(season)
+    # go through the trades for this team, match to current roster, create for other team
+    self.traded_for_season(season).each do |tl|
+      traded_from_team = tl.other_team
+      if(rp = Roster.find_roster_for_name_position_team_season(tl.name,'n/a',self,season))
+        player_attributes = rp.attributes
+        player_attributes.delete('id')
+        player_attributes.delete('season')
+        player_attributes.delete('player_id')
+        player_attributes.delete('team_id')
+        player_details = player_attributes
+        player_details['status'] = 'traded'
+        player_details['trade_status'] = Roster::TRADED
+        player_details['trade_team_id'] = self.id
+        Roster.create_or_update_roster_player_for_season_by_team(season,traded_from_team,player_details)
+        rp.update_attributes(:trade_status => Roster::ACQUIRED_TRADE, :trade_team_id => traded_from_team.id)
       end
     end
+  end
+
+  def traded_for_season(season)
+    traded = self.transaction_logs.for_season(season).traded
+    traded
   end
 
   def self.create_or_update_rosters_for_season(season)
     Team.all.each do |t|
       t.create_or_update_rosters_for_season(season)
+    end
+
+    Team.all.each do |t|
+      t.create_or_update_traded_rosters_for_season(season)
     end
   end
 

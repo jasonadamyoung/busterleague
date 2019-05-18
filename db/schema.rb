@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_12_230255) do
+ActiveRecord::Schema.define(version: 2019_05_18_172053) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -135,8 +135,7 @@ ActiveRecord::Schema.define(version: 2019_05_12_230255) do
     t.integer "gdp", default: 0, null: false
     t.integer "ebh", default: 0, null: false
     t.integer "tb", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer "1b", default: 0, null: false
     t.index ["boxscore_id", "name", "team_id"], name: "gbs_ndx", unique: true
   end
 
@@ -270,8 +269,10 @@ ActiveRecord::Schema.define(version: 2019_05_12_230255) do
     t.jsonb "batting_data"
     t.jsonb "pitching_data"
     t.jsonb "fielding_data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "status"
+    t.integer "status_code"
+    t.integer "trade_status"
+    t.integer "trade_team_id"
     t.index ["name", "position", "age", "season", "team_id"], name: "roster_ndx", unique: true
   end
 
@@ -285,6 +286,24 @@ ActiveRecord::Schema.define(version: 2019_05_12_230255) do
     t.datetime "updated_at", null: false
     t.integer "web_team_id", limit: 2
     t.index ["name"], name: "index_teams_on_name", unique: true
+  end
+
+  create_table "transaction_logs", force: :cascade do |t|
+    t.string "hashid", limit: 255, null: false
+    t.date "date", null: false
+    t.integer "season", null: false
+    t.integer "roster_id"
+    t.string "name", limit: 255, default: "", null: false
+    t.integer "action", null: false
+    t.string "action_text", limit: 255, default: "", null: false
+    t.integer "team_id", null: false
+    t.string "team_string", limit: 4, default: "", null: false
+    t.integer "other_team_id"
+    t.string "other_team_string", limit: 4
+    t.date "effective_date"
+    t.string "when_string", limit: 255
+    t.index ["hashid", "season"], name: "record_ndx", unique: true
+    t.index ["name", "team_id"], name: "name_team_ndx"
   end
 
   create_table "uploads", force: :cascade do |t|

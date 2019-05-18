@@ -50,17 +50,19 @@ class RosterParser
     rows[3..-2].each do |row|
       cells = row.search('td')
       player_details = {}
-      status = cells[0].text.strip
-      player_details['status'] = (status == 'f') ? 'farmed' : 'active'
-      player_details['name'] = name_fixer(cells[1].text.strip)
+      contract_data = {}
+      status = cell_text(cells[0])
+      player_details['status'] = (status == 'f') ? 'reserve' : 'active'
+      player_details['name'] = name_fixer(cell_text(cells[1]))
       player_details['end_name'] = player_details['name'].split(' ').last
-      player_details['position'] = cells[2].text.strip.downcase
-      player_details['bats'] = cells[3].text.strip.downcase
-      player_details['throws'] = cells[4].text.strip.upcase
-      player_details['age'] = cells[5].text.strip.to_i
-      player_details['percent_active'] =  cells[6].text.strip.to_i
-      player_details['percent_disabled'] =  cells[7].text.strip.to_i
-      player_details['salary'] =  cells[8].text.strip.to_i
+      player_details['position'] = cell_text(cells[2]).downcase
+      player_details['bats'] = cell_text(cells[3]).downcase
+      player_details['throws'] = cell_text(cells[4]).upcase
+      player_details['age'] = cell_text(cells[5]).to_i
+      contract_data['percent_active'] =  cell_text(cells[6]).to_i
+      contract_data['percent_disabled'] =  cell_text(cells[7]).to_i
+      contract_data['salary'] =  cell_text(cells[8]).to_i
+      player_details['contract_data'] = contract_data
       hashkey = keyme(player_details['name'],player_details['position'])
       self.roster[hashkey] = player_details
     end

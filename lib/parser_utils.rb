@@ -16,7 +16,16 @@ module ParserUtils
     else
       "#{prefix}#{converted_field}"
     end
-
   end
+
+  def cell_text(cell)
+    text = cell.text.strip
+    if(text == '&nbsp')
+      ''
+    else
+      text
+    end
+  end
+
 
 end

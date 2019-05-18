@@ -9,12 +9,41 @@ class Roster < ApplicationRecord
   belongs_to :player, optional: true
 
 
+  before_save  :set_status_code
   after_create :create_or_update_player
 
   scope :pitchers, -> { where(position: ['cl','mr','sp']) }
   scope :for_season, lambda {|season| where(season: season)}
+  scope :by_team, lambda {|team| where(team_id: team.id)}
 
+  
   ADJUSTMENT_SEASON = 2000
+
+  # status_codes
+  STATUS_ACTIVE = 1
+  STATUS_RESERVE = 0
+  STATUS_TRADED = -1
+  STATUS_UNKNOWN = 999
+
+  # trade_status_codes
+  NOT_TRADED = 0
+  TRADED = 1
+  ACQUIRED_TRADE = 2
+
+
+  def set_status_code
+    case self.status
+    when 'reserve'
+      self.status_code = STATUS_RESERVE
+    when 'active'
+      self.status_code = STATUS_ACTIVE
+    when 'traded'
+      self.status_code = STATUS_TRADED
+    else
+      self.status = STATUS_UNKNOWN
+    end
+  end
+
 
   def self.dump_data
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
@@ -55,28 +84,32 @@ class Roster < ApplicationRecord
 
     if(found_players = player_finder.all)
       if(found_players.size == 1)
-        return found_players[0].id
+        return found_players[0]
       elsif(found_players.size > 1)
         # found more than one
-        found_player_id = -1
         found_players.each do |roster_player|
           matcher = Regexp.new("^#{startswith}")
           if(roster_player.name =~ matcher)
-            return roster_player.id
+            return roster_player
           end
         end
+        return nil
       else
-        return 0
+        return nil
       end
     else
-      return 0
+      return nil
     end
   end
 
   def self.match_team_season_names(team_id,season,names_hash)
     match_data = {}
     names_hash.each do |name,position|
-      match_data[name] = self.find_roster_for_name_position_team_season(name,position,team_id,season)
+      if(rp = self.find_roster_for_name_position_team_season(name,position,team_id,season))
+        match_data[name] = rp.id
+      else
+        match_data[name] = 0
+      end
     end
     match_data
   end
@@ -115,5 +148,19 @@ class Roster < ApplicationRecord
     end
     name_hash
   end
+
+
+  def self.create_or_update_roster_player_for_season_by_team(season,team,player_details)
+    rp = self.for_season(season).by_team(team).where(name: player_details['name']).first
+    if(!rp)
+      rp = self.new(season: season, team_id: team.id)
+      rp.assign_attributes(player_details)
+      rp.save!
+    else
+      rp.update_attributes(player_details)
+    end
+    rp
+  end
+  
 
 end

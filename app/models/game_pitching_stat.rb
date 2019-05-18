@@ -28,5 +28,19 @@ class GamePitchingStat < ApplicationRecord
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
 
+  def fix_roster_id
+    if(roster = Roster.find_roster_for_name_position_team_season(self.name,
+                                                                 'p',
+                                                                 self.team_id,
+                                                                 self.season))
+      self.update_attribute(:roster_id,roster.id)
+    end
+  end
+
+  def self.fix_roster_ids
+    self.where(roster_id: 0).find_each do |gps|
+      gps.fix_roster_id
+    end
+  end
 
 end
