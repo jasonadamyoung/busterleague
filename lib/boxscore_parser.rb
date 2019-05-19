@@ -324,8 +324,8 @@ class BoxscoreParser
 
   def process_batting_stats
     batting_stats = {}
-    batting_stats[:home_batting_stats] = self.ab_data_hash('home')
-    batting_stats[:away_batting_stats] = self.ab_data_hash('away')
+    batting_stats[:home_batting_stats] = self.home_ab_data_hash
+    batting_stats[:away_batting_stats] = self.away_ab_data_hash
     batting_stats[:unknown_batting_stats] = {}
 
     self.game_stat_data_hash['batting'].each do |name,game_stat_data|
@@ -379,8 +379,8 @@ class BoxscoreParser
 
   def process_pitching_stats
     pitching_stats = {}
-    pitching_stats[:home_pitching_stats] = self.pitching_data_hash('home')
-    pitching_stats[:away_pitching_stats] = self.pitching_data_hash('away')
+    pitching_stats[:home_pitching_stats] = self.home_pitching_data_hash
+    pitching_stats[:away_pitching_stats] = self.away_pitching_data_hash
     pitching_stats[:unknown_pitching_stats] = {}
 
     self.game_stat_data_hash['pitching'].each do |name,game_stat_data|
