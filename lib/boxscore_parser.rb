@@ -304,18 +304,24 @@ class BoxscoreParser
   def ab_data_hash(home_or_away)
     ab_data_hash = {}
     ab_data = (home_or_away == 'home') ? self.home_at_bat_data.dup :  self.away_at_bat_data.dup
-    ab_data.shift # ignore header row`
+    ab_data.shift # ignore header row
+    lineup = 0
     ab_data.each do |dataline| 
       (name,position_and_stats) = [dataline[0..17].strip,dataline[18..-1].split(%r{\s+})]
-      # all because of Jones(R)
-      name.gsub!(%r{[\(\)]},'')
-      is_substitution = (dataline =~ %r{^\s+})
+      name = name_transforms(name)
+      if(dataline =~ %r{^\s+})
+        is_substitution = true
+      else
+        lineup += 1
+        is_substitution = false
+      end
       data_hash = {'position' => position_and_stats[0].downcase,
                       'ab' => position_and_stats[1].to_i,
                       'r' => position_and_stats[2].to_i,
                       'h' => position_and_stats[3].to_i,
                       'rbi' => position_and_stats[4].to_i,
-                      'gs' => is_substitution ? 0 : 1
+                      'gs' => is_substitution ? 0 : 1,
+                      'lineup' => lineup
                     }
       ab_data_hash[name] = data_hash
     end
