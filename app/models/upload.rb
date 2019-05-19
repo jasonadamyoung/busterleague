@@ -78,6 +78,12 @@ class Upload < ApplicationRecord
       season_header = doc.search("h2").first.text.strip
       if(season_header =~ %r{^Organization:\s+(\d+)\s+})
         season = $1.to_i
+        # exception handling for 2001 season index
+        if(season == 2000)
+          if(season_header =~ %r{DMB(\d+)})
+            season = $1
+          end
+        end  
         self.update_attribute(:season, season)
         move_to = "#{Rails.root}/public/dmbweb/#{self.season}"     
         Dir.mkdir(move_to) unless Dir.exist?(move_to)
