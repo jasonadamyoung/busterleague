@@ -9,10 +9,10 @@ class Boxscore < ApplicationRecord
   belongs_to :home_team, :class_name => 'Team'
   belongs_to :away_team, :class_name => 'Team'
   belongs_to :winning_team, :class_name => 'Team'
-  has_many :games
-  has_many :innings
-  has_many :game_batting_stats
-  has_many :game_pitching_stats
+  has_many :games, dependent: :destroy
+  has_many :innings, dependent: :destroy
+  has_many :game_batting_stats, dependent: :destroy
+  has_many :game_pitching_stats, dependent: :destroy
 
   scope :for_season, lambda {|season| where(season: season)}
   scope :by_team_id, lambda {|team_id| where("home_team_id = #{team_id} or away_team_id = #{team_id}")}
@@ -113,6 +113,33 @@ class Boxscore < ApplicationRecord
     end
 
     array_content
+  end
+
+  def reprocess
+    self.games.destroy_all
+    self.innings.destroy_all
+    self.game_batting_stats.destroy_all
+    self.game_pitching_stats.destroy_all
+
+    bp = self.parsed_content
+    dtb_data = bp.date_teams_ballpark
+    self.data_records_created = false
+    self.date = dtb_data['date']
+    self.ballpark = dtb_data['ballpark']
+    self.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['home_team'])).first.id
+    self.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['away_team'])).first.id
+    self.game_stats = {}
+    innings_totals = bp.innings_totals
+    self.home_runs = bp.innings_totals['home_runs']
+    self.away_runs = bp.innings_totals['away_runs']
+    self.total_innings = bp.innings_totals['total_innings']   
+    self.game_stats['innings_totals'] = innings_totals
+    self.game_stats['batting_stats'] = bp.batting_stats
+    self.game_stats['pitching_stats'] = bp.pitching_stats
+    self.winning_team_id = ((innings_totals['home_runs'] > innings_totals['away_runs']) ? self.home_team_id : self.away_team_id)
+    self.save!
+
+    self.create_data_records
   end
 
   def self.get_and_create(web_reports_url,boxscore_name,season)
