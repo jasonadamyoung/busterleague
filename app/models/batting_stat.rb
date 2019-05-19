@@ -9,6 +9,8 @@ class BattingStat < ApplicationRecord
   has_one :player, through: :roster
   belongs_to :team
 
+  before_save :set_singles
+
   scope :for_season, lambda {|season| where(season: season)}
 
   def self.dump_data
@@ -26,6 +28,25 @@ class BattingStat < ApplicationRecord
       return nil
     end
     response.to_str
+  end
+
+  def set_singles
+    self.h1b = (h - (h3b+h2b+hr))
+  end
+
+  def fix_roster_id
+    if(roster = Roster.find_roster_for_name_position_team_season(self.name,
+                                                                 self.position,
+                                                                 self.team_id,
+                                                                 self.season))
+      self.update_attribute(:roster_id,roster.id)
+    end
+  end
+
+  def self.fix_roster_ids
+    self.where(roster_id: 0).where("name NOT IN ('Total','Pitchers','Other')").find_each do |bs|
+      bs.fix_roster_id
+    end
   end
 
 end
