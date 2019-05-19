@@ -27,5 +27,24 @@ module ParserUtils
     end
   end
 
+  def label_translation(label)
+    case label.downcase
+    when '1b'
+      'h1b'
+    when '2b'
+      'h2b'
+    when '3b'
+      'h3b'
+    else
+      label
+    end
+  end
+
+  def name_transforms(name)
+    transformed = name.dup
+    # all because of Jones(R)
+    transformed.gsub!(%r{[\(\)]},'')
+    transformed
+  end  
 
 end

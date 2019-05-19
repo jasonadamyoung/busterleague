@@ -16,26 +16,14 @@ class GameBattingStat < ApplicationRecord
   scope :for_season, lambda {|season| where(season: season)}
   scope :four_homer_games, -> {where("hr >= 4")}
   scope :six_hit_games, -> {where("h >= 6")}
-  scope :cycles, ->{where('"1b" >= 1').where('"2b" >= 1').where('"3b" >=1').where('"hr" >= 1')}
+  scope :cycles, ->{where('h1b >= 1').where('h2b >= 1').where('h3b >=1').where('hr >= 1')}
 
   # location
   LOCATION_HOME = 1
   LOCATION_AWAY = 2
 
   def set_singles
-    self.write_attribute('1b',(h - (triples+doubles+hr)))
-  end
-
-  def singles
-    self.read_attribute('1b')
-  end
-
-  def doubles
-    self.read_attribute('2b')
-  end
-
-  def triples
-    self.read_attribute('3b')
+    self.h1b = (h - (h3b+h2b+hr))
   end
 
   def self.rebuild_all

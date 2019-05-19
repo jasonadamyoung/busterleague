@@ -68,7 +68,7 @@ class BattingRegisterParser
       cells = row.search('td')
       player_details = {}
       cells.each_with_index do |table_cell,index|
-        label = header_cells[index]
+        label = label_translation(header_cells[index])
         if(label == 'team')
           # skip blank team rows
           if table_cell.text.strip.empty? 

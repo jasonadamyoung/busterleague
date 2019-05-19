@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class BoxscoreParser
+  include ParserUtils
 
   attr_accessor :content
   attr_accessor :date_teams_ballpark_data
@@ -250,7 +251,7 @@ class BoxscoreParser
     game_stat_data_hash = {'batting' => {}, 'pitching' => {}, 'fielding' => {}}
     self.game_stat_data.each do |batstat|
       (stat,names) = batstat.split('-')
-      stat.downcase!
+      stat = label_translation(stat).downcase
       names.split(', ').each do |namedata|
         # remove any totals
         namedata.gsub!(%r{\(\d+\)},'')
