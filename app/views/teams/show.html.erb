@@ -4,6 +4,60 @@
   <h1><%= @page_title %></h1>
 </div>
 
+
+  <div class="page-header">
+    <h1>Season Stats</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>W-L</th>
+            <th>PCT</th>
+            <th>GB</th>
+            <th>L10</th>
+            <th>STRK</th>
+            <th>RF</th>
+            <th>RA</th>
+            <th>X_PCT</th>
+            <th>X_WL</th>
+            <th>Home</th>
+            <th>Road</th>
+            <th>v.Hum</th>
+            <th>v.Com</th>
+            <th>v.Winners</th>
+            <th>v.Losers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%- date_stat = DateStat.new(:date => @date, :team => @team, :season => @season)%>
+          <tr>
+            <td><%= display_wl([date_stat.wins,date_stat.losses]) %></td>
+            <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td>
+            <td><%= display_gb(date_stat.gb) %></td>
+            <td><%= date_stat.last_ten %></td>
+            <td><%= date_stat.streak %></td>
+            <td><%= date_stat.rf %></td>
+            <td><%= date_stat.ra %></td>
+            <td><%= number_with_precision(date_stat.expected_pct,:precision => 3)%></td>
+            <td><%= display_wl(date_stat.expected_wl) %></td>
+            <td><%= display_wl(date_stat.home_wl) %></td>
+            <td><%= display_wl(date_stat.road_wl) %></td>
+            <td><%= display_wl(date_stat.human_wl) %></td>
+            <td><%= display_wl(date_stat.computer_wl) %></td>
+            <td><%= display_wl(date_stat.winners_wl) %></td>
+            <td><%= display_wl(date_stat.losers_wl) %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+
+  </div>
+
   <div class="page-header">
     <h1>Roster</h1>
   </div>
@@ -12,17 +66,17 @@
       <table class="table table-bordered table-striped">
       <thead>
         <tr>
+          <th>Position</th>
           <th>Name</th>
           <th>Age</th>
-          <th>Position</th>
         </tr>
       </thead>
       <tbody>
           <%- @team.rosters.for_season(@season).includes(:player).each do |rp| %>
           <tr>
+            <td><%= rp.position -%></td>
             <td><%= player_link(rp.player) -%></td>
             <td><%= rp.age -%></td>
-            <td><%= rp.position -%></td>
           </tr>
           <%- end -%>
       </tbody>
@@ -30,42 +84,6 @@
     </div>
   </div>
 
-  <div class="page-header">
-    <h1>Stats and Graphs</h1>
-  </div>
-  <div class="row">
-    <div class="col-md-3">
-      <table class="table table-bordered table-striped">
-        <tbody>
-          <%- date_stat = DateStat.new(:date => @date, :team => @team, :season => @season)%>
-  		  <tr><td>W-L</td><td><%= display_wl([date_stat.wins,date_stat.losses]) %></td></tr>
-  		  <tr><td>Winning %</td> <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td></tr>
-  		  <tr><td>Games Back</td><td><%= display_gb(date_stat.gb) %></td></tr>
-  		  <tr><td>L10</td> <td><%= date_stat.last_ten %></td></tr>
-  		  <tr><td>Streak</td> <td><%= date_stat.streak %></td></tr>
-  		  <tr><td>Runs</td><td><%= date_stat.rf %></td></tr>
-  		  <tr><td>Opponent Runs</td> <td><%= date_stat.ra %></td></tr>
-  		  <tr><td>Expected Winning %</td><td><%= number_with_precision(date_stat.expected_pct,:precision => 3)%></td></tr>
-  		  <tr><td>Expected W-L</td> <td><%= display_wl(date_stat.expected_wl) %></td></tr>
-  		  <tr><td>Home</td> <td><%= display_wl(date_stat.home_wl) %></td></tr>
-  		  <tr><td>Road</td>	<td><%= display_wl(date_stat.road_wl) %></td></tr>
-  		  <tr><td>versus Human Teams</td>	<td><%= display_wl(date_stat.human_wl) %></td></tr>
-  		  <tr><td>versus Computer Teams</td><td><%= display_wl(date_stat.computer_wl) %></td></tr>
-  		  <tr><td>versus Winners</td><td><%= display_wl(date_stat.winners_wl) %></td></tr>
-  		  <tr><td>versus Losers</td><td><%= display_wl(date_stat.losers_wl) %></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="col-md-9">
-      <h3>Winning % vs. Expected Winning %</h3>
-      <p><em>click the legend labels to toggle display of the given item</em></p>
-      <%- win_pct_plot_data = @team.win_pct_plot_data(@season) %>
-      <%= render(:partial => 'win_pct_plot', :locals => {:data => win_pct_plot_data[:data], :labels => win_pct_plot_data[:labels], :plotlabel => @team.abbrev})%>
-    </div>
-
-
-  </div>
 
   <div class="page-header">
     <h1>Game Results</h1>
