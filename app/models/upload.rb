@@ -98,6 +98,8 @@ class Upload < ApplicationRecord
   def process_upload_data
     self.update_attribute(:processing_status, PROCESSING_STARTED)
     SlackIt.post(message: "Starting processing for : #{self.archivefile_file_name}")
+    TransactionLog.create_or_update_logs_for_season(self.season)
+    SlackIt.post(message: "... Transaction logs created/updated for Season : #{self.season}")
     Team.create_or_update_rosters_for_season(self.season)
     SlackIt.post(message: "... Rosters created/updated for Season : #{self.season}")
     Team.update_batting_stats_for_season(self.season)
