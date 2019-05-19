@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_18_172053) do
+ActiveRecord::Schema.define(version: 2019_05_19_134804) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,8 +27,8 @@ ActiveRecord::Schema.define(version: 2019_05_18_172053) do
     t.float "spc"
     t.integer "ab"
     t.integer "h"
-    t.integer "2b"
-    t.integer "3b"
+    t.integer "h2b"
+    t.integer "h3b"
     t.integer "hr"
     t.integer "r"
     t.integer "rbi"
@@ -85,6 +85,7 @@ ActiveRecord::Schema.define(version: 2019_05_18_172053) do
     t.integer "r_k"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "h1b", default: 0, null: false
     t.index ["roster_id", "name", "season", "team_id"], name: "batstat_ndx", unique: true
   end
 
@@ -118,8 +119,8 @@ ActiveRecord::Schema.define(version: 2019_05_18_172053) do
     t.string "position", limit: 2, default: "", null: false
     t.integer "ab", default: 0, null: false
     t.integer "h", default: 0, null: false
-    t.integer "2b", default: 0, null: false
-    t.integer "3b", default: 0, null: false
+    t.integer "h2b", default: 0, null: false
+    t.integer "h3b", default: 0, null: false
     t.integer "hr", default: 0, null: false
     t.integer "r", default: 0, null: false
     t.integer "rbi", default: 0, null: false
@@ -135,7 +136,8 @@ ActiveRecord::Schema.define(version: 2019_05_18_172053) do
     t.integer "gdp", default: 0, null: false
     t.integer "ebh", default: 0, null: false
     t.integer "tb", default: 0, null: false
-    t.integer "1b", default: 0, null: false
+    t.integer "h1b", default: 0, null: false
+    t.integer "lineup", default: 0, null: false
     t.index ["boxscore_id", "name", "team_id"], name: "gbs_ndx", unique: true
   end
 
@@ -163,8 +165,6 @@ ActiveRecord::Schema.define(version: 2019_05_18_172053) do
     t.integer "hb"
     t.integer "balk"
     t.integer "wp"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
   end
 
@@ -317,6 +317,7 @@ ActiveRecord::Schema.define(version: 2019_05_18_172053) do
     t.integer "rebuild_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "season", default: 0, null: false
     t.index ["archivefile_fingerprint"], name: "fingerprint_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end
