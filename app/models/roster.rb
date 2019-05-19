@@ -15,6 +15,9 @@ class Roster < ApplicationRecord
   scope :pitchers, -> { where(position: ['cl','mr','sp']) }
   scope :for_season, lambda {|season| where(season: season)}
   scope :by_team, lambda {|team| where(team_id: team.id)}
+  scope :active, -> {where(status_code: STATUS_ACTIVE)}
+  scope :reserve, -> {where(status_code: STATUS_RESERVE)}
+  scope :traded, -> {where(status_code: STATUS_TRADED)}
 
   
   ADJUSTMENT_SEASON = 2000

@@ -10,6 +10,7 @@ class Team < ApplicationRecord
   has_many :games
   has_many :innings
   has_many :rosters
+  has_many :players, through: :rosters
   has_many :game_batting_stats
   has_many :game_pitching_stats
   has_many :batting_stats
