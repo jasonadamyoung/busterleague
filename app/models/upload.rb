@@ -33,15 +33,6 @@ class Upload < ApplicationRecord
 
   after_create :check_for_processing
   
-  def season
-    if(self.archivefile_file_name =~ %r{\D*(\d{4})})
-      $1.to_i
-    else
-      Game.current_season
-    end
-  end
-
-
   def check_for_processing
     if(Settings.redis_enabled)
       # let the processing be manual post-create if we aren't backgrounding
@@ -70,24 +61,31 @@ class Upload < ApplicationRecord
   end
 
   def extract_zip
-    unzip_to = "#{Rails.root}/public/dmbweb/#{self.season}"
-    Dir.mkdir(unzip_to) unless Dir.exist?(unzip_to) 
+    # unzip to tmp directory
+    unzip_to = Dir.mktmpdir
     Zip::File.open(self.archivefile.path) do |zip_file|
       zip_file.each do |f|
-        # remove "Web" from file name - ongoing season files are in a "Web" directory
-        if(f.name =~ %r{^Web/(.*)})
-          output_fname = $1
-        # season summary files are in a "YYYY" directory
-        elsif(f.name =~ %r{^#{self.season}/(.*)})
-          output_fname = $1
-        else
-          output_fname = f.name
-        end
+        output_fname = File.basename(f.name)
         fpath = File.join(unzip_to, output_fname)
         zip_file.extract(f, fpath) { true }
       end
     end
-    true
+
+    index_file = File.join(unzip_to, "index.htm")
+    if(File.exist?(index_file))
+      index_data = File.read(index_file)
+      doc = Nokogiri::HTML(index_data)
+      season_header = doc.search("h2").first.text.strip
+      if(season_header =~ %r{^Organization:\s+(\d+)\s+})
+        season = $1.to_i
+        self.update_attribute(:season, season)
+        move_to = "#{Rails.root}/public/dmbweb/#{self.season}"     
+        Dir.mkdir(move_to) unless Dir.exist?(move_to)
+        FileUtils.mv(unzip_to, move_to, :force => true)
+        return true
+      end
+    end
+    return false
   end
 
   def unzip_and_process
