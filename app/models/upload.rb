@@ -85,8 +85,10 @@ class Upload < ApplicationRecord
           end
         end  
         self.update_attribute(:season, season)
-        move_to = "#{Rails.root}/public/dmbweb/#{self.season}"     
-        Dir.mkdir(move_to) unless Dir.exist?(move_to)
+        move_to = "#{Rails.root}/public/dmbweb/#{self.season}/"     
+        if(Dir.exist?(move_to))
+          FileUtils.remove_dir(move_to, force: true)
+        end
         FileUtils.mv(unzip_to, move_to, :force => true)
         return true
       end
