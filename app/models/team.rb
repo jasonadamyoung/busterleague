@@ -152,7 +152,7 @@ class Team < ApplicationRecord
       name_hash[stats['name']] = stats['p']
     end
 
-    Roster.match_team_season_names(self.id,season,name_hash)
+    Roster.match_team_season_names(self.id,season,name_hash,true)
   end
 
 

@@ -70,17 +70,22 @@ class Roster < ApplicationRecord
     self.update_attribute(:player_id, player.id)
   end
 
-  def self.find_roster_for_name_position_team_season(name,position,team_id,season)
-    namefinder = self.idiotic_shorthand_name_translations(name.dup)
-    (lastname,startswith) = namefinder.split(',')
-    if(lastname.last =~ %r{[A-Z]})
-      startswith = lastname.last
-      lastname.chop!
-    end 
-    nameparts = lastname.split("'")
-    finder = nameparts.max_by(&:length)
-    end_name = finder.downcase.split(' ').last
-    player_finder = self.where(season: season).where(team_id: team_id).where("end_name ILIKE '%#{end_name}%'")
+  def self.find_roster_for_name_position_team_season(name,position,team_id,season,is_fullname=false)
+    if(is_fullname)
+      player_finder = self.where(season: season).where(team_id: team_id).where("name ILIKE '%#{name}%'")
+      startswith = name.first
+    else
+      namefinder = self.idiotic_shorthand_name_translations(name.dup)
+      (lastname,startswith) = namefinder.split(',')
+      if(lastname.last =~ %r{[A-Z]})
+        startswith = lastname.last
+        lastname.chop!
+      end 
+      nameparts = lastname.split("'")
+      finder = nameparts.max_by(&:length)
+      end_name = finder.downcase.split(' ').last
+      player_finder = self.where(season: season).where(team_id: team_id).where("end_name ILIKE '%#{end_name}%'")
+    end
     if(position == 'p')
       player_finder = player_finder.pitchers
     end
@@ -105,10 +110,10 @@ class Roster < ApplicationRecord
     end
   end
 
-  def self.match_team_season_names(team_id,season,names_hash)
+  def self.match_team_season_names(team_id,season,names_hash,have_fullnames=false)
     match_data = {}
     names_hash.each do |name,position|
-      if(rp = self.find_roster_for_name_position_team_season(name,position,team_id,season))
+      if(rp = self.find_roster_for_name_position_team_season(name,position,team_id,season,have_fullnames))
         match_data[name] = rp.id
       else
         match_data[name] = 0
