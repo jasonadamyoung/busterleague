@@ -91,6 +91,9 @@ gem 'rubyzip'
 gem 'paperclip'
 gem 'dropzonejs-rails'
 
+# xlsx file processing
+gem 'roo'
+
 # mathn is removed in ruby 2.5
 gem 'mathn'
 
