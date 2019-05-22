@@ -90,6 +90,10 @@ class Upload < ApplicationRecord
           FileUtils.remove_dir(move_to, force: true)
         end
         FileUtils.mv(unzip_to, move_to, :force => true)
+        # fix perms
+        perms_source = "#{Rails.root}/public/dmbweb/"
+        command = "/usr/bin/getfacl #{perms_source} | /usr/bin/setfacl --set-file=- -R #{move_to}"
+        system(command)
         return true
       end
     end
