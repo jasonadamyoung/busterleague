@@ -52,6 +52,8 @@ module ParserUtils
     # I mean, seriously WTF
     if(string =~ %r{Jackson\.A})
       string.gsub(%r{Jackson\.A},'Jackson,A')
+    elsif(string =~ %r{Kennedy\.A})
+      string.gsub(%r{Kennedy\.A},'Kennedy,A')
     else
       string
     end

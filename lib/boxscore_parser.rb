@@ -255,7 +255,7 @@ class BoxscoreParser
     self.game_stat_data.each do |batstat|
       (stat,names) = batstat.split('-')
       stat = label_translation(stat).downcase
-      names.split('., ').each do |namedata|
+      names.split(', ').each do |namedata|
         # remove any totals
         namedata.gsub!(%r{\(\d+\)},'')
         if(namedata =~ %r{(\D+)(\d+)})
