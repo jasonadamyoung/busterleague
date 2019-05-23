@@ -45,6 +45,16 @@ module ParserUtils
     # all because of Jones(R)
     transformed.gsub!(%r{[\(\)]},'')
     transformed
-  end  
+  end
+  
+  def more_mass_name_nonsense(string)
+    # replace all "Jackson.A" strings with "Jackson,A"
+    # I mean, seriously WTF
+    if(string =~ %r{Jackson\.A})
+      string.gsub(%r{Jackson\.A},'Jackson,A')
+    else
+      string
+    end
+  end
 
 end

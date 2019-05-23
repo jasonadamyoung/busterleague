@@ -57,6 +57,9 @@ class BoxscoreParser
 
   def process_parts
     array_content = self.content.dup
+
+
+
     # date_teams_ballpark
     self.date_teams_ballpark_data = array_content.shift
 
@@ -71,7 +74,7 @@ class BoxscoreParser
     ## at_bat data
     at_bat_block = []
     while((array_content.first =~ %r{INN\s+H\s+R\s+ER}).nil?)
-      line = array_content.shift
+      line = more_mass_name_nonsense(array_content.shift)    
       at_bat_block << line unless line.strip.empty?
     end
     at_bat_block.each do |line|
@@ -91,7 +94,7 @@ class BoxscoreParser
     ## pitching_data
     # away
     while(!array_content.first.strip.empty?)
-      line = array_content.shift
+      line = more_mass_name_nonsense(array_content.shift)    
       self.away_pitching_data << line
     end
     # pop off the summary line
@@ -103,7 +106,7 @@ class BoxscoreParser
 
     # home
     while(!array_content.first.strip.empty?)
-      line = array_content.shift
+      line = more_mass_name_nonsense(array_content.shift)    
       self.home_pitching_data << line
     end
     # pop off the summary line
@@ -128,7 +131,7 @@ class BoxscoreParser
     game_stat_data_block = []
     # game_stat_data
     while(!(array_content.first =~ %r{^[a-zA-Z\s]+:}) and !(array_content.first =~ %r{injured}) and !(array_content.first =~ %r{removed}) and !(array_content.first =~ %r{ejected}) and !array_content.first.nil?)
-      line = array_content.shift      
+      line = more_mass_name_nonsense(array_content.shift)    
       game_stat_data_block << line unless line.strip.empty?
     end
 
@@ -252,7 +255,7 @@ class BoxscoreParser
     self.game_stat_data.each do |batstat|
       (stat,names) = batstat.split('-')
       stat = label_translation(stat).downcase
-      names.split(', ').each do |namedata|
+      names.split('., ').each do |namedata|
         # remove any totals
         namedata.gsub!(%r{\(\d+\)},'')
         if(namedata =~ %r{(\D+)(\d+)})
