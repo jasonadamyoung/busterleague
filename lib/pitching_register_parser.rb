@@ -12,6 +12,7 @@ class PitchingRegisterParser
   attr_accessor :tables
   attr_accessor :pitching_data
   attr_accessor :table_type
+  attr_accessor :fix_dup_tables
 
   CORE_TABLES = 
   [{table_label: 'primary', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
@@ -27,9 +28,10 @@ class PitchingRegisterParser
     {table_label: 'rhb', ignore_header_rows: 2, ignore_footer_rows: 0, prefix: 'r_'}]
  
 
-  def initialize(htmlcontent,table_type)
+  def initialize(htmlcontent,table_type,fix_dup_tables = false)
     self.htmldoc = Nokogiri::HTML(htmlcontent)
     self.tables = self.htmldoc.search('table')
+    self.fix_dup_tables = fix_dup_tables
     self.table_type = table_type
     self.pitching_data = {}
     self.process_tables
@@ -47,7 +49,12 @@ class PitchingRegisterParser
 
 
     tables_to_process.each_with_index do |pt,index|
-      processed_data = self.process_table(table: self.tables[index],
+      if(self.fix_dup_tables)
+        array_index = index+tables_to_process.size
+      else
+        array_index = index
+      end
+      processed_data = self.process_table(table: self.tables[array_index],
                                           ignore_header_rows: pt[:ignore_header_rows],
                                           ignore_footer_rows: pt[:ignore_footer_rows],
                                           prefix: pt[:prefix])

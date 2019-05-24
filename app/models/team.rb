@@ -161,7 +161,8 @@ class Team < ApplicationRecord
 
 
   def pitching_register_parser(season,table_type)
-    PitchingRegisterParser.new(self.get_html(self.pitching_url(season,table_type)),table_type)
+    fix_dup_tables = ((2000..2003).to_a.include?(season) and table_type == 'batting_tables')
+    PitchingRegisterParser.new(self.get_html(self.pitching_url(season,table_type)),table_type,fix_dup_tables)
   end
 
   def get_pitching_data(season)
