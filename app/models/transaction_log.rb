@@ -8,7 +8,7 @@ class TransactionLog < ApplicationRecord
   belongs_to :roster, optional: true
   belongs_to :team, optional: true
   belongs_to :other_team, class_name: 'Team', optional: true
-  before_save :set_teams, :set_action
+  before_save :cleanup_data, :set_teams, :set_action
 
   scope :for_season, lambda {|season| where(season: season)}
   scope :traded, ->{where(action: ACQUIRED_TRADE)}
@@ -58,6 +58,32 @@ class TransactionLog < ApplicationRecord
     tlp = TransactionLogParser.new(self.get_transactions_html(season))
     tlp
   end
+
+  def cleanup_data
+    if(self.season == 2013)
+      if(self.name == 'Miller,B')
+        if(self.action_text == 'Released')
+          self.action_text = 'Traded away';
+          self.other_team_string = 'BAL'
+        elsif(self.action_text == 'Signed')
+          self.action_text = 'Acquired via trade'
+          self.other_team_string = 'NYY'
+        end
+      end
+    elsif(self.season == 2015)
+      if(self.name == 'Ethier')
+        if(self.action_text == 'Released')
+          self.action_text = 'Traded away';
+          self.other_team_string = 'BAL'
+        elsif(self.action_text == 'Signed')
+          self.action_text = 'Acquired via trade'
+          self.other_team_string = 'STL'
+        end
+      end
+    end
+    true
+  end
+
 
   def set_teams
     self.team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(self.team_string)).first.id
