@@ -28,18 +28,6 @@ class RosterParser
     self.process_contract_table
   end
 
-  def name_fixer(name)
-    case name
-    when 'Valeri delosSantos'
-      'Valerio de los Santos'
-    when 'Paul LoDuca'
-      'Paul Lo Duca'
-    else
-      name
-    end
-  end
-
-
   def process_contract_table
     self.roster = {}
     contract_table = self.tables[CONTRACT_TABLE]

@@ -4,12 +4,36 @@
 # see LICENSE file
 
 module ParserUtils
+
+  ConverterEncoding = Encoding.find("UTF-8")
+
+  CONVERTERS  = {
+    integer:   lambda { |f|
+      Integer(f.encode(ConverterEncoding)) rescue f
+    },
+    float:     lambda { |f|
+      Float(f.encode(ConverterEncoding)) rescue f
+    }
+  }
+
+  def convert_numeric(value)
+    returnvalue = value
+    [:integer,:float].each do |convertertype|
+      converter = CONVERTERS[convertertype]
+      returnvalue = converter[value]
+      break unless returnvalue.is_a?(String)
+    end
+    returnvalue
+  end
+
   def keyme(name,*others)
     Digest::MD5.hexdigest(([name] + others).join(':').downcase.gsub(/[[:space:]]/, ''))
   end
 
   def convert_field(field,prefix = '')
-    converted_field = field.downcase.gsub('/','_per_')
+    converted_field = field.downcase
+    converted_field = converted_field.downcase.gsub('/','_per_')
+    converted_field = converted_field.gsub('%','_percent')
     if(['name','team','p','age'].include?(converted_field))
       # don't prefix repeated string fields
       converted_field
@@ -35,8 +59,21 @@ module ParserUtils
       'h2b'
     when '3b'
       'h3b'
+    when 'inn'
+      'ip'
     else
       label
+    end
+  end
+
+  def name_fixer(name)
+    case name
+    when 'Valeri delosSantos'
+      'Valerio de los Santos'
+    when 'Paul LoDuca'
+      'Paul Lo Duca'
+    else
+      name
     end
   end
 

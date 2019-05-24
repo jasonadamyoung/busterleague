@@ -80,6 +80,8 @@ class Roster < ApplicationRecord
       if(lastname.last =~ %r{[A-Z]})
         startswith = lastname.last
         lastname.chop!
+      else
+        startswith = self.idiotic_shorthand_startswith_translations(startswith)
       end 
       nameparts = lastname.split("'")
       finder = nameparts.max_by(&:length)
@@ -136,6 +138,15 @@ class Roster < ApplicationRecord
       name
     end
   end
+
+  def self.idiotic_shorthand_startswith_translations(startswith)
+    if(startswith.length > 1)
+      startswith.first
+    else
+      startswith
+    end
+  end
+
 
   def self.map_stats_to_name_hash(stats,is_pitching = false)
     name_hash = {}

@@ -14,6 +14,7 @@ class Team < ApplicationRecord
   has_many :game_batting_stats
   has_many :game_pitching_stats
   has_many :batting_stats
+  has_many :pitching_stats
   has_many :transaction_logs
 
 
@@ -125,6 +126,17 @@ class Team < ApplicationRecord
     "#{base_url}/tm#{self.web_team_id}_tmbat.htm"
   end
 
+  def pitching_url(season,table_type)
+    base_url = "#{Settings.web_reports_base_url}/#{season}"
+    case table_type
+    when 'core_tables'
+      "#{base_url}/tm#{self.web_team_id}_tmpch.htm"
+    when 'batting_tables'
+      "#{base_url}/tm#{self.web_team_id}_tmpch2.htm"
+    else
+      nil
+    end      
+  end
 
   def get_html(url)
     response = RestClient.get(url)
@@ -142,13 +154,31 @@ class Team < ApplicationRecord
     BattingRegisterParser.new(self.get_html(self.batting_url(season)))
   end
 
-  def batting_data_roster_matcher(season)
-    batting_data = self.batting_register_parser(season).batting_data
+  def get_batting_data(season)
+    brp = self.batting_register_parser(season)
+    brp.batting_data
+  end
+
+
+  def pitching_register_parser(season,table_type)
+    PitchingRegisterParser.new(self.get_html(self.pitching_url(season,table_type)),table_type)
+  end
+
+  def get_pitching_data(season)
+    batting_pitching_data = self.pitching_register_parser(season,"batting_tables").pitching_data
+    core_pitching_data = self.pitching_register_parser(season,"core_tables").pitching_data
+    pitching_data = batting_pitching_data.deep_merge(core_pitching_data)
+    pitching_data
+  end
+
+
+  def position_data_roster_matcher(position_data,season)
     # get the names out
     name_hash = {}
-    batting_data.each do |key,stats|
+    position_data.each do |key,stats|
       next if stats['name'] == 'Total'
       next if stats['name'] == 'Pitchers'
+      next if stats['name'] == 'Other'
       name_hash[stats['name']] = stats['p']
     end
 
@@ -158,8 +188,8 @@ class Team < ApplicationRecord
 
   def update_batting_stats_for_season(season)
     allowed_attributes = BattingStat.column_names
-    batting_data = self.batting_register_parser(season).batting_data
-    name_matcher = batting_data_roster_matcher(season)
+    batting_data = self.get_batting_data(season)
+    name_matcher = position_data_roster_matcher(batting_data,season)
     batting_data.each do |hashkey,stats|
       name = stats['name']
       roster_id = name_matcher[name] || 0
@@ -185,6 +215,36 @@ class Team < ApplicationRecord
     end
     batting_data
   end
+
+  def update_pitching_stats_for_season(season)
+    allowed_attributes = PitchingStat.column_names
+    pitching_data = self.get_pitching_data(season)
+    name_matcher = position_data_roster_matcher(pitching_data,season)
+    pitching_data.each do |hashkey,stats|
+      name = stats['name']
+      roster_id = name_matcher[name] || 0
+      season = season
+      if(!(pitching_stat = self.pitching_stats.where(season: season).where(roster_id: roster_id).where(name: name).first))
+        pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name)
+        stats.each do |name,value|
+          name = 'position' if(name == 'p') # relabel
+          if(allowed_attributes.include?(name))
+            pitching_stat[name] = value
+          end
+        end
+        pitching_stat.save!
+      else
+        stats.each do |name,value|
+          name = 'position' if(name == 'p') # relabel
+          if(allowed_attributes.include?(name))
+            pitching_stat[name] = value
+          end
+        end
+        pitching_stat.save!
+      end
+    end
+    pitching_data
+  end  
 
   def create_or_update_rosters_for_season(season)
     rp = self.roster_parser(season)
@@ -234,5 +294,11 @@ class Team < ApplicationRecord
       t.update_batting_stats_for_season(season)
     end
   end    
+
+  def self.update_pitching_stats_for_season(season)
+    Team.all.each do |t|
+      t.update_pitching_stats_for_season(season)
+    end
+  end   
 
 end

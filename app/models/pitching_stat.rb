@@ -3,7 +3,7 @@
 # === LICENSE:
 # see LICENSE file
 
-class BattingStat < ApplicationRecord
+class PitchingStat < ApplicationRecord
 
   belongs_to :roster, optional: true
   has_one :player, through: :roster
@@ -19,7 +19,7 @@ class BattingStat < ApplicationRecord
 
   def self.register_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
-    "#{base_url}/orgbatreg.htm"
+    "#{base_url}/orgpchreg.htm"
   end
 
   def self.get_html(url)
@@ -30,8 +30,8 @@ class BattingStat < ApplicationRecord
     response.to_str
   end
 
-  def self.batting_register_parser(season)
-    BattingRegisterParser.new(self.get_html(self.register_url(season)))
+  def self.pitching_register_parser(season)
+    PitchingRegisterParser.new(self.get_html(self.register_url(season)),"core_tables")
   end
 
   def set_singles
@@ -48,8 +48,8 @@ class BattingStat < ApplicationRecord
   end
 
   def self.fix_roster_ids
-    self.where(roster_id: 0).where("name NOT IN ('Total','Pitchers','Other')").find_each do |bs|
-      bs.fix_roster_id
+    self.where(roster_id: 0).where("name NOT IN ('Total')").find_each do |ps|
+      ps.fix_roster_id
     end
   end
 
