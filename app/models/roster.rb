@@ -81,7 +81,9 @@ class Roster < ApplicationRecord
         startswith = lastname.last
         lastname.chop!
       else
-        startswith = self.idiotic_shorthand_startswith_translations(startswith)
+        if !startswith.nil?
+          startswith = self.idiotic_shorthand_startswith_translations(startswith)
+        end
       end 
       nameparts = lastname.split("'")
       finder = nameparts.max_by(&:length)
