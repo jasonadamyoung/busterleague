@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_25_164154) do
+ActiveRecord::Schema.define(version: 2019_05_25_183635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -485,6 +485,7 @@ ActiveRecord::Schema.define(version: 2019_05_25_164154) do
     t.integer "trade_status"
     t.integer "trade_team_id"
     t.integer "original_roster_id"
+    t.boolean "is_pitcher", default: false, null: false
     t.index ["name", "position", "age", "season", "team_id"], name: "roster_ndx", unique: true
   end
 

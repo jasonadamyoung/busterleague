@@ -9,17 +9,19 @@ class Roster < ApplicationRecord
   belongs_to :player, optional: true
 
 
-  before_save  :set_status_code
+  before_save  :set_status_code, :set_is_pitcher
   after_create :create_or_update_player
 
-  scope :pitchers, -> { where(position: ['cl','mr','sp']) }
+  scope :pitchers, -> { where(is_pitcher: true) }
+  scope :batters, -> { where(is_pitcher: false) }
+
   scope :for_season, lambda {|season| where(season: season)}
   scope :by_team, lambda {|team| where(team_id: team.id)}
   scope :active, -> {where(status_code: STATUS_ACTIVE)}
   scope :reserve, -> {where(status_code: STATUS_RESERVE)}
   scope :traded, -> {where(status_code: STATUS_TRADED)}
 
-  
+  PITCHING_POSITIONS = ['sp','cl','mr']
   ADJUSTMENT_SEASON = 2000
 
   # status_codes
@@ -45,6 +47,10 @@ class Roster < ApplicationRecord
     else
       self.status = STATUS_UNKNOWN
     end
+  end
+
+  def set_is_pitcher
+    self.is_pitcher = PITCHING_POSITIONS.include?(self.position)
   end
 
 
