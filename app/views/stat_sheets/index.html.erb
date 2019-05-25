@@ -1,4 +1,4 @@
-<% @page_title = "Recent DMB Export Uploads" %>
+<% @page_title = "Stat Sheets" %>
 
 <div class="row">
   <div class="col-md-12">
@@ -9,6 +9,6 @@
 <%- if @currentowner.is_admin? -%>
 <%= render(:partial => 'file_upload_form' )%>
 <script>
-    <%= render(partial: 'shared/dropzone.js', :locals => {post_controller: 'uploads', param_name: 'upload[archivefile]', accepted_file_extensions: '.zip'}) -%>
+    <%= render(partial: 'shared/dropzone.js', :locals => {post_controller: 'stat_sheets', param_name: 'stat_sheet[datafile]', accepted_file_extensions: '.xlsx,.xls'}) -%>
 </script>
 <%- end -%>

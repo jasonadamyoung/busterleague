@@ -1,0 +1,23 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+        <th>Filename</th>
+        <th>Size</th>
+        <th>File Date</th>
+        <th>Uploaded At</th>
+        <th>Uploaded By</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <%- @stat_sheets.each do |stat_sheet| -%>
+        <tr>
+          <td><%= link_to(stat_sheet.datafile_file_name,stat_sheet.datafile.url) %></td>
+          <td><%= humanize_bytes(stat_sheet.datafile_file_size) %></td>
+          <td><%= stat_sheet.datafile_updated_at %></td>
+          <td><%= stat_sheet.created_at %></td>
+          <td><%= stat_sheet.owner.nickname -%></td>
+        </tr>
+    <%- end -%>
+  </tbody>
+</table>

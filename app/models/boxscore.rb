@@ -126,8 +126,8 @@ class Boxscore < ApplicationRecord
     self.data_records_created = false
     self.date = dtb_data['date']
     self.ballpark = dtb_data['ballpark']
-    self.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['home_team'])).first.id
-    self.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['away_team'])).first.id
+    self.home_team_id = Team.id_for_abbreviation(dtb_data['home_team'])
+    self.away_team_id = Team.id_for_abbreviation(dtb_data['away_team'])
     self.game_stats = {}
     innings_totals = bp.innings_totals
     self.home_runs = bp.innings_totals['home_runs']
@@ -153,8 +153,8 @@ class Boxscore < ApplicationRecord
         dtb_data = bp.date_teams_ballpark
         boxscore.date = dtb_data['date']
         boxscore.ballpark = dtb_data['ballpark']
-        boxscore.home_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['home_team'])).first.id
-        boxscore.away_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(dtb_data['away_team'])).first.id
+        boxscore.home_team_id = Team.id_for_abbreviation(dtb_data['home_team']) 
+        boxscore.away_team_id = Team.id_for_abbreviation(dtb_data['away_team']) 
         boxscore.game_stats = {}
         innings_totals = bp.innings_totals
         boxscore.home_runs = bp.innings_totals['home_runs']

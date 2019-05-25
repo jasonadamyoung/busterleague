@@ -116,6 +116,18 @@ class Team < ApplicationRecord
     end
   end
 
+  def self.abbreviation_finder(abbrev)
+    self.where(abbrev: self.abbreviation_transmogrifier(abbrev)).first
+  end
+
+  def self.id_for_abbreviation(abbrev)
+    if(team = self.abbreviation_finder(abbrev))
+      team.id
+    else
+      nil
+    end
+  end
+
   def roster_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
     "#{base_url}/tm#{self.web_team_id}_tmroster.htm"

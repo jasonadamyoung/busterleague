@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_24_183224) do
+ActiveRecord::Schema.define(version: 2019_05_25_142028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -485,6 +485,19 @@ ActiveRecord::Schema.define(version: 2019_05_24_183224) do
     t.integer "trade_status"
     t.integer "trade_team_id"
     t.index ["name", "position", "age", "season", "team_id"], name: "roster_ndx", unique: true
+  end
+
+  create_table "stat_sheets", force: :cascade do |t|
+    t.bigint "owner_id"
+    t.string "datafile_file_name"
+    t.string "datafile_content_type"
+    t.bigint "datafile_file_size"
+    t.datetime "datafile_updated_at"
+    t.string "datafile_fingerprint"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["datafile_fingerprint"], name: "statsheet_fingerprint_ndx", unique: true
+    t.index ["owner_id"], name: "index_stat_sheets_on_owner_id"
   end
 
   create_table "teams", force: :cascade do |t|

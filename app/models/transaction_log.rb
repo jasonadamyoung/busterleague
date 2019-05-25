@@ -86,9 +86,9 @@ class TransactionLog < ApplicationRecord
 
 
   def set_teams
-    self.team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(self.team_string)).first.id
+    self.team_id = Team.id_for_abbreviation(self.team_string)  
     if(!self.other_team_string.blank?)
-      self.other_team_id = Team.where(abbrev: Team.abbreviation_transmogrifier(self.other_team_string)).first.id
+      self.other_team_id = Team.id_for_abbreviation(self.other_team_string) 
     end
     true
   end

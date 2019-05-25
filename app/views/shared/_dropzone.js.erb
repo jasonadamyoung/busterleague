@@ -7,12 +7,12 @@
   previewNode.parentNode.removeChild(previewNode);
 
   var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-    paramName: "upload[archivefile]",
+    paramName: "<%= param_name %>",
     headers: {
       'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
     },
-    acceptedFiles: ".zip",
-    url: "/uploads/", // Set the url
+    acceptedFiles: "<%= accepted_file_extensions %>",
+    url: "/<%= post_controller %>/", // Set the url
     maxFiles: 1,
     uploadMultiple: false,
     timeout: 420000, // 7 minutes in milliseconds for my slow-ass internet
@@ -42,9 +42,9 @@
   myDropzone.on("queuecomplete", function(progress) {
     document.querySelector("#total-progress").style.opacity = "0";
     // like highlander there can be only one
-    document.querySelectorAll(".queuestatus")[0].innerHTML = "Uploaded! <a href='/uploads/'>Show uploads list</a>"
+    document.querySelectorAll(".queuestatus")[0].innerHTML = "Uploaded! <a href='/<%= post_controller %>/'>Show uploads list</a>"
     // this is just a hack, but I like it actually.
-    window.location.href = "/uploads/"
+    window.location.href = "/<%= post_controller %>/"
   });
 
   // Setup the buttons for all transfers

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resources :games, :only => [:show, :index]
   resources :boxscores, :only => [:show, :index]
   resources :uploads, :only => [:index,:create]
+  resources :stat_sheets, :only => [:index,:create]
 
 
   get '/dmb', to: "welcome#dmb", :as => 'dmbexport'
