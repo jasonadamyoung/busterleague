@@ -15,7 +15,7 @@
 					
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 						<%- Game.available_seasons.each do |season| %>
-							<%= setseason_nav_item(season) -%>
+							<%= nav_dropdown_item(standings_path(season: season),"#{season}") -%>
 						<%- end -%>
 					</div>
 				</li>
@@ -33,7 +33,7 @@
 					</div>
 				</li>
 
-				<%= nav_item(dmbexport_path,'DMB Web Export') -%>
+				<%= nav_item(dmbexport_index_path(season: @season),"#{@season} DMB Web Export") -%>
 			</ul>
 		<%- else -%>
 			<!-- Core Navigation -->

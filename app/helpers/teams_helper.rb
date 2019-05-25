@@ -40,5 +40,9 @@ module TeamsHelper
     link_to(team.name, team).html_safe
   end
 
+  def team_season_link(team,season)
+    link_to(team.name, team_path(team,season: season)).html_safe
+  end
+
 
 end

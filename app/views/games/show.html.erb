@@ -1,0 +1,20 @@
+<% @page_title = boxscore_title(@game) %>
+
+<div class="page-header" id="overview">
+  <h1>
+    <%= link_to(@game.home_team.name, team_path(@game.home_team))%>
+    vs.
+    <%= link_to(@game.away_team.name, team_path(@game.away_team))%>
+    - <%= @game.date.strftime("%b %d")%>
+  </h1>
+</div>
+
+  <div class="page-header">
+    <h1>Boxscore</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <pre><%= @game.content.join("\n") %></pre>
+    </div>
+  </div>

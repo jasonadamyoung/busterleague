@@ -1,0 +1,118 @@
+<% @page_title = "Breakout Single Game Batting Performances" %>
+
+<div class="page-header" id="overview">
+  <h1><%= @page_title %></h1>
+</div>
+
+<div class="page-header">
+  <h3>Four Home Run Games</h3>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+        <th>Season</th>
+        <th>Date</th>
+        <th>Player</th>
+        <th>Team</th>
+        <th>Opponent</th>
+        <th>Win/Loss</th>
+        <th>Home Runs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- GameBattingStat.four_homer_games.includes(:player, :boxscore, :team, :opposing_team).order(:season).each do |gbs| -%>
+          <tr>
+            <td><%= gbs.season %></td>
+            <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
+            <td><%= player_link(gbs.player) %></td>
+            <td><%= team_season_link(gbs.team,gbs.season) %></td>
+            <td><%= team_season_link(gbs.opposing_team,gbs.season) %></td>
+            <td><%= ((gbs.team_id == gbs.boxscore.winning_team_id) ? 'W' : 'L') %></td>
+            <td><%= gbs.hr %></td>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page-header">
+  <h3>Six Hit Games</h3>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+        <th>Season</th>
+        <th>Date</th>
+        <th>Player</th>
+        <th>Team</th>
+        <th>Opponent</th>
+        <th>Win/Loss</th>
+        <th>Hits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- GameBattingStat.six_hit_games.includes(:player, :boxscore, :team, :opposing_team).order(:season).each do |gbs| -%>
+          <tr>
+            <td><%= gbs.season %></td>
+            <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
+            <td><%= player_link(gbs.player) %></td>
+            <td><%= team_season_link(gbs.team,gbs.season) %></td>
+            <td><%= team_season_link(gbs.opposing_team,gbs.season) %></td>
+            <td><%= ((gbs.team_id == gbs.boxscore.winning_team_id) ? 'W' : 'L')%></td>
+            <td><%= gbs.h %></td>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page-header">
+  <h3>For The Cycle</h3>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+        <th>Season</th>
+        <th>Date</th>
+        <th>Player</th>
+        <th>Team</th>
+        <th>Opponent</th>
+        <th>Win/Loss</th>
+        <th>Hits</th>
+        <th>1B</th>
+        <th>2B</th>
+        <th>3B</th>
+        <th>HR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- GameBattingStat.cycles.includes(:player, :boxscore, :team, :opposing_team).order(:season).each do |gbs| -%>
+          <tr>
+            <td><%= gbs.season %></td>
+            <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
+            <td><%= player_link(gbs.player) %></td>
+            <td><%= team_season_link(gbs.team,gbs.season) %></td>
+            <td><%= team_season_link(gbs.opposing_team,gbs.season) %></td>
+            <td><%= ((gbs.team_id == gbs.boxscore.winning_team_id) ? 'W' : 'L')%></td>
+            <td><%= gbs.h %></td>
+            <td><%= gbs.h1b %></td>
+            <td><%= gbs.h2b %></td>
+            <td><%= gbs.h3b %></td>
+            <td><%= gbs.hr %></td>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </div>
+</div>

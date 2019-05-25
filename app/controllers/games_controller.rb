@@ -11,5 +11,9 @@ class GamesController < ApplicationController
   def show
     @game = Boxscore.where(id: params[:id]).first
   end
+
+  def breakout_batting
+  end
+
     
 end

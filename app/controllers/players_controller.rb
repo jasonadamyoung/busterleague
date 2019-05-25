@@ -13,5 +13,4 @@ class PlayersController < ApplicationController
     @player = Player.where(id: params[:id]).first
   end
 
-
 end

@@ -10,7 +10,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table class="table table-bordered">
+      <table class="table table-sm table-bordered">
         <thead>
           <tr>
             <th>W-L</th>
@@ -63,19 +63,19 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table class="table table-bordered table-striped">
+      <table class="table table-sm table-bordered">
       <thead>
         <tr>
-          <th>Position</th>
           <th>Name</th>
+          <th>Position</th>
           <th>Age</th>
         </tr>
       </thead>
       <tbody>
           <%- @team.rosters.for_season(@season).includes(:player).each do |rp| %>
           <tr>
-            <td><%= rp.position -%></td>
             <td><%= player_link(rp.player) -%></td>
+            <td><%= rp.position -%></td>
             <td><%= rp.age -%></td>
           </tr>
           <%- end -%>

@@ -1,5 +1,9 @@
 class WelcomeController < ApplicationController
 
+  def home
+    return redirect_to(standings_url(season: @season))
+  end
+
   def index
   end
 

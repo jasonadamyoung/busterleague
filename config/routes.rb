@@ -4,27 +4,42 @@ require 'admin_constraint'
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/queues', :constraints => AdminConstraint.new
 
-  root :to => 'teams#index'
+  root :to => 'welcome#home'
 
   resources :owners
 
-  resources :teams, :only => [:show, :index]  do
-    collection do
-      get :wingraphs
-      get :gbgraphs
-      get :crash
-    end
-  end
+  # resources :teams, :only => [:show, :index]  do
+  #   collection do
+  #     get :wingraphs
+  #     get :gbgraphs
+  #     get :crash
+  #   end
+  # end
 
   resources :players, :only => [:show, :index]
   
-  resources :games, :only => [:show, :index]
+  resources :games, :only => [:show, :index] do
+    collection do 
+      get :breakout_batting
+    end
+  end
+
   resources :boxscores, :only => [:show, :index]
   resources :uploads, :only => [:index,:create]
   resources :stat_sheets, :only => [:index,:create]
 
+  scope "/(:season)", :defaults => {:season => 'all'} do
+    resources :standings, :only => [:index]
+    resources :dmbexport, :only => [:index]
+    resources :teams, :only => [:show, :index]  do
+      collection do
+        get :wingraphs
+        get :gbgraphs
+        get :crash
+      end
+    end
+  end
 
-  get '/dmb', to: "welcome#dmb", :as => 'dmbexport'
   get '/ss', to: "welcome#ss", :as => 'setseason'
 
   get '/logout' => 'sessions#end', :as => 'logout'

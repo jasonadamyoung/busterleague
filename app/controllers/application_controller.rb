@@ -43,27 +43,12 @@ class ApplicationController < ActionController::Base
       else
         @season = Game.current_season
       end
-      cookies[:season] = {:value => @season}
-    elsif(!cookies[:season].nil?)
-      if(Game.allowed_seasons.include?(cookies[:season].to_i))
-        @season = cookies[:season]
-      else
-        @cookies[:season] = nil
-        @season = Game.current_season
-      end      
     else
       @season = Game.current_season
     end
     return true
   end  
 
-  def set_season
-    if(params[:season] and Game.pluck(:season).include?(params[:season].to_i))
-      @season = params[:season].to_i
-    else
-      @season = Settings.current_season
-    end
-  end
 
   def home_url
     root_url

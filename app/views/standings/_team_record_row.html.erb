@@ -4,7 +4,7 @@
 <%- else -%>
 <tr>
 <%- end -%>
-  <td><%= link_to(team.name, team) %></td>
+  <td><%= link_to(team.name, team_path(team,season: season)) %></td>
   <td><%= display_wl([date_stat.wins,date_stat.losses]) %></td>
   <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td>
   <td><%= display_gb(date_stat.gb) %></td>

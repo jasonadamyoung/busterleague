@@ -19,7 +19,4 @@ class TeamsController < ApplicationController
   def gbgraphs
   end
 
-  def dmb
-  end
-
 end
