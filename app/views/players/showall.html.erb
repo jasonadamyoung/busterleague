@@ -20,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        <%- @player.rosters.order(:season).each do |roster| -%>
+        <%- @player.rosters.order('season DESC').each do |roster| -%>
           <tr>
             <td><%= link_to(roster.season,player_path(@player,season: roster.season)) %></td>
             <td><%= link_to(roster.team.name,team_path(roster.team,season: roster.season)) %></td>
