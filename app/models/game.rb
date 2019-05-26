@@ -4,6 +4,8 @@
 # see LICENSE file
 
 class Game < ApplicationRecord
+  extend CleanupTools
+
   belongs_to :boxscore
   belongs_to :team
   belongs_to :opponent, :class_name => 'Team'
@@ -14,7 +16,7 @@ class Game < ApplicationRecord
   scope :home, -> { where(:home => true) }
   scope :away, -> { where(:home => false) }
   scope :for_season, lambda {|season| where(season: season)}
-  scope :through_season_date, lambda {|season,date| where(season: season).where("date <= ?",date)}
+  scope :through_date, lambda {|date| where("date <= ?",date)} 
   scope :zero_hits, -> { where(:hits => 0) }
   scope :zero_errors, -> { where(:errs => 0) }
   scope :opponent_zero_hits, -> { where(:opponent_hits => 0) }
@@ -34,22 +36,33 @@ class Game < ApplicationRecord
     ALLOWED_SEASONS.to_a
   end
 
+  def self.through_season_date(season,date)
+    if(season == 'all')
+      through_date(date)
+    else
+      for_season(season).through_date(date)
+    end
+  end
+
   def self.available_seasons
     (self.distinct.pluck(:season) + [self.current_season]).uniq.sort.reverse
   end
 
   def self.earliest_date(season)
-    self.where(season: season).minimum(:date)
+    if(season == 'all')
+      self.minimum(:date)
+    else
+      self.where(season: season).minimum(:date)
+    end
   end
 
   def self.latest_date(season)
-    self.where(season: season).maximum(:date)
+    if(season == 'all')
+      self.maximum(:date)
+    else
+      self.where(season: season).maximum(:date)
+    end
   end
-
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
-  end
-
 
   def self.rebuild_all
     self.dump_data

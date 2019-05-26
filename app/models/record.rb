@@ -4,6 +4,8 @@
 # see LICENSE file
 
 class Record < ApplicationRecord
+  extend CleanupTools
+
 	belongs_to :team
   
   before_save :set_win_minus_losses
@@ -15,10 +17,6 @@ class Record < ApplicationRecord
   scope :for_season, lambda {|season| where(season: season)}
   scope :final_for_season, ->{where(final_season_record: true)}
 
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
-  end
-  
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses
   end
@@ -48,14 +46,18 @@ class Record < ApplicationRecord
       end
 
       # gamesback
+      overall_records = {}
       leagues = Team.group(:league).count(:league)
       leagues.keys.each do |league|
+        league_records = {}
         divisions = Team.where(:league => league).group(:division).count(:division)
         divisions.keys.each do |division|
           teamlist = Team.where(:league => league).where(:division => division).load
           records = {}
           teamlist.each do |team|
             records[team] = team.records.on_season_date(season,date).first
+            league_records[team] = records[team]
+            overall_records[team] = records[team]
           end
 
           maxwml = records.values.map(&:wins_minus_losses).max
@@ -63,6 +65,16 @@ class Record < ApplicationRecord
             record.update_column(:gb, (maxwml - record.wins_minus_losses) / 2.to_f)
           end
         end
+
+        maxwml = league_records.values.map(&:wins_minus_losses).max
+        league_records.each do |team,record|
+          record.update_column(:league_gb, (maxwml - record.wins_minus_losses) / 2.to_f)
+        end
+      end
+
+      maxwml = overall_records.values.map(&:wins_minus_losses).max
+      overall_records.each do |team,record|
+        record.update_column(:overall_gb, (maxwml - record.wins_minus_losses) / 2.to_f)
       end
 
 
@@ -93,7 +105,7 @@ class Record < ApplicationRecord
     record_for_date
   end
 
-  def self.flag_final_records_for_season(season)
+  def self.create_or_update_final_record_for_season(season)
     latest_date_for_season = Game.latest_date(season)
     self.create_or_update_records_for_season_and_dates(season,[latest_date_for_season])
   end

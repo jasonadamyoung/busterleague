@@ -46,12 +46,20 @@ class DateStat
     record_for_date.try(:gb) || 0
   end
 
+  def league_gb
+    record_for_date.try(:league_gb) || 0
+  end
+
+  def overall_gb
+    record_for_date.try(:overall_gb) || 0
+  end
+
   def wins_minus_losses
     record_for_date.try(:wins_minus_losses)
   end
 
   def last_ten
-    gameslist = team.games.through_season_date(self.season,self.date).order("date DESC").limit(10)
+    gameslist = team.games.for_season(self.season).through_date(self.date).order("date DESC").limit(10)
     last_wins = 0; last_losses = 0;
     gameslist.each do |game|
       if(game.win?)
@@ -109,7 +117,7 @@ class DateStat
   def records_by_opponent(forceupdate = false)
     if(!@records_by_opponent or forceupdate)
       @records_by_opponent = {}
-      games = team.games.through_season_date(season,date)
+      games = team.games.for_season(season).through_date(date)
       games.each do |g|
         @records_by_opponent[g.opponent_id] ||= {:wins => 0, :losses => 0}
         if(g.win?)
