@@ -1,0 +1,56 @@
+<% @page_title = "#{@team.name}" %>
+
+<div class="page-header" id="overview">
+  <h1><%= @page_title %></h1>
+</div>
+
+<div class="page-header">
+  <h1>Season Stats</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-sm table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Season</th>
+          <th>W-L</th>
+          <th>PCT</th>
+          <th>GB</th>
+          <th>RF</th>
+          <th>RA</th>
+          <th>X_PCT</th>
+          <th>X_WL</th>
+          <th>Home</th>
+          <th>Road</th>
+          <th>v.Hum</th>
+          <th>v.Com</th>
+          <th>v.Winners</th>
+          <th>v.Losers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- Game.available_seasons.each do |season| -%>
+        <%- date_stat = DateStat.new(:date => Game.latest_date(season), :team => @team, :season => season)%>
+          <tr>
+            <td><%= link_to(season,team_path(@team,season: season)) %></td>
+            <td><%= display_wl([date_stat.wins,date_stat.losses]) %></td>
+            <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td>
+            <td><%= display_gb(date_stat.gb) %></td>
+            <td><%= date_stat.rf %></td>
+            <td><%= date_stat.ra %></td>
+            <td><%= number_with_precision(date_stat.expected_pct,:precision => 3)%></td>
+            <td><%= display_wl(date_stat.expected_wl) %></td>
+            <td><%= display_wl(date_stat.home_wl) %></td>
+            <td><%= display_wl(date_stat.road_wl) %></td>
+            <td><%= display_wl(date_stat.human_wl) %></td>
+            <td><%= display_wl(date_stat.computer_wl) %></td>
+            <td><%= display_wl(date_stat.winners_wl) %></td>
+            <td><%= display_wl(date_stat.losers_wl) %></td>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+

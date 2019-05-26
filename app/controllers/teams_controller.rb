@@ -11,6 +11,9 @@ class TeamsController < ApplicationController
 
   def show
     @team = Team.where(id: params[:id]).first
+    if(@season == 'all')
+      return render('showall')
+    end
   end
 
   def wingraphs

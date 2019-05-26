@@ -4,79 +4,37 @@
 	</button>
 
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<%- if !@draftmode -%>
 		<!-- Core Navigation -->
-			<ul class="navbar-nav mr-auto">
+		<ul class="navbar-nav mr-auto">
 
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						Seasons
-					</a>
-					
-					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<%- Game.available_seasons.each do |season| %>
-							<%= nav_dropdown_item(standings_path(season: season),"#{season}") -%>
-						<%- end -%>
-					</div>
-				</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Seasons
+				</a>
+				
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<%- Game.available_seasons.each do |season| %>
+						<%= nav_dropdown_item(standings_path(season: season),"#{season}") -%>
+					<%- end -%>
+				</div>
+			</li>
 
+			<%- if(!@season.blank? and @season != 'all') %>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<%= @season -%> Season
+				</a>
 
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<%= @season -%> Season
-					</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<%= nav_dropdown_item(teams_path,"Standings") -%>
+					<%= nav_dropdown_item(wingraphs_teams_path,"Winning % Graphs") -%>
+					<%= nav_dropdown_item(gbgraphs_teams_path,"Games Back Graphs") -%>
+				</div>
+			</li>
 
-					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<%= nav_dropdown_item(teams_path,"Standings") -%>
-						<%= nav_dropdown_item(wingraphs_teams_path,"Winning % Graphs") -%>
-						<%= nav_dropdown_item(gbgraphs_teams_path,"Games Back Graphs") -%>
-					</div>
-				</li>
-
-				<%= nav_item(dmbexport_index_path(season: @season),"#{@season} DMB Web Export") -%>
-			</ul>
-		<%- else -%>
-			<!-- Core Navigation -->
-			<ul class="navbar-nav mr-auto">
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Draft
-					</a>
-
-					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<%= nav_dropdown_item(draft_index_path,'Dashboard') %>
-						<%= nav_dropdown_item(draft_rounds_path,'Rounds') %>
-						<%= nav_dropdown_item(draft_teams_path,'Teams') %>
-					</div>
-				</li>
-
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Players
-					</a>
-
-					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						<%= nav_dropdown_item(position_players_path(position: 'all'),'All Players') %>
-						<%= nav_dropdown_item(position_players_path(position: 'allbatters'),'All Batters') %>
-						<%= nav_dropdown_item(position_players_path(position: 'allpitchers'),'All Pitchers') %>
-						<div class="dropdown-divider"></div>
-						<h6 class="dropdown-header">By position</h6>
-						<%- Pitcher::POSITIONS.each do |pos,label| -%>
-							<%= nav_dropdown_item(position_players_path(position: pos),label) %>
-						<%- end -%>
-						<%- Batter::POSITIONS.each do |pos,label| -%>
-							<%= nav_dropdown_item(position_players_path(position: pos),label) %>
-						<%- end -%>
-						<%= nav_dropdown_item(position_players_path(position: 'of'),'All Outfielders') %>
-					</div>
-				</li>
-
-				<!-- Search Form -->
-				<%= form_tag(findplayer_players_path, { :class => 'form-inline mly-2 mly-lg-0' }) do -%>
-					<%= text_field_tag(:q, params[:q], {:class => 'search-query form-control mr-2', placeholder: 'Find Player', autocomplete: 'off', 'aria-label': 'Find Player' }) -%>
-				<%- end -%>
-			</ul>
-		<%- end -%>
+			<%= nav_item(dmbexport_index_path(season: @season),"#{@season} DMB Web Export") -%>
+			<%- end -%>
+		</ul>
 
 		<ul class="navbar-nav navbar-right">
 			<%- if @currentowner -%>

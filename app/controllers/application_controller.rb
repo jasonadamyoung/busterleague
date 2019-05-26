@@ -38,7 +38,9 @@ class ApplicationController < ActionController::Base
 
   def check_for_season
     if(!params[:season].nil?)
-      if(Game.allowed_seasons.include?(params[:season].to_i))
+      if(params[:season] == 'all')
+        @season = 'all'
+      elsif(Game.allowed_seasons.include?(params[:season].to_i))
         @season = params[:season].to_i
       else
         @season = Game.current_season
