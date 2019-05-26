@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   
   resources :games, :only => [:show, :index] do
     collection do 
-      get :breakout_batting
+      get :batting
     end
   end
 

@@ -12,7 +12,7 @@ class GamesController < ApplicationController
     @game = Boxscore.where(id: params[:id]).first
   end
 
-  def breakout_batting
+  def batting
   end
 
     

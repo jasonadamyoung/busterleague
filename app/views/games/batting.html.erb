@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        <%- GameBattingStat.four_homer_games.includes(:player, :boxscore, :team, :opposing_team).order(:season).each do |gbs| -%>
+        <%- GameBattingStat.four_homer_games.includes(:player, :boxscore, :team, :opposing_team).order(:season,:date).each do |gbs| -%>
           <tr>
             <td><%= gbs.season %></td>
             <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
@@ -58,7 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        <%- GameBattingStat.six_hit_games.includes(:player, :boxscore, :team, :opposing_team).order(:season).each do |gbs| -%>
+        <%- GameBattingStat.six_hit_games.includes(:player, :boxscore, :team, :opposing_team).order(:season,:date).each do |gbs| -%>
           <tr>
             <td><%= gbs.season %></td>
             <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
@@ -97,7 +97,7 @@
         </tr>
       </thead>
       <tbody>
-        <%- GameBattingStat.cycles.includes(:player, :boxscore, :team, :opposing_team).order(:season).each do |gbs| -%>
+        <%- GameBattingStat.cycles.includes(:player, :boxscore, :team, :opposing_team).order(:season,:date).each do |gbs| -%>
           <tr>
             <td><%= gbs.season %></td>
             <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
