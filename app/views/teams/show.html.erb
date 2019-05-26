@@ -1,7 +1,9 @@
 <% @page_title = "#{@team.name} - #{@season} Season" %>
 
 <div class="page-header" id="overview">
-  <h1><%= @page_title %></h1>
+  <h1><%= @page_title %>
+    <small class="text-muted">(<%= link_to('all seasons',team_path(@team)) %>)</small>
+  </h1>
 </div>
 
 
