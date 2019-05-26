@@ -71,6 +71,11 @@ class Player < ApplicationRecord
     self.save!
   end
 
+  def mark_name_fixed
+    self.names_fixed = true
+    self.save!
+  end
+
   def self.create_or_update_from_roster(roster)
     if(player = self.where(buster_id: roster.buster_id).first)
       if(roster.season < player.earliest_season)
