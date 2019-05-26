@@ -13,6 +13,7 @@ class Record < ApplicationRecord
   scope :on_date, lambda {|date| where("date = ?",date)}
   scope :on_season_date, lambda {|season,date| where(season: season).where("date = ?",date)}
   scope :for_season, lambda {|season| where(season: season)}
+  scope :final_for_season, ->{where(final_season_record: true)}
 
   def self.dump_data
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
