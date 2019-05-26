@@ -59,13 +59,21 @@ class Team < ApplicationRecord
 
 
   def self.standings(options = {})
-    league = options[:league]
+    league = options[:league] 
     division = options[:division]
     season = options[:season] || Game.current_season
     date = options[:date] || Game.latest_date(season)
   
+    scope = Team.all
+    if(league != 'all')
+      scope = scope.where(:league => league)
+    end
 
-    teamlist = Team.where(:league => league).where(:division => division).load.to_a
+    if(division != 'all')
+      scope = scope.where(:division => division)
+    end  
+
+    teamlist = scope.load.to_a
     teamlist.sort!{|a,b| b.wins_minus_losses(season,date) <=> a.wins_minus_losses(season,date) }
     teamlist
   end
