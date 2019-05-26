@@ -124,7 +124,11 @@ class Boxscore < ApplicationRecord
     bp = self.parsed_content
     dtb_data = bp.date_teams_ballpark
     self.data_records_created = false
-    self.date = dtb_data['date']
+    if([2000,2001].include?(self.season))
+      self.date = dtb_data['date'] - 1.year
+    else
+      self.date = dtb_data['date']
+    end
     self.ballpark = dtb_data['ballpark']
     self.home_team_id = Team.id_for_abbreviation(dtb_data['home_team'])
     self.away_team_id = Team.id_for_abbreviation(dtb_data['away_team'])
@@ -151,7 +155,11 @@ class Boxscore < ApplicationRecord
         boxscore.content = array_content
         bp = BoxscoreParser.new(boxscore.content)
         dtb_data = bp.date_teams_ballpark
-        boxscore.date = dtb_data['date']
+        if([2000,2001].include?(boxscore.season))
+          boxscore.date = dtb_data['date'] - 1.year
+        else
+          boxscore.date = dtb_data['date']
+        end
         boxscore.ballpark = dtb_data['ballpark']
         boxscore.home_team_id = Team.id_for_abbreviation(dtb_data['home_team']) 
         boxscore.away_team_id = Team.id_for_abbreviation(dtb_data['away_team']) 
