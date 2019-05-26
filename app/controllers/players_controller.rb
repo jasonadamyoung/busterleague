@@ -11,6 +11,9 @@ class PlayersController < ApplicationController
 
   def show
     @player = Player.where(id: params[:id]).first
+    if(@season == 'all')
+      return render('showall')
+    end
   end
 
 end

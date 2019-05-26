@@ -15,8 +15,6 @@ Rails.application.routes.draw do
   #     get :crash
   #   end
   # end
-
-  resources :players, :only => [:show, :index]
   
   resources :games, :only => [:show, :index] do
     collection do 
@@ -31,6 +29,7 @@ Rails.application.routes.draw do
   scope "/(:season)", :defaults => {:season => 'all'} do
     resources :standings, :only => [:index]
     resources :dmbexport, :only => [:index]
+    resources :players, :only => [:show, :index]
     resources :teams, :only => [:show, :index]  do
       collection do
         get :wingraphs

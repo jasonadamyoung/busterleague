@@ -1,17 +1,18 @@
-<% @page_title = "#{@player.name} - #{@season} Season" %>
+<% @page_title = "#{@player.name}" %>
 
 <div class="pb-2 mt-4 mb-2 border-bottom" id="overview">
   <h1><%= @page_title %></h1>
 </div>
 
 <div class="pb-2 mt-4 mb-2 border-bottom">
-  <h1>Roster </h1>
+  <h1>Seasons</h1>
 </div>
 <div class="row">
   <div class="col-md-12">
     <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr>
+          <th>Season</th>
           <th>Team</th>
           <th>Age</th>
           <th>Position</th>
@@ -19,9 +20,10 @@
         </tr>
       </thead>
       <tbody>
-        <%- @player.rosters.for_season(@season).each do |roster| -%>
+        <%- @player.rosters.order(:season).each do |roster| -%>
           <tr>
-            <td><%= link_to(roster.team.name,team_path(roster.team,season: @season)) %></td>
+            <td><%= link_to(roster.season,player_path(@player,season: roster.season)) %></td>
+            <td><%= link_to(roster.team.name,team_path(roster.team,season: roster.season)) %></td>
             <td><%= roster.age %></td>
             <td><%= roster.position %></td>
             <td><%= roster.status %></td>
@@ -31,4 +33,5 @@
     </table>
   </div>
 </div>
+
 
