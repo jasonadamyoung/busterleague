@@ -7,7 +7,11 @@ class Roster < ApplicationRecord
 
   belongs_to :team
   belongs_to :player, optional: true
-
+  has_many :batting_stats
+  has_many :pitching_stats
+  has_many :game_batting_stats
+  has_many :game_pitching_stats
+  has_many :transaction_logs
 
   before_save  :set_status_code, :set_is_pitcher
   after_create :create_or_update_player
