@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_25_183635) do
+ActiveRecord::Schema.define(version: 2019_05_26_131016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "h1b", default: 0, null: false
+    t.string "first_name"
+    t.string "last_name"
     t.index ["roster_id", "name", "season", "team_id"], name: "batstat_ndx", unique: true
   end
 
@@ -138,6 +140,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.integer "tb", default: 0, null: false
     t.integer "h1b", default: 0, null: false
     t.integer "lineup", default: 0, null: false
+    t.string "first_name"
+    t.string "last_name"
     t.index ["boxscore_id", "name", "team_id"], name: "gbs_ndx", unique: true
   end
 
@@ -165,6 +169,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.integer "hb"
     t.integer "balk"
     t.integer "wp"
+    t.string "first_name"
+    t.string "last_name"
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
   end
 
@@ -326,6 +332,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.integer "r_sh"
     t.integer "r_sf"
     t.integer "r_gdp"
+    t.string "first_name"
+    t.string "last_name"
     t.index ["name", "season", "team_id"], name: "pitchstat_ndx", unique: true
   end
 
@@ -344,6 +352,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.integer "seasons", array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "check_names", default: false, null: false
+    t.boolean "names_fixed", default: false, null: false
     t.index ["buster_id"], name: "player_ndx", unique: true
   end
 
@@ -463,6 +473,7 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.integer "home_ra"
     t.integer "road_rf"
     t.integer "road_ra"
+    t.boolean "final_season_record", default: false, null: false
     t.index ["date", "season", "team_id"], name: "records_ndx", unique: true
   end
 
@@ -486,6 +497,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.integer "trade_team_id"
     t.integer "original_roster_id"
     t.boolean "is_pitcher", default: false, null: false
+    t.string "first_name"
+    t.string "last_name"
     t.index ["name", "position", "age", "season", "team_id"], name: "roster_ndx", unique: true
   end
 
@@ -528,6 +541,8 @@ ActiveRecord::Schema.define(version: 2019_05_25_183635) do
     t.string "other_team_string", limit: 4
     t.date "effective_date"
     t.string "when_string", limit: 255
+    t.string "first_name"
+    t.string "last_name"
     t.index ["hashid", "season"], name: "record_ndx", unique: true
     t.index ["name", "team_id"], name: "name_team_ndx"
   end
