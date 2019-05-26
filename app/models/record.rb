@@ -22,8 +22,12 @@ class Record < ApplicationRecord
     self.wins_minus_losses = self.wins - self.losses
   end
 
-  def self.create_or_update_records(season)
-    for date in (Game.earliest_date(season)..Game.latest_date(season)) do
+  def self.create_or_update_records_for_season_and_dates(season,dates = 'default')
+    if(dates == 'default')
+      dates = (Game.earliest_date(season)..Game.latest_date(season)).to_a
+    end
+
+    dates.each do |date|
       Team.all.each do |team|
         record = self.create_or_update_for_team_and_date(season,team,date)
         # streak
@@ -65,6 +69,7 @@ class Record < ApplicationRecord
   end
 
   def self.create_or_update_for_team_and_date(season,team,date)
+    latest_date_for_season = Game.latest_date(season)
     if(!record_for_date = self.where(season: season).where(:date => date).where(:team_id => team.id).first)
       record_for_date = Record.new(season: season, date: date, team: team)
     end
@@ -82,12 +87,19 @@ class Record < ApplicationRecord
     record_for_date.road_ra = team.games.away.through_season_date(season,date).sum(:opponent_runs)
     record_for_date.rf = record_for_date.home_rf + record_for_date.road_rf
     record_for_date.ra = record_for_date.home_ra + record_for_date.road_ra
+    record_for_date.final_season_record = (date == latest_date_for_season)
     record_for_date.save!
     record_for_date
   end
 
+  def self.flag_final_records_for_season(season)
+    latest_date_for_season = Game.latest_date(season)
+    self.create_or_update_records_for_season_and_dates(season,[latest_date_for_season])
+  end
+
+
   def self.rebuild(season)
-    self.create_or_update_records(season)
+    self.create_or_update_records_for_season_and_dates(season)
   end
 
 
