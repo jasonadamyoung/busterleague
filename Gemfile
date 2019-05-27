@@ -97,6 +97,13 @@ gem 'roo'
 # mathn is removed in ruby 2.5
 gem 'mathn'
 
+# nice emails
+gem 'bootstrap-email'
+
+# inline svg for team logos
+gem 'inline_svg'
+
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
