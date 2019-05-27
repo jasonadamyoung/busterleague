@@ -20,18 +20,6 @@
 			</li>
 
 			<%- if(!@season.blank? and @season != 'all') %>
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<%= @season -%> Season
-				</a>
-
-				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<%= nav_dropdown_item(teams_path,"Standings") -%>
-					<%= nav_dropdown_item(wingraphs_teams_path,"Winning % Graphs") -%>
-					<%= nav_dropdown_item(gbgraphs_teams_path,"Games Back Graphs") -%>
-				</div>
-			</li>
-
 			<%= nav_item(dmbexport_index_path(season: @season),"#{@season} DMB Web Export") -%>
 			<%- end -%>
 		</ul>
