@@ -6,7 +6,13 @@
 class TeamsController < ApplicationController
 
   def index
-    @teams = Team.all
+    @team_display = {}
+    ['American','National'].each do |league|
+      @team_display[league] = {}
+      ['East','West'].each do |division|
+        @team_display[league][division] = Team.standings(league: league,division: division,season: @season)
+      end
+    end
   end
 
   def show

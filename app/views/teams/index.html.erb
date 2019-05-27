@@ -1,0 +1,27 @@
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <h1 class="display-4">Busterleague Teams</h1>
+  <p class="lead">
+    <%- if @season != 'all' -%>
+      <%= @season%> season
+    <%- end -%>
+  </p>
+</div>
+
+<% (0..4).to_a.each do |index| %>
+<div class="card-deck">
+  <%- ['American','National'].each do |league| -%>
+    <%- ['East','West'].each do |division| -%>
+      <%- team = @team_display[league][division][index] -%>
+      <div class="card">
+        <%= inline_svg(team.logo, class: 'card-img-top', size: "300px*300px") -%>
+        <div class="card-body">
+          <h5 class="card-title text-center"><%= link_to(team.name, team_path(team,season: @season)) %></h5>
+          <p class="card-text">
+
+          </p>
+        </div>
+      </div>
+    <%- end -%>
+  <%- end -%>
+</div>
+<%- end -%>

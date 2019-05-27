@@ -1,7 +1,10 @@
 <% @page_title = "#{@team.name}" %>
 
 <div class="page-header" id="overview">
-  <h1><%= @page_title %></h1>
+  <h1>
+  <%= inline_svg(@team.logo, size: "200px*200px") -%>
+  <%= @page_title %>
+  </h1>
 </div>
 
 <div class="page-header">

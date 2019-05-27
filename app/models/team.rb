@@ -2,6 +2,7 @@
 # Copyright (c) Jason Adam Young
 # === LICENSE:
 # see LICENSE file
+require 'stringio'
 
 class Team < ApplicationRecord
 
@@ -29,6 +30,10 @@ class Team < ApplicationRecord
   scope :d1, lambda { where(:league => 'd1')}
   scope :d2, lambda { where(:league => 'd2')}
 
+  def logo
+    StringIO.new(self.svglogo)
+  end
+  
   def is_human?
     (owner_id != Owner.computer_id)
   end
@@ -52,11 +57,6 @@ class Team < ApplicationRecord
     end
     {:labels => ['Win %','Expected %'],:data => [win_pcts] + [x_pcts]}
   end
-
-  # -----------------------------------
-  # Class-level methods
-  # -----------------------------------
-
 
   def self.standings(options = {})
     league = options[:league] 
