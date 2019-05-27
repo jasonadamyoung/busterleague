@@ -126,7 +126,7 @@ class Upload < ApplicationRecord
     SlackIt.post(message: "... Season records rebuilt for Season : #{self.season}")
     Record.create_or_update_final_record_for_season('all')
     SlackIt.post(message: "... Total records rebuilt for all seasons")
-    self.update_attributes(processing_status: PROCESSED)
+    self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
     SlackIt.post(message: "An upload has been processed: #{self.archivefile_file_name}")
   end
 

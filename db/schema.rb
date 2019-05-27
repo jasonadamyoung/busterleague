@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_26_170211) do
+ActiveRecord::Schema.define(version: 2019_05_27_200220) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -523,9 +523,8 @@ ActiveRecord::Schema.define(version: 2019_05_26_170211) do
     t.string "abbrev", limit: 3, default: "", null: false
     t.string "league", limit: 10, default: "", null: false
     t.string "division", limit: 4, default: "", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "web_team_id", limit: 2
+    t.text "svglogo"
     t.index ["name"], name: "index_teams_on_name", unique: true
   end
 
