@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_27_200220) do
+ActiveRecord::Schema.define(version: 2019_05_29_010234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -172,6 +172,29 @@ ActiveRecord::Schema.define(version: 2019_05_27_200220) do
     t.string "first_name"
     t.string "last_name"
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
+  end
+
+  create_table "game_results", force: :cascade do |t|
+    t.integer "season"
+    t.date "date"
+    t.string "boxscore_name", limit: 255
+    t.integer "boxscore_id"
+    t.integer "home_team_id"
+    t.string "home_team_string", limit: 4
+    t.integer "home_runs"
+    t.integer "away_team_id"
+    t.string "away_team_string", limit: 4
+    t.integer "away_runs"
+    t.integer "total_innings"
+    t.string "winning_pitcher_name", limit: 255
+    t.integer "winning_pitcher_id"
+    t.string "losing_pitcher_name", limit: 255
+    t.integer "losing_pitcher_id"
+    t.string "save_pitcher_name", limit: 255
+    t.integer "save_pitcher_id"
+    t.string "gwrbi_name", limit: 255
+    t.integer "gwrbi_id"
+    t.index ["date", "season", "home_team_id", "away_team_id"], name: "game_results_ndx", unique: true
   end
 
   create_table "games", force: :cascade do |t|
@@ -525,7 +548,7 @@ ActiveRecord::Schema.define(version: 2019_05_27_200220) do
     t.string "division", limit: 4, default: "", null: false
     t.integer "web_team_id", limit: 2
     t.text "svglogo"
-    t.index ["name"], name: "index_teams_on_name", unique: true
+    t.integer "web_team_id_nn", limit: 2
   end
 
   create_table "transaction_logs", force: :cascade do |t|
@@ -560,6 +583,7 @@ ActiveRecord::Schema.define(version: 2019_05_27_200220) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "season", default: 0, null: false
+    t.datetime "latest_game_date"
     t.index ["archivefile_fingerprint"], name: "fingerprint_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end
