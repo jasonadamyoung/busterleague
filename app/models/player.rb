@@ -23,7 +23,7 @@ class Player < ApplicationRecord
   BATTER = 2
 
   PITCHING_POSITIONS = ['sp','cl','mr']
-  ADJUSTMENT_SEASON = 2000
+  ADJUSTMENT_SEASON = 1999
 
   def set_names(saveit = false)
     if((self.first_name.blank? or self.last_name.blank?))

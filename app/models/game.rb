@@ -6,7 +6,7 @@
 class Game < ApplicationRecord
   extend CleanupTools
 
-  belongs_to :boxscore
+  belongs_to :boxscore, optional: true
   belongs_to :team
   belongs_to :opponent, :class_name => 'Team'
   has_many :innings, :through => :boxscores
@@ -25,8 +25,8 @@ class Game < ApplicationRecord
   scope :perfects, -> { wins.opponent_zero_hits.zero_errors }
 
 
-  ALLOWED_SEASONS = (2000..2018)
-  FIRST_SEASON = 2000
+  ALLOWED_SEASONS = (1999..2018)
+  FIRST_SEASON = 1999
   
   def self.current_season
     Date.today.year - 1

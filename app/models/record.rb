@@ -13,9 +13,17 @@ class Record < ApplicationRecord
   scope :winners, -> { where("wins / games::float > .5") }
   scope :losers, -> { where("wins / games::float <= .5") }
   scope :on_date, lambda {|date| where("date = ?",date)}
-  scope :on_season_date, lambda {|season,date| where(season: season).where("date = ?",date)}
   scope :for_season, lambda {|season| where(season: season)}
   scope :final_for_season, ->{where(final_season_record: true)}
+
+  ALL_SEASON = 0
+
+  def self.on_season_date(season,date)
+    if(season == 'all')
+      season = ALL_SEASON
+    end
+    where(season: season).where("date = ?",date)
+  end
 
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses

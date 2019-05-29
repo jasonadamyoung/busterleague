@@ -11,7 +11,7 @@ class DateStat
     self.season = options[:season] || Settings.current_season
     self.date = options[:date] || Game.latest_date(self.season)
     self.team = options[:team]
-    self.record_for_date = self.team.records.where(season: season).where(date: self.date).first
+    self.record_for_date = self.team.records.on_season_date(season,date).first
   end
 
   def streak
@@ -117,7 +117,7 @@ class DateStat
   def records_by_opponent(forceupdate = false)
     if(!@records_by_opponent or forceupdate)
       @records_by_opponent = {}
-      games = team.games.for_season(season).through_date(date)
+      games = team.games.through_season_date(season,date)
       games.each do |g|
         @records_by_opponent[g.opponent_id] ||= {:wins => 0, :losses => 0}
         if(g.win?)

@@ -26,7 +26,7 @@ class Roster < ApplicationRecord
   scope :traded, -> {where(status_code: STATUS_TRADED)}
 
   PITCHING_POSITIONS = ['sp','cl','mr']
-  ADJUSTMENT_SEASON = 2000
+  ADJUSTMENT_SEASON = 1999
 
   # status_codes
   STATUS_ACTIVE = 1
@@ -72,7 +72,7 @@ class Roster < ApplicationRecord
   end
 
   def adjusted_age
-    self.age - (self.season - Roster::ADJUSTMENT_SEASON) + 42
+    self.age - (self.season - Roster::ADJUSTMENT_SEASON) + 43
   end
 
   def create_or_update_player

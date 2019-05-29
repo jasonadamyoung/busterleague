@@ -143,16 +143,28 @@ class Team < ApplicationRecord
 
   def batting_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
-    "#{base_url}/tm#{self.web_team_id}_tmbat.htm"
+    if(season == 1999)
+      "#{base_url}/tm#{self.web_team_id_nn}_tmbat_1999.htm"
+    else
+      "#{base_url}/tm#{self.web_team_id}_tmbat.htm"
+    end
   end
 
   def pitching_url(season,table_type)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
     case table_type
     when 'core_tables'
-      "#{base_url}/tm#{self.web_team_id}_tmpch.htm"
+      if(season == 1999)
+        "#{base_url}/tm#{self.web_team_id_nn}_tmpch_1999.htm"
+      else
+        "#{base_url}/tm#{self.web_team_id}_tmpch.htm"
+      end
     when 'batting_tables'
-      "#{base_url}/tm#{self.web_team_id}_tmpch2.htm"
+      if(season == 1999)
+        "#{base_url}/tm#{self.web_team_id_nn}_tmpch2_1999.htm"
+      else
+        "#{base_url}/tm#{self.web_team_id}_tmpch2.htm"
+      end
     else
       nil
     end      
