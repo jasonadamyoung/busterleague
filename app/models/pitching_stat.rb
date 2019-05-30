@@ -19,7 +19,11 @@ class PitchingStat < ApplicationRecord
 
   def self.register_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
-    "#{base_url}/orgpchreg.htm"
+    if(season == 1999)
+      "#{base_url}/org1_orgpchreg_1999.htm"
+    else
+      "#{base_url}/orgpchreg.htm"
+    end
   end
 
   def self.get_html(url)
@@ -32,6 +36,11 @@ class PitchingStat < ApplicationRecord
 
   def self.pitching_register_parser(season)
     PitchingRegisterParser.new(self.get_html(self.register_url(season)),"core_tables")
+  end
+
+  def self.get_pitching_data(season)
+    prp = self.pitching_register_parser(season)
+    prp.pitching_data
   end
 
   def set_singles

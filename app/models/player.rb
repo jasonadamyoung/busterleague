@@ -82,9 +82,6 @@ class Player < ApplicationRecord
         player.earliest_season = roster.season
         player.earliest_season_age = roster.age
       end
-      player.positions = (player.positions + [roster.position]).uniq
-      player.teams = (player.teams + [roster.team_id]).uniq
-      player.seasons = (player.seasons + [roster.season]).uniq
       player.save!
     else
       player = Player.new
@@ -96,9 +93,6 @@ class Player < ApplicationRecord
       player[:earliest_season_age] = roster.age
       player[:bats] = roster.bats
       player[:throws] = roster.throws
-      player[:positions] = [roster.position]
-      player[:teams] = [roster.team_id]
-      player[:seasons] = [roster.season]
       player.save!
     end
     player

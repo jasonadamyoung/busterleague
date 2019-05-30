@@ -32,6 +32,7 @@ class Roster < ApplicationRecord
   STATUS_ACTIVE = 1
   STATUS_RESERVE = 0
   STATUS_TRADED = -1
+  STATUS_PRESENT = 42
   STATUS_UNKNOWN = 999
 
   # trade_status_codes
@@ -48,6 +49,8 @@ class Roster < ApplicationRecord
       self.status_code = STATUS_ACTIVE
     when 'traded'
       self.status_code = STATUS_TRADED
+    when 'present'
+      self.status_code = STATUS_PRESENT
     else
       self.status = STATUS_UNKNOWN
     end
@@ -191,6 +194,30 @@ class Roster < ApplicationRecord
       rp.update_attributes(player_details)
     end
     rp
+  end
+
+  def self.create_ninety_nine_rosters
+    batting_data = BattingStat.get_batting_data(1999)
+    batting_data.each do |key,batting_details|
+      team = Team.abbreviation_finder(batting_details['team'])
+      player_details = {}
+      player_details['status'] = 'present'
+      player_details['name'] = batting_details['name']
+      player_details['position'] = batting_details['p']
+      player_details['age'] = batting_details['age']
+      self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
+    end
+
+    pitching_data = PitchingStat.get_pitching_data(1999)
+    pitching_data.each do |key,pitching_details|
+      team = Team.abbreviation_finder(pitching_details['team'])
+      player_details = {}
+      player_details['status'] = 'present'
+      player_details['name'] = pitching_details['name']
+      player_details['position'] = pitching_details['p']
+      player_details['age'] = pitching_details['age']
+      self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
+    end    
   end
   
 
