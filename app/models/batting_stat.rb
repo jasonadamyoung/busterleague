@@ -19,7 +19,11 @@ class BattingStat < ApplicationRecord
 
   def self.register_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
-    "#{base_url}/orgbatreg.htm"
+    if(season == 1999)
+      "#{base_url}/org1_orgbatreg_1999.htm"
+    else
+      "#{base_url}/orgbatreg.htm"
+    end
   end
 
   def self.get_html(url)
@@ -33,6 +37,12 @@ class BattingStat < ApplicationRecord
   def self.batting_register_parser(season)
     BattingRegisterParser.new(self.get_html(self.register_url(season)))
   end
+
+  def self.get_batting_data(season)
+    brp = self.batting_register_parser(season)
+    brp.batting_data
+  end
+
 
   def set_singles
     self.h1b = (h - (h3b+h2b+hr))

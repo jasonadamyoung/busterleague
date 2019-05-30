@@ -27,7 +27,7 @@ class GameResult < ApplicationRecord
   
   def create_games
     # home team's game
-    home_game = Game.new(:boxscore_id => (0-self.id), :date => self.date, :season => self.season)
+    home_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
     home_game.team_id = self.home_team_id
     home_game.home = true
     home_game.opponent_id = self.away_team_id
@@ -38,7 +38,7 @@ class GameResult < ApplicationRecord
     home_game.save!
 
     # away team's game
-    away_game = Game.new(:boxscore_id => (0-self.id), :date => self.date, :season => self.season)
+    away_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
     away_game.team_id = self.away_team_id
     away_game.home = false
     away_game.opponent_id = self.home_team_id

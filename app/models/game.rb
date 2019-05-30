@@ -6,6 +6,7 @@
 class Game < ApplicationRecord
   extend CleanupTools
 
+  belongs_to :game_result, optional: true
   belongs_to :boxscore, optional: true
   belongs_to :team
   belongs_to :opponent, :class_name => 'Team'
