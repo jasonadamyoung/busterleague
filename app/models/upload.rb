@@ -122,8 +122,10 @@ class Upload < ApplicationRecord
       SlackIt.post(message: "... Rosters created/updated for Season : #{self.season}")
     end
     Team.update_batting_stats_for_season(self.season)
+    BattingStat.update_total_batting_stats_for_season(self.season)
     SlackIt.post(message: "... Batting stats created/updated for Season: #{self.season}")
     Team.update_pitching_stats_for_season(self.season)
+    PitchingStat.update_total_pitching_stats_for_season(self.season)
     SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
     if(self.season != 1999)   
       Boxscore.download_and_store_for_season(self.season)
@@ -138,5 +140,7 @@ class Upload < ApplicationRecord
     self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
     SlackIt.post(message: "An upload has been processed: #{self.archivefile_file_name}")
   end
+
+
 
 end
