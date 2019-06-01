@@ -227,7 +227,11 @@ class Team < ApplicationRecord
       roster_id = name_matcher[name] || 0
       season = season
       if(!(batting_stat = self.batting_stats.where(season: season).where(roster_id: roster_id).where(name: name).first))
-        batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name)
+        if(roster = Roster.where(id: roster_id).first)
+          batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name, player_id: roster.player_id, age: roster.age)
+        else
+          batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name)
+        end
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -257,7 +261,11 @@ class Team < ApplicationRecord
       roster_id = name_matcher[name] || 0
       season = season
       if(!(pitching_stat = self.pitching_stats.where(season: season).where(roster_id: roster_id).where(name: name).first))
-        pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name)
+        if(roster = Roster.where(id: roster_id).first)
+          pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name, player_id: roster.player_id, age: roster.age)
+        else
+          pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name)
+        end        
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
