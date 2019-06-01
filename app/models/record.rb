@@ -113,6 +113,154 @@ class Record < ApplicationRecord
     record_for_date
   end
 
+  def records_by_opponent
+    if(read_attribute(:records_by_opponent).blank?)
+      self.set_records_by_opponent
+    end
+    read_attribute(:records_by_opponent)
+  end
+
+  def set_records_by_opponent
+    rbo = {}
+    games = self.team.games.through_season_date(season,date)
+    games.each do |g|
+      rbo[g.opponent_id] ||= {:wins => 0, :losses => 0}
+      if(g.win?)
+        rbo[g.opponent_id][:wins] += 1
+      else
+        rbo[g.opponent_id][:losses] += 1
+      end
+    end
+    self.update_attribute(:records_by_opponent, rbo)
+  end
+
+  def streak
+    (n = read_attribute(:streak)) ? n : 0
+  end
+
+  def wins
+    (n = read_attribute(:wins)) ? n : 0
+  end
+
+  def gamescount
+    self.try(:games) || 0
+  end
+
+  def losses
+    (n = read_attribute(:losses)) ? n : 0
+  end
+
+  def win_pct
+    self.gamescount > 0 ? (self.wins/self.gamescount) : 0
+  end
+
+  def rf
+    (n = read_attribute(:rf)) ? n : 0
+  end
+
+  def ra
+    (n = read_attribute(:ra)) ? n : 0
+  end
+
+  def gb
+    (n = read_attribute(:gb)) ? n : 0
+  end
+
+  def league_gb
+    (n = read_attribute(:league_gb)) ? n : 0
+  end
+
+  def overall_gb
+    (n = read_attribute(:overall_gb)) ? n : 0
+  end
+
+  def wins_minus_losses
+    (n = read_attribute(:wins_minus_losses)) ? n : 0
+  end
+
+  def last_ten
+    gameslist = team.games.for_season(self.season).through_date(self.date).order("date DESC").limit(10)
+    last_wins = 0; last_losses = 0;
+    gameslist.each do |game|
+      if(game.win?)
+        last_wins += 1;
+      else
+        last_losses += 1;
+      end
+    end
+    "#{last_wins} - #{last_losses}"
+  end
+
+  def expected_pct
+    if(self.gamescount > 0)
+      exponent = ((rf + ra) / gamescount )**0.287
+     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) )
+    else
+      0
+    end
+  end
+
+  def expected_wl
+    x_wins = (expected_pct * gamescount).round
+    x_losses = gamescount - x_wins
+    [x_wins,x_losses]
+  end
+
+  def home_wl
+    g = self.try(:home_games) || 0
+    w =  self.try(:home_wins) || 0
+    [w,g-w]
+  end
+
+  def road_wl
+    g = self.try(:road_games) || 0
+    w =  self.try(:road_wins) || 0
+    [w,g-w]
+  end
+
+  def human_wl
+    total_record_against_opponents(Team.human)
+  end
+
+  def computer_wl
+    total_record_against_opponents(Team.computer)
+  end
+
+  def winners_wl
+    total_record_against_opponents(self.class.winning_teams_for_season_date(self.season,self.date))
+  end
+
+  def losers_wl
+    total_record_against_opponents(self.class.losing_teams_for_season_date(self.season,self.date))
+  end
+
+
+  def record_against_opponents(opponents)
+    opponent_ids = opponents.map(&:id)
+    filtered_records = records_by_opponent.reject{|id,record| !(opponent_ids.include?(id.to_i))}
+    filtered_records
+  end
+
+  def total_record_against_opponents(opponents)
+    wins = 0; losses = 0;
+    record_against_opponents(opponents).each do |id,record|
+      wins += record['wins']
+      losses += record['losses']
+    end
+    {:wins => wins, :losses => losses}
+  end
+
+
+  def self.winning_teams_for_season_date(season,date)
+    self.winners.on_season_date(season,date).map(&:team)
+  end
+
+
+  def self.losing_teams_for_season_date(season,date)
+    self.losers.on_season_date(season,date).map(&:team)
+  end
+
+
   def self.create_or_update_final_record_for_season(season)
     latest_date_for_season = Game.latest_date(season)
     self.create_or_update_records_for_season_and_dates(season,[latest_date_for_season])
@@ -122,6 +270,5 @@ class Record < ApplicationRecord
   def self.rebuild(season)
     self.create_or_update_records_for_season_and_dates(season)
   end
-
 
 end

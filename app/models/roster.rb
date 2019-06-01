@@ -203,6 +203,7 @@ class Roster < ApplicationRecord
       player_details = {}
       player_details['status'] = 'present'
       player_details['name'] = batting_details['name']
+      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = batting_details['p']
       player_details['age'] = batting_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
@@ -214,6 +215,7 @@ class Roster < ApplicationRecord
       player_details = {}
       player_details['status'] = 'present'
       player_details['name'] = pitching_details['name']
+      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = pitching_details['p']
       player_details['age'] = pitching_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
