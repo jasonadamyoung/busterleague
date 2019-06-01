@@ -10,14 +10,14 @@
 <div class="row">
   <div class="col-md-12">
     <h3>East Division</h3>
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'American', :division => 'East', :season => @season, :date => @date)} )%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.by_division('American','East')} )%>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-12">
     <h3>West Division</h3>
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'American', :division => 'West', :season => @season, :date => @date)})%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.by_division('American','West')})%>
   </div>
 </div>
 
@@ -28,14 +28,14 @@
 <div class="row">
   <div class="col-md-12">
     <h3>East Division</h3>
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'National', :division => 'East', :season => @season, :date => @date)} )%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.by_division('National','East')} )%>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-12">
     <h3>West Division</h3>
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'National', :division => 'West', :season => @season, :date => @date)})%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.by_division('National','West')})%>
   </div>
 </div>
 
@@ -46,14 +46,14 @@
 <div class="row">
   <div class="col-md-12">
     <h3>American League</h3>
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'American', :division => 'all', :season => @season, :date => @date)} )%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.by_league('American')} )%>
   </div>
 </div>
 
 <div class="row">
   <div class="col-md-12">
     <h3>National League</h3>
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'National', :division => 'all', :season => @season, :date => @date)} )%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.by_league('National')} )%>
   </div>
 </div>
 
@@ -63,6 +63,6 @@
 
 <div class="row">
   <div class="col-md-12">
-    <%= render(:partial => 'teamlist', :locals => {:teamlist => Team.standings(:league => 'all', :division => 'all', :season => @season, :date => @date)} )%>
+    <%= render(:partial => 'teamlist', :locals => {:teamlist => @standings.all} )%>
   </div>
 </div>

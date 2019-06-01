@@ -38,7 +38,7 @@ class Game < ApplicationRecord
   end
 
   def self.through_season_date(season,date)
-    if(season == 'all')
+    if(season == 'all' or season == 0)
       through_date(date)
     else
       for_season(season).through_date(date)
@@ -50,7 +50,7 @@ class Game < ApplicationRecord
   end
 
   def self.earliest_date(season)
-    if(season == 'all')
+    if(season == 'all' or season == 0)
       self.minimum(:date)
     else
       self.where(season: season).minimum(:date)
@@ -58,7 +58,7 @@ class Game < ApplicationRecord
   end
 
   def self.latest_date(season)
-    if(season == 'all')
+    if(season == 'all' or season == 0)
       self.maximum(:date)
     else
       self.where(season: season).maximum(:date)

@@ -21,8 +21,8 @@ module TeamsHelper
     if(wl.is_a?(Array))
       (wins,losses) = wl
     elsif(wl.is_a?(Hash))
-      wins = wl[:wins]
-      losses = wl[:losses]
+      wins = wl['wins']
+      losses = wl['losses']
     else
       wins = 'unknown'
       losses = 'unknown'

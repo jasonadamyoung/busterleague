@@ -33,9 +33,12 @@
       </thead>
       <tbody>
         <%- Game.available_seasons.each do |season| -%>
-        <%- record = @team.records.for_season(@season).final_for_season.first %>
           <tr>
+            <%- record = @team.records.final_for_season(season).first %>
             <td><%= link_to(season,team_path(@team,season: season)) %></td>
+            <%- if record.nil? -%>
+            <td colspan="13"><em>no records available</em></td>
+            <%- else -%>            
             <td><%= display_wl([record.wins,record.losses]) %></td>
             <td><%= number_with_precision(record.win_pct.to_f,:precision => 3)%></td>
             <td><%= display_gb(record.gb) %></td>
@@ -49,6 +52,7 @@
             <td><%= display_wl(record.computer_wl) %></td>
             <td><%= display_wl(record.winners_wl) %></td>
             <td><%= display_wl(record.losers_wl) %></td>
+            <%- end -%>
           </tr>
         <%- end -%>
       </tbody>

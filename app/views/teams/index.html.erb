@@ -11,7 +11,7 @@
 <div class="card-deck">
   <%- ['American','National'].each do |league| -%>
     <%- ['East','West'].each do |division| -%>
-      <%- team = @team_display[league][division][index] -%>
+      <%- (team,record) = @team_display[league][division][index] -%>
       <div class="card">
         <%= inline_svg(team.logo, class: 'card-img-top', size: "300px*300px") -%>
         <div class="card-body">

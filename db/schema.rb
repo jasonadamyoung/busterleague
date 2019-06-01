@@ -497,6 +497,8 @@ ActiveRecord::Schema.define(version: 2019_05_31_233405) do
     t.boolean "final_season_record", default: false, null: false
     t.float "league_gb"
     t.float "overall_gb"
+    t.string "last_ten", array: true
+    t.jsonb "wl_groups"
     t.jsonb "records_by_opponent"
     t.index ["date", "season", "team_id"], name: "records_ndx", unique: true
   end

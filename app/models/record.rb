@@ -4,30 +4,150 @@
 # see LICENSE file
 
 class Record < ApplicationRecord
+  include ActiveModel::AttributeAssignment
   extend CleanupTools
+
 
 	belongs_to :team
   
   before_save :set_win_minus_losses
 
-  scope :winners, -> { where("wins / games::float > .5") }
-  scope :losers, -> { where("wins / games::float <= .5") }
+  scope :winners, -> { where("games > 0").where("wins / games::float > .5") }
+  scope :losers, -> { where("games > 0").where("wins / games::float <= .5") }
   scope :on_date, lambda {|date| where("date = ?",date)}
   scope :for_season, lambda {|season| where(season: season)}
-  scope :final_for_season, ->{where(final_season_record: true)}
+  scope :final_for_season, lambda {|season| for_season(season).where(final_season_record: true)}
 
   ALL_SEASON = 0
 
+  
   def self.on_season_date(season,date)
-    if(season == 'all')
+    if(season == 'all' or season == 0)
       season = ALL_SEASON
     end
-    where(season: season).where("date = ?",date)
+    for_season(season).on_date(date)
   end
 
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses
   end
+
+
+  def gameslist
+    self.team.games.through_season_date(self.season,self.date)
+  end
+
+  def set_records_by_opponent
+    rbo = {}
+    self.gameslist.each do |g|
+      rbo[g.opponent_id] ||= {'wins' => 0, 'losses' => 0}
+      if(g.win?)
+        rbo[g.opponent_id]['wins'] += 1
+      else
+        rbo[g.opponent_id]['losses'] += 1
+      end
+    end
+    self.update_attribute(:records_by_opponent, rbo)
+    self.update_attribute(:wl_groups, wl_groups)
+
+  end
+
+  def wl_group_idlist
+    idlist = {}
+    idlist['human'] = Team.human.pluck(:id).map(&:to_s)
+    idlist['computer'] = Team.computer.pluck(:id).map(&:to_s)
+    idlist['winners'] = self.class.winners.on_season_date(self.season,self.date).pluck(:team_id).map(&:to_s)
+    idlist['losers'] = self.class.losers.on_season_date(self.season,self.date).pluck(:team_id).map(&:to_s)
+    idlist
+  end
+
+  def set_wl_groups
+    wl_groups = {'human' => {},'computer' => {}, 'winners' => {}, 'losers' => {}}
+    idlist = self.wl_group_idlist
+
+    records_by_opponent.each do |id,wl|
+      idlist.each do |key,ids|
+        if ids.include?(id)
+          wl_groups[key][id] = wl
+        end 
+      end
+    end
+    self.update_attribute(:wl_groups, wl_groups)
+  end
+
+  def self.set_wl_groups_for_season_and_date(season,date)
+    self.on_season_date(season,date).each do |record|
+      record.set_wl_groups
+    end
+  end
+
+
+
+  # this is inefficient as all get out, I really
+  # need to work out how to go backwards
+  def set_streak
+    # streak
+    streak_code = ''
+    streak_count = 0
+    self.gameslist.order("date").each do |game|
+      game_code = (game.win? ? 'W' : 'L')
+      if(game_code == streak_code)
+        streak_count += 1
+      else
+        streak_code = game_code
+        streak_count = 1
+      end
+    end
+    self.update_column(:streak, "#{streak_code}#{streak_count}")
+  end
+
+  def set_last_ten
+    last_wins = 0; last_losses = 0;
+    self.gameslist.order("date DESC").limit(10).each do |game|
+      if(game.win?)
+        last_wins += 1;
+      else
+        last_losses += 1;
+      end
+    end
+    self.update_attribute(:last_ten, [last_wins,last_losses])
+  end
+  
+
+  def self.set_gb_for_season_and_date(season,date)
+    # gamesback
+    overall_records = {}
+    leagues = Team.group(:league).count(:league)
+    leagues.keys.each do |league|
+      league_records = {}
+      divisions = Team.where(:league => league).group(:division).count(:division)
+      divisions.keys.each do |division|
+        teamlist = Team.where(:league => league).where(:division => division).load
+        records = {}
+        teamlist.each do |team|
+          records[team] = team.records.on_season_date(season,date).first
+          league_records[team] = records[team]
+          overall_records[team] = records[team]
+        end
+
+        maxwml = records.values.map(&:wins_minus_losses).max
+        records.each do |team,record|
+          record.update_column(:gb, (maxwml - record.wins_minus_losses) / 2.to_f)
+        end
+      end
+
+      maxwml = league_records.values.map(&:wins_minus_losses).max
+      league_records.each do |team,record|
+        record.update_column(:league_gb, (maxwml - record.wins_minus_losses) / 2.to_f)
+      end
+    end
+
+    maxwml = overall_records.values.map(&:wins_minus_losses).max
+    overall_records.each do |team,record|
+      record.update_column(:overall_gb, (maxwml - record.wins_minus_losses) / 2.to_f)
+    end
+  end
+
 
   def self.create_or_update_records_for_season_and_dates(season,dates = 'default')
     if(dates == 'default')
@@ -37,55 +157,13 @@ class Record < ApplicationRecord
     dates.each do |date|
       Team.all.each do |team|
         record = self.create_or_update_for_team_and_date(season,team,date)
-        # streak
-        gameslist_through_season_date = team.games.through_season_date(season,date).order(:date)
-        streak_code = ''
-        streak_count = 0
-        gameslist_through_season_date.each do |game|
-          game_code = (game.win? ? 'W' : 'L')
-          if(game_code == streak_code)
-            streak_count += 1
-          else
-            streak_code = game_code
-            streak_count = 1
-          end
-        end
-        record.update_column(:streak, "#{streak_code}#{streak_count}")
+        record.set_streak
+        record.set_last_ten
+        record.set_records_by_opponent
       end
 
-      # gamesback
-      overall_records = {}
-      leagues = Team.group(:league).count(:league)
-      leagues.keys.each do |league|
-        league_records = {}
-        divisions = Team.where(:league => league).group(:division).count(:division)
-        divisions.keys.each do |division|
-          teamlist = Team.where(:league => league).where(:division => division).load
-          records = {}
-          teamlist.each do |team|
-            records[team] = team.records.on_season_date(season,date).first
-            league_records[team] = records[team]
-            overall_records[team] = records[team]
-          end
-
-          maxwml = records.values.map(&:wins_minus_losses).max
-          records.each do |team,record|
-            record.update_column(:gb, (maxwml - record.wins_minus_losses) / 2.to_f)
-          end
-        end
-
-        maxwml = league_records.values.map(&:wins_minus_losses).max
-        league_records.each do |team,record|
-          record.update_column(:league_gb, (maxwml - record.wins_minus_losses) / 2.to_f)
-        end
-      end
-
-      maxwml = overall_records.values.map(&:wins_minus_losses).max
-      overall_records.each do |team,record|
-        record.update_column(:overall_gb, (maxwml - record.wins_minus_losses) / 2.to_f)
-      end
-
-
+      self.set_gb_for_season_and_date(season,date)
+      self.set_wl_groups_for_season_and_date(season,date)
     end
   end
 
@@ -113,29 +191,14 @@ class Record < ApplicationRecord
     record_for_date
   end
 
-  def records_by_opponent
-    if(read_attribute(:records_by_opponent).blank?)
-      self.set_records_by_opponent
-    end
-    read_attribute(:records_by_opponent)
-  end
 
-  def set_records_by_opponent
-    rbo = {}
-    games = self.team.games.through_season_date(season,date)
-    games.each do |g|
-      rbo[g.opponent_id] ||= {:wins => 0, :losses => 0}
-      if(g.win?)
-        rbo[g.opponent_id][:wins] += 1
-      else
-        rbo[g.opponent_id][:losses] += 1
-      end
-    end
-    self.update_attribute(:records_by_opponent, rbo)
-  end
 
   def streak
     (n = read_attribute(:streak)) ? n : 0
+  end
+
+  def last_ten
+    (n = read_attribute(:last_ten)) ? n : [0,0]
   end
 
   def wins
@@ -178,18 +241,6 @@ class Record < ApplicationRecord
     (n = read_attribute(:wins_minus_losses)) ? n : 0
   end
 
-  def last_ten
-    gameslist = team.games.for_season(self.season).through_date(self.date).order("date DESC").limit(10)
-    last_wins = 0; last_losses = 0;
-    gameslist.each do |game|
-      if(game.win?)
-        last_wins += 1;
-      else
-        last_losses += 1;
-      end
-    end
-    "#{last_wins} - #{last_losses}"
-  end
 
   def expected_pct
     if(self.gamescount > 0)
@@ -219,19 +270,30 @@ class Record < ApplicationRecord
   end
 
   def human_wl
-    total_record_against_opponents(Team.human)
+    wl_for_group('human')
   end
 
   def computer_wl
-    total_record_against_opponents(Team.computer)
+    wl_for_group('computer')
   end
 
   def winners_wl
-    total_record_against_opponents(self.class.winning_teams_for_season_date(self.season,self.date))
+    wl_for_group('winners')
   end
 
   def losers_wl
-    total_record_against_opponents(self.class.losing_teams_for_season_date(self.season,self.date))
+    wl_for_group('losers')
+  end
+
+  def wl_for_group(group)
+    if(self.wl_groups.keys.include?(group))
+      {
+        'wins' => self.wl_groups[group].values.map{|h| h['wins']}.sum,
+        'losses' => self.wl_groups[group].values.map{|h| h['losses']}.sum,
+      }
+    else
+      nil
+    end
   end
 
 
@@ -250,15 +312,6 @@ class Record < ApplicationRecord
     {:wins => wins, :losses => losses}
   end
 
-
-  def self.winning_teams_for_season_date(season,date)
-    self.winners.on_season_date(season,date).map(&:team)
-  end
-
-
-  def self.losing_teams_for_season_date(season,date)
-    self.losers.on_season_date(season,date).map(&:team)
-  end
 
 
   def self.create_or_update_final_record_for_season(season)
