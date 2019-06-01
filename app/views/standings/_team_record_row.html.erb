@@ -1,4 +1,3 @@
-<%- date_stat = DateStat.new(:date => date, :team => team, :season => season)%>
 <%- if (team.is_human?) -%>
 <tr class='shaded'>
 <%- else -%>
@@ -6,23 +5,27 @@
 <%- end -%>
   <td>
   <%= inline_svg(team.logo, size: "25px*25px") -%>
-  <%= link_to(team.name, team_path(team,season: season)) %>
+  <%= link_to(team.name, team_path(team,season: record.season)) %>
   </td>
-  <td><%= display_wl([date_stat.wins,date_stat.losses]) %></td>
-  <td><%= number_with_precision(date_stat.win_pct.to_f,:precision => 3)%></td>
-  <td><%= display_gb(date_stat.gb) %></td>
-  <td><%= date_stat.last_ten %></td>
-  <td><%= date_stat.streak %></td>
-  <td><%= date_stat.rf %></td>
-  <td><%= date_stat.ra %></td>
-  <td><%= number_with_precision(date_stat.expected_pct,:precision => 3)%></td>
-  <td><%= display_wl(date_stat.expected_wl) %></td>
-  <td><%= display_wl(date_stat.home_wl) %></td>
-  <td><%= display_wl(date_stat.road_wl) %></td>
-  <td><%= display_wl(date_stat.human_wl) %></td>
-  <td><%= display_wl(date_stat.computer_wl) %></td>
-  <td><%= display_wl(date_stat.winners_wl) %></td>
-  <td><%= display_wl(date_stat.losers_wl) %></td>
-  <td><%= display_gb(date_stat.league_gb) %></td>
-  <td><%= display_gb(date_stat.overall_gb) %></td>
+  <%- if record.nil? -%>
+  <td colspan="17"><em>no records available</em></td>
+  <%- else -%>
+  <td><%= display_wl([record.wins,record.losses]) %></td>
+  <td><%= number_with_precision(record.win_pct.to_f,:precision => 3)%></td>
+  <td><%= display_gb(record.gb) %></td>
+  <td><%= display_wl(record.last_ten) %></td>
+  <td><%= record.streak %></td>
+  <td><%= record.rf %></td>
+  <td><%= record.ra %></td>
+  <td><%= number_with_precision(record.expected_pct,:precision => 3)%></td>
+  <td><%= display_wl(record.expected_wl) %></td>
+  <td><%= display_wl(record.home_wl) %></td>
+  <td><%= display_wl(record.road_wl) %></td>
+  <td><%= display_wl(record.human_wl) %></td>
+  <td><%= display_wl(record.computer_wl) %></td>
+  <td><%= display_wl(record.winners_wl) %></td>
+  <td><%= display_wl(record.losers_wl) %></td>
+  <td><%= display_gb(record.league_gb) %></td>
+  <td><%= display_gb(record.overall_gb) %></td>
+  <%- end -%>
 </tr>

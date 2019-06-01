@@ -6,11 +6,12 @@
 class TeamsController < ApplicationController
 
   def index
+    @standings = Standings.new(@season,@date)
     @team_display = {}
     ['American','National'].each do |league|
       @team_display[league] = {}
       ['East','West'].each do |division|
-        @team_display[league][division] = Team.standings(league: league,division: division,season: @season)
+        @team_display[league][division] = @standings.by_division(league,division)
       end
     end
   end
