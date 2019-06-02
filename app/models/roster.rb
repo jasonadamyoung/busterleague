@@ -136,27 +136,41 @@ class Roster < ApplicationRecord
     playing_time_data['remaining_games'] = games_remaining
     playing_time_data['have_data'] = false
     if(self.is_pitcher?)
-      if(rps = self.get_real_pitching_stat and ps = self.get_total_pitching_stat)
+      if(rps = self.get_real_pitching_stat)
         playing_time_data['have_data'] = true
         playing_time_data['actual_ip'] = rps.ip
         playing_time_data['qualifying_ip'] = (playing_time_data['actual_ip'] / 2.to_f).ceil
-        playing_time_data['ip'] = ps.ip
+        if(ps = self.get_total_pitching_stat)
+          playing_time_data['ip'] = ps.ip
+        else
+          playing_time_data['ip'] = 0
+        end
         need_ip = playing_time_data['qualifying_ip'] -  playing_time_data['ip']
         playing_time_data['need_ip'] = (need_ip >= 0) ? need_ip : 0
         playing_time_data['qualified'] = (need_ip >= 0) ? false : true
       end
     else
-      if(rbs = self.get_real_batting_stat and bs = self.get_total_batting_stat)
+      if(rbs = self.get_real_batting_stat)
         playing_time_data['have_data'] = true
         playing_time_data['actual_ab'] = rbs.ab
         allowed = rbs.ab / 400.to_f
-        playing_time_data['allowed'] = (allowed < 1) ? allowed : 1 
-        playing_time_data['played'] = (bs.g / total_games).to_f
-        playing_time_data['allowed_starts'] = (playing_time_data['allowed'] * 162).ceil
-        playing_time_data['starts'] = bs.gs
-        playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
+        playing_time_data['allowed'] = (allowed < 1) ? allowed : 1
         playing_time_data['qualifying_ab'] = (playing_time_data['actual_ab'] / 2.to_f).ceil
-        playing_time_data['ab'] = bs.ab
+        playing_time_data['allowed_starts'] = (playing_time_data['allowed'] * 162).ceil
+        if(bs = self.get_total_batting_stat) 
+          playing_time_data['played'] = (bs.gs / total_games).to_f
+          playing_time_data['starts'] = bs.gs
+          playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
+          playing_time_data['ab'] = bs.ab
+          need_ab = playing_time_data['qualifying_ab'] -  playing_time_data['ab']
+          playing_time_data['need_ab'] = (need_ab >= 0) ? need_ab : 0
+          playing_time_data['qualified'] = (need_ab >= 0) ? false : true
+        else
+          playing_time_data['played'] = 0
+          playing_time_data['starts'] = 0
+          playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
+          playing_time_data['ab'] = 0
+        end
         need_ab = playing_time_data['qualifying_ab'] -  playing_time_data['ab']
         playing_time_data['need_ab'] = (need_ab >= 0) ? need_ab : 0
         playing_time_data['qualified'] = (need_ab >= 0) ? false : true
