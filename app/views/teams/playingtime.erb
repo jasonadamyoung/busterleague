@@ -1,0 +1,128 @@
+<% @page_title = "#{@team.name} - #{@season} Playing Time Report" %>
+
+<div class="page-header" id="overview">
+  <h1>
+    <%=  link_to(inline_svg(@team.logo, size: "200px*200px"),team_path(@team, season: @season))  -%>
+    <%= @page_title %>
+    <small class="text-muted">Total Games: <%= @gamescount -%> | Remaining Games: <%= 162 - @gamescount -%></small>
+  </h1>
+</div>
+
+  
+  <div class="page-header">
+    <h1>Batters</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Roster Status</th>
+          <th>Actual AB</th>
+          <th>Allowed Playing %</th>
+          <th>% Played</th>
+          <th>Allowed GS</th>
+          <th>GS</th>
+          <th>Remaining GS</th>
+          <th>Qualifying AB</th>
+          <th>Current AB</th>
+          <th>Needed AB</th>
+        </tr>
+      </thead>
+      <tbody>
+          <%- @batters.each do |rp| %>
+            <%- playing_time = rp.playing_time -%>
+            <%- if playing_time['have_data'] -%>
+              <%- if playing_time['qualified'] -%>
+              <tr class="table-success">
+              <%- else -%>
+              <tr class="table-warning">
+              <%- end -%>
+                <td><%= player_season_link(rp.player,@season) -%></td>
+                <td><%= rp.position -%></td>
+                <td><%= rp.status -%></td>
+                <td><%= playing_time['actual_ab'] -%></td>
+                <td><%= number_to_percentage(playing_time['allowed']*100,precision: 0) -%></td>
+                <%- if playing_time['allowed'] == 1 -%>
+                <td>-</td>
+                <td>-</td>
+                <td><%= playing_time['starts'] -%></td>
+                <td>-</td>
+                <%- else -%>
+                <td><%= number_to_percentage(playing_time['played']*100,precision: 0) -%></td>
+                <td><%= playing_time['allowed_starts'] -%></td>
+                <td><%= playing_time['starts'] -%></td>
+                <td><%= playing_time['remaining_starts'] -%></td>
+                <%- end -%>
+                <td><%= playing_time['qualifying_ab'] -%></td>
+                 <td><%= playing_time['ab'] -%></td>
+                <td><%= playing_time['need_ab'] -%></td>
+              </tr>
+            <%- else -%>
+              <tr class="table-danger">
+                <td><%= player_season_link(rp.player,@season) -%></td>
+                <td><%= rp.position -%></td>
+                <td><%= rp.status -%></td>
+                <td colspan='9'><strong>No playing time data available!</strong></td>
+              </tr>
+            <%- end -%>
+          <%- end -%>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+ <div class="page-header">
+    <h1>Pitchers</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Roster Status</th>
+          <th>Actual IP</th>
+          <th>Qualifying IP</th>
+          <th>Current IP</th>
+          <th>Needed IP</th>
+        </tr>
+      </thead>
+      <tbody>
+          <%- @pitchers.each do |rp| %>
+            <%- playing_time = rp.playing_time -%>
+            <%- if playing_time['have_data'] -%>
+              <%- if playing_time['qualified'] -%>
+              <tr class="table-success">
+              <%- else -%>
+              <tr class="table-warning">
+              <%- end -%>
+                <td><%= player_season_link(rp.player,@season) -%></td>
+                <td><%= rp.position -%></td>
+                <td><%= rp.status -%></td>
+                <td><%= display_ip(playing_time['actual_ip']) -%></td>
+                <td><%= playing_time['qualifying_ip'] -%></td>
+                 <td><%= display_ip(playing_time['ip']) -%></td>
+                <td><%= display_ip(playing_time['need_ip']) -%></td>
+              </tr>
+            <%- else -%>
+              <tr class="table-danger">
+                <td><%= player_season_link(rp.player,@season) -%></td>
+                <td><%= rp.position -%></td>
+                <td><%= rp.status -%></td>
+                <td colspan='4'><strong>No playing time data available!</strong></td>
+              </tr>
+            <%- end -%>
+          <%- end -%>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+
+

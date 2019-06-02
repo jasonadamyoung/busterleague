@@ -23,6 +23,13 @@ class TeamsController < ApplicationController
     end
   end
 
+  def playingtime
+    @team = Team.where(id: params[:id]).first
+    @gamescount = @team.records.final_for_season(@season).first.gamescount
+    @batters = @team.rosters.for_season(@season).current.batters.includes(:player).order(:status,:last_name)
+    @pitchers = @team.rosters.for_season(@season).current.pitchers.includes(:player).order(:status,:last_name)
+  end
+
   def wingraphs
   end
 

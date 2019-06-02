@@ -29,12 +29,14 @@ Rails.application.routes.draw do
   scope "/(:season)", :defaults => {:season => 'all'} do
     resources :standings, :only => [:index]
     resources :dmbexport, :only => [:index]
-    resources :players, :only => [:show, :index]
+    resources :players, :only => [:show, :index]   
     resources :teams, :only => [:show, :index]  do
+      member do 
+        get :playingtime
+      end
       collection do
         get :wingraphs
         get :gbgraphs
-        get :crash
       end
     end
   end

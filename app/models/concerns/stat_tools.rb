@@ -21,10 +21,9 @@ module StatTools
     if(roster = Roster.find_roster_for_name_position_team_season(name,
                                                                  save_stats['position'],
                                                                  save_stats['team_id'],
-                                                                 save_stats['season']))
+                                                                 save_stats['season'],
+                                                                 true))
       save_stats['roster_id'] = roster.id
-    else
-      return nil
     end
 
 

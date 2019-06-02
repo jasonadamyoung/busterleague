@@ -67,7 +67,9 @@
   </div>
 
   <div class="page-header">
-    <h1>Roster</h1>
+    <h1>Roster
+    <small class="text-muted">(<%= link_to('Playing Time Report',playingtime_team_path(@team, season: @season)) %>)</small>
+    </h1>
   </div>
   <div class="row">
     <div class="col-md-12">
@@ -77,14 +79,16 @@
           <th>Name</th>
           <th>Position</th>
           <th>Age</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
-          <%- @team.rosters.for_season(@season).includes(:player).each do |rp| %>
+          <%- @team.rosters.for_season(@season).includes(:player).order(:status,:last_name).each do |rp| %>
           <tr>
-            <td><%= player_link(rp.player) -%></td>
+            <td><%= player_season_link(rp.player,@season) -%></td>
             <td><%= rp.position -%></td>
             <td><%= rp.age -%></td>
+            <td><%= rp.status -%></td>
           </tr>
           <%- end -%>
       </tbody>
