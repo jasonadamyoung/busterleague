@@ -68,7 +68,9 @@
 
   <div class="page-header">
     <h1>Roster
+    <%- if (RealBattingStat.for_season(@season).count > 0 and  RealPitchingStat.for_season(@season).count > 0) %>
     <small class="text-muted">(<%= link_to('Playing Time Report',playingtime_team_path(@team, season: @season)) %>)</small>
+    <%- end -%>
     </h1>
   </div>
   <div class="row">

@@ -11,6 +11,9 @@ class RealBattingStat < ApplicationRecord
   has_one :player, through: :roster
   belongs_to :team, optional: true
 
+  scope :for_season, lambda {|season| where(season: season)}
+
+
   def name
     "#{self.first_name} #{self.last_name}"
   end

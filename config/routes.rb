@@ -35,6 +35,7 @@ Rails.application.routes.draw do
         get :playingtime
       end
       collection do
+        get :playingtime
         get :wingraphs
         get :gbgraphs
       end
