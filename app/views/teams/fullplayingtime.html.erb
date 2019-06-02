@@ -43,7 +43,7 @@
               <%- end -%>
                 <td><%= link_to(rp.team.name, playingtime_team_path(rp.team,season: @season)) %></td>
                 <td><%= playing_time['total_games'] -%></td>
-                <td><%= playing_time['remaining_game'] -%></td>
+                <td><%= playing_time['remaining_games'] -%></td>
                 <td><%= player_season_link(rp.player,@season) -%></td>
                 <td><%= rp.position -%></td>
                 <td><%= rp.status -%></td>
@@ -68,7 +68,7 @@
               <tr class="table-danger">
                 <td><%= link_to(rp.team.name, playingtime_team_path(rp.team,season: @season)) %></td>
                 <td><%= playing_time['total_games'] -%></td>
-                <td><%= playing_time['remaining_game'] -%></td>
+                <td><%= playing_time['remaining_games'] -%></td>
                 <td><%= player_season_link(rp.player,@season) -%></td>
                 <td><%= rp.position -%></td>
                 <td><%= rp.status -%></td>
