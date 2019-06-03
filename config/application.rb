@@ -16,5 +16,6 @@ module Busterleague
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
     config.eager_load_paths << Rails.root.join('lib')
+    config.action_mailer.preview_path = "#{Rails.root}/app/mailer_previews"
   end
 end
