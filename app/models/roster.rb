@@ -7,10 +7,12 @@ class Roster < ApplicationRecord
 
   belongs_to :team
   belongs_to :player, optional: true
-  has_many :batting_stats
-  has_many :pitching_stats
+  has_one :batting_stat
+  has_one :pitching_stat
   has_many :game_batting_stats
   has_many :game_pitching_stats
+  has_one :real_batting_stat
+  has_one :real_pitching_stat
   has_many :transaction_logs
 
   before_save  :set_status_code, :set_is_pitcher
@@ -24,6 +26,8 @@ class Roster < ApplicationRecord
   scope :active, -> {where(status_code: STATUS_ACTIVE)}
   scope :reserve, -> {where(status_code: STATUS_RESERVE)}
   scope :traded, -> {where(status_code: STATUS_TRADED)}
+  scope :current, -> {where.not(status_code: STATUS_TRADED)}
+
 
   PITCHING_POSITIONS = ['sp','cl','mr']
   ADJUSTMENT_SEASON = 1999
@@ -81,6 +85,98 @@ class Roster < ApplicationRecord
   def create_or_update_player
     player = Player.create_or_update_from_roster(self)
     self.update_attribute(:player_id, player.id)
+  end
+
+  def get_real_batting_stat
+    if(rbs = self.real_batting_stat)
+      return rbs
+    elsif(trade_status == ACQUIRED_TRADE and rbs = RealBattingStat.where(roster_id: original_roster_id).first)
+      return rbs
+    else
+      return nil
+    end
+  end
+
+  def get_real_pitching_stat
+    if(rps = self.real_pitching_stat)
+      return rps
+    elsif(trade_status == ACQUIRED_TRADE and rps = RealPitchingStat.where(roster_id: original_roster_id).first)
+      return rps
+    else
+      return nil
+    end
+  end
+
+  def get_total_batting_stat
+    bs = self.batting_stat
+    if(trade_status == ACQUIRED_TRADE)
+      if(tbs = BattingStat.where(season: self.season).where(team_id: BattingStat::MULTIPLE_TEAM).where(player_id: self.player_id).first)
+        return tbs
+      end
+    end
+    return bs
+  end
+
+  def get_total_pitching_stat
+    ps = self.pitching_stat
+    if(trade_status == ACQUIRED_TRADE)
+      if(tps = PitchingStat.where(season: self.season).where(team_id: PitchingStat::MULTIPLE_TEAM).where(player_id: self.player_id).first)
+        return tps
+      end
+    end
+    return ps
+  end  
+
+
+  def playing_time
+    playing_time_data = {}
+    total_games = self.team.records.final_for_season(self.season).first.gamescount
+    games_remaining = 162 - total_games
+    playing_time_data['total_games'] = total_games
+    playing_time_data['remaining_games'] = games_remaining
+    playing_time_data['have_data'] = false
+    if(self.is_pitcher?)
+      if(rps = self.get_real_pitching_stat)
+        playing_time_data['have_data'] = true
+        playing_time_data['actual_ip'] = rps.ip
+        playing_time_data['qualifying_ip'] = (playing_time_data['actual_ip'] / 2.to_f).ceil
+        if(ps = self.get_total_pitching_stat)
+          playing_time_data['ip'] = ps.ip
+        else
+          playing_time_data['ip'] = 0
+        end
+        need_ip = playing_time_data['qualifying_ip'] -  playing_time_data['ip']
+        playing_time_data['need_ip'] = (need_ip >= 0) ? need_ip : 0
+        playing_time_data['qualified'] = (need_ip >= 0) ? false : true
+      end
+    else
+      if(rbs = self.get_real_batting_stat)
+        playing_time_data['have_data'] = true
+        playing_time_data['actual_ab'] = rbs.ab
+        allowed = rbs.ab / 400.to_f
+        playing_time_data['allowed'] = (allowed < 1) ? allowed : 1
+        playing_time_data['qualifying_ab'] = (playing_time_data['actual_ab'] / 2.to_f).ceil
+        playing_time_data['allowed_starts'] = (playing_time_data['allowed'] * 162).ceil
+        if(bs = self.get_total_batting_stat) 
+          playing_time_data['played'] = (bs.gs / total_games).to_f
+          playing_time_data['starts'] = bs.gs
+          playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
+          playing_time_data['ab'] = bs.ab
+          need_ab = playing_time_data['qualifying_ab'] -  playing_time_data['ab']
+          playing_time_data['need_ab'] = (need_ab >= 0) ? need_ab : 0
+          playing_time_data['qualified'] = (need_ab >= 0) ? false : true
+        else
+          playing_time_data['played'] = 0
+          playing_time_data['starts'] = 0
+          playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
+          playing_time_data['ab'] = 0
+        end
+        need_ab = playing_time_data['qualifying_ab'] -  playing_time_data['ab']
+        playing_time_data['need_ab'] = (need_ab >= 0) ? need_ab : 0
+        playing_time_data['qualified'] = (need_ab >= 0) ? false : true
+      end
+    end
+    playing_time_data
   end
 
   def self.find_roster_for_name_position_team_season(name,position,team_id,season,is_fullname=false)
@@ -203,6 +299,7 @@ class Roster < ApplicationRecord
       player_details = {}
       player_details['status'] = 'present'
       player_details['name'] = batting_details['name']
+      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = batting_details['p']
       player_details['age'] = batting_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
@@ -214,6 +311,7 @@ class Roster < ApplicationRecord
       player_details = {}
       player_details['status'] = 'present'
       player_details['name'] = pitching_details['name']
+      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = pitching_details['p']
       player_details['age'] = pitching_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)

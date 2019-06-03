@@ -14,4 +14,9 @@ module PlayersHelper
     link_to(player.fullname,player_path(player,season: season)).html_safe
   end
 
+  def display_ip(ip)
+    (integer,decimal) = ip.divmod(1)
+    "#{integer}.#{number_with_precision((decimal*3),precision: 0)}"
+  end
+
 end

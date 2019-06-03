@@ -22,8 +22,8 @@
 	  </tr>
   </thead>
   <tbody>
-    <%- teamlist.each do |team| -%>
-	    <%= render(:partial => 'team_record_row', :locals => {:team => team, :season => @season, :date => @date} )%>
+    <%- teamlist.each do |team,record| -%>
+	    <%= render(:partial => 'team_record_row', :locals => {:team => team, :record => record} )%>
     <%- end -%>
     </tbody>
 </table>

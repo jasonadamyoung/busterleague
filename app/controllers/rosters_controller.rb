@@ -4,4 +4,5 @@
 # see LICENSE file
 
 class RostersController < ApplicationController
+
 end
