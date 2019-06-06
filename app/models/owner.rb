@@ -31,7 +31,9 @@ class Owner < ApplicationRecord
   end
 
   def team
-    if(self.teams.blank?)
+    if(self.id == self.class.computer_id)
+      Team.computer.order("RANDOM()").first
+    elsif(self.teams.blank?)
       return nil
     else
       self.teams[0]
