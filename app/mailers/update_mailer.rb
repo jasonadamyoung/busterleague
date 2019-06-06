@@ -10,6 +10,7 @@ class UpdateMailer < ApplicationMailer
 
   def update_email
     @owner = params[:owner]
+    @team = @owner.team
     @subject = "#{@owner.nickname} : Your BusterLeague Update"
 
     if(!@owner.email.blank?)
