@@ -327,6 +327,13 @@ class Team < ApplicationRecord
     Team.all.each do |t|
       t.update_pitching_stats_for_season(season)
     end
-  end   
+  end
+  
+  def self.send_owner_emails
+    self.human.each do |team|
+      team.owner.send_update_email
+    end
+    true
+  end
 
 end

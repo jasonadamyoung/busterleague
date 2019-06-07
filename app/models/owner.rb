@@ -15,6 +15,7 @@ class Owner < ApplicationRecord
   has_many :wantedplayers,-> { select("wanteds.highlight as highlight, players.*") }, :through => :wanteds, :source => :player
   belongs_to :primary_owner, :class_name => 'Owner'
 
+  scope 
 
   def fullname
     if(!self.firstname.blank? and !self.lastname.blank?)
@@ -65,12 +66,6 @@ class Owner < ApplicationRecord
 
   def send_update_email
     UpdateMailer.with(owner: self).update_email.deliver
-  end
-
-  def self.send_update_emails
-    self.human.each do |owner|
-      owner.send_update_email
-    end
   end
 
  
