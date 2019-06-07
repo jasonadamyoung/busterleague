@@ -102,6 +102,7 @@ gem 'bootstrap-email'
 
 # inline svg for team logos
 gem 'inline_svg'
+gem 'rmagick'
 
 
 

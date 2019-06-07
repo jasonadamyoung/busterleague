@@ -42,6 +42,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/teamlogo/:id/:filename', to: "welcome#teamlogo", :as => 'teamlogo'
+  
   get '/ss', to: "welcome#ss", :as => 'setseason'
 
   get '/logout' => 'sessions#end', :as => 'logout'

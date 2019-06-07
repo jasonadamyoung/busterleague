@@ -1,0 +1,64 @@
+<preview>Busterleague Updates!</preview>
+<div class="container">
+
+
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h4 class="text-center">Your <%= Game.current_season %> Busterleague Update</h4>
+      <img class="mx-auto" width="100" height="100" src="<%= teamlogo_url(id: @team.id, filename: 'email.png') -%>" />
+      <h2 class="text-center"><%= @team.name -%></h2>
+      <hr/>
+
+  
+      <h3 class="text-center"><%= display_wl([@teamrecord.wins,@teamrecord.losses]) %></h3>
+      <h5 class="text-center">
+      <%- if @teamrecord.gb == 0 -%>
+        <i class="fa fa-trophy fa-3x"></i> First Place!
+      <%- else -%>
+        <%= display_gb(@teamrecord.gb) %> Games Back
+      <%- end -%>
+      </h5>
+      <hr/>
+      <h5 class="text-center">Recent Games</h5>
+      <table class="table table-striped">
+        <tbody>
+            <%- @team.games.for_season(Game.current_season).order("date DESC").limit(10).each do |game| -%>
+            <tr>
+              <td><%= link_to((game.home? ? 'vs.' : '@') + " #{game.opponent.name}",  boxscore_url(game.boxscore))%></td>
+              <td><%= (game.win? ? 'W' : 'L')%></td>
+              <td><%= display_score(game.score)%></td>
+              <td><%= game.total_innings %></td>
+            </tr>
+          <%- end -%>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm">
+            <div class="text-center">         
+              <%= link_to("#{Game.current_season} Standings", standings_url(season: Game.current_season), class: 'btn btn-primary') -%>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <div class="text-center">         
+            <%= link_to("Team Details", team_url(@team,season: Game.current_season), class: 'btn btn-primary') -%>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <div class="text-center">         
+            <%= link_to("Playing Time Report", playingtime_team_url(@team,season: Game.current_season), class: 'btn btn-primary') -%>
+            </div>
+        </div>    
+      </div>
+    </div>
+  </div>
+
+
+</div>

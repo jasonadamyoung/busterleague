@@ -31,7 +31,9 @@ class Owner < ApplicationRecord
   end
 
   def team
-    if(self.teams.blank?)
+    if(self.id == self.class.computer_id)
+      Team.computer.order("RANDOM()").first
+    elsif(self.teams.blank?)
       return nil
     else
       self.teams[0]
@@ -60,6 +62,18 @@ class Owner < ApplicationRecord
   def clear_token
     self.update_column(:token,nil)
   end
+
+  def send_update_email
+    UpdateMailer.with(owner: self).update_email.deliver
+  end
+
+  def self.send_update_emails
+    self.human.each do |owner|
+      owner.send_update_email
+    end
+  end
+
+ 
 
 
 end

@@ -1,4 +1,6 @@
 class AuthMailer < ApplicationMailer
+  layout 'mailer'
+  
   def create_mail(options = {})
     mail(options) do |format|
       format.text
