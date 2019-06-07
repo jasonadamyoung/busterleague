@@ -63,5 +63,17 @@ class Owner < ApplicationRecord
     self.update_column(:token,nil)
   end
 
+  def send_update_email
+    UpdateMailer.with(owner: self).update_email.deliver
+  end
+
+  def self.send_update_emails
+    self.human.each do |owner|
+      owner.send_update_email
+    end
+  end
+
+ 
+
 
 end

@@ -1,47 +1,64 @@
 <preview>Busterleague Updates!</preview>
 <div class="container">
 
+
+
   <div class="card mb-4">
     <div class="card-body">
-      
+      <h4 class="text-center">Your <%= Game.current_season %> Busterleague Update</h4>
       <img class="mx-auto" width="100" height="100" src="<%= teamlogo_url(id: @team.id, filename: 'email.png') -%>" />
-      <h4 class="text-center"><%= @team.name -%></h4>
-      <h5 class="text-muted text-center">2018 Record:</h5>
-
+      <h2 class="text-center"><%= @team.name -%></h2>
       <hr/>
 
-      <h5 class="text-center"><strong>Ride Details</strong></h5>
-      <table class="table">
+  
+      <h3 class="text-center"><%= display_wl([@teamrecord.wins,@teamrecord.losses]) %></h3>
+      <h5 class="text-center">
+      <%- if @teamrecord.gb == 0 -%>
+        <i class="fa fa-trophy fa-3x"></i> First Place!
+      <%- else -%>
+        <%= display_gb(@teamrecord.gb) %> Games Back
+      <%- end -%>
+      </h5>
+      <hr/>
+      <h5 class="text-center">Recent Games</h5>
+      <table class="table table-striped">
         <tbody>
-          <tr>
-            <td style="border-top: 0;">Lyft fare (2.62mi, 13m 10s)</td>
-            <td style="border-top: 0;" class="text-right">$11.87</td>
-          </tr>
-          <tr>
-            <td>
-              <img class="pr-2 float-left" height="20" width="32" src="https://s3.amazonaws.com/lyft.zimride.com/images/emails/credit_icons/cc_apple_pay.png"/>Apple Pay (MasterCard)
-            </td>
-            <td>
-              <h4 class="text-right"><strong>$11.87</strong></h4>
-            </td>
-          </tr>
+            <%- @team.games.for_season(Game.current_season).order("date DESC").limit(10).each do |game| -%>
+            <tr>
+              <td><%= link_to((game.home? ? 'vs.' : '@') + " #{game.opponent.name}",  boxscore_url(game.boxscore))%></td>
+              <td><%= (game.win? ? 'W' : 'L')%></td>
+              <td><%= display_score(game.score)%></td>
+              <td><%= game.total_innings %></td>
+            </tr>
+          <%- end -%>
         </tbody>
       </table>
-
     </div>
   </div>
 
-  <div class="card w-100 mb-4">
+  <div class="card mb-4">
     <div class="card-body">
-      <img width="50" height="50" class="mx-auto" src="https://s3.amazonaws.com/lyft.zimride.com/images/emails/enterprise/briefcase_dark_large.png">
-      <h4 class="text-center">Make expensing business rides easy</h4>
-      <p class="text-center">Enable business profile on Lyft to make expensing rides quick and easy.</p>
-      <a class="btn btn-primary btn-lg mx-auto mt-2" href="https://lyft.com">Get Business Profile</a>
+      <div class="row">
+        <div class="col-sm">
+            <div class="text-center">         
+              <%= link_to("#{Game.current_season} Standings", standings_url(season: Game.current_season), class: 'btn btn-primary') -%>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <div class="text-center">         
+            <%= link_to("Team Details", team_url(@team,season: Game.current_season), class: 'btn btn-primary') -%>
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <div class="text-center">         
+            <%= link_to("Playing Time Report", playingtime_team_url(@team,season: Game.current_season), class: 'btn btn-primary') -%>
+            </div>
+        </div>    
+      </div>
     </div>
   </div>
-
-  <div class="text-center text-muted">Pricing FAQ · Help Center</div>
-  <div class="text-center text-muted mb-4">Map data © OpenStreetMap contributors</div>
 
 
 </div>

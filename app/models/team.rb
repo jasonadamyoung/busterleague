@@ -47,6 +47,10 @@ class Team < ApplicationRecord
     end
   end
 
+  def record_for_season(season)
+    self.records.final_for_season(season).first
+  end
+
   def win_pct_plot_data(season)
     win_pcts = []
     x_pcts = []
@@ -56,26 +60,6 @@ class Team < ApplicationRecord
       x_pcts << [record.date, ((record.rf**(exponent)) / ( (record.rf**(exponent)) + (record.ra**(exponent)) )).to_f]
     end
     {:labels => ['Win %','Expected %'],:data => [win_pcts] + [x_pcts]}
-  end
-
-  def self.standings(options = {})
-    league = options[:league] 
-    division = options[:division]
-    season = options[:season] || Game.current_season
-    date = options[:date] || Game.latest_date(season)
-  
-    scope = Team.all
-    if(league != 'all')
-      scope = scope.where(:league => league)
-    end
-
-    if(division != 'all')
-      scope = scope.where(:division => division)
-    end  
-
-    teamlist = scope.load.to_a
-    teamlist.sort!{|a,b| b.wins_minus_losses(season,date) <=> a.wins_minus_losses(season,date) }
-    teamlist
   end
 
   def self.win_pct_plot_data(season)

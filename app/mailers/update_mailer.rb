@@ -1,5 +1,7 @@
 class UpdateMailer < ApplicationMailer
   layout 'mailer'
+  helper :teams
+  helper :mailer
 
   def create_mail(options = {})
     make_bootstrap_mail(options) do |format|
@@ -11,6 +13,7 @@ class UpdateMailer < ApplicationMailer
   def update_email
     @owner = params[:owner]
     @team = @owner.team
+    @teamrecord = @team.record_for_season(Game.current_season)
     @subject = "#{@owner.nickname} : Your BusterLeague Update"
 
     if(!@owner.email.blank?)
