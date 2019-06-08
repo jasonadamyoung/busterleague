@@ -67,30 +67,82 @@
   </div>
 
   <div class="page-header">
-    <h1>Roster
+    <h1>Roster Stats
     <%- if (RealBattingStat.for_season(@season).count > 0 and  RealPitchingStat.for_season(@season).count > 0) %>
     <small class="text-muted">(<%= link_to('Playing Time Report',playingtime_team_path(@team, season: @season)) %>)</small>
     <%- end -%>
     </h1>
   </div>
+
+  <div class="page-header">
+    <h3>Hitting</h3>
+  </div>  
+
   <div class="row">
     <div class="col-md-12">
       <table class="table table-sm table-bordered">
       <thead>
         <tr>
           <th>Name</th>
-          <th>Position</th>
-          <th>Age</th>
           <th>Status</th>
+          <th>Position</th>
+          <% DefinedStat.batting.core.order(:default_display_order).pluck('name').each do |name| %>
+            <th><%= name %></th>
+          <%- end -%>
         </tr>
       </thead>
       <tbody>
-          <%- @team.rosters.for_season(@season).includes(:player).order(:status,:last_name).each do |rp| %>
+          <%- @team.rosters.for_season(@season).includes(:player,:batting_stat).order("is_pitcher ASC",:status,:last_name).each do |rp| %>
+          <%- bs = rp.batting_stat -%>
           <tr>
             <td><%= player_season_link(rp.player,@season) -%></td>
-            <td><%= rp.position -%></td>
-            <td><%= rp.age -%></td>
             <td><%= rp.status -%></td>
+            <td><%= rp.position -%></td>
+            <% DefinedStat.batting.core.order(:default_display_order).pluck('name').each do |name| %>
+              <%- if bs -%>
+              <td><%= display_stat(bs,name) -%></td>
+              <%- else -%>
+              <td>-</td>
+              <%- end -%>
+            <%- end -%>
+          </tr>
+          <%- end -%>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+    <div class="page-header">
+    <h3>Pitching</h3>
+  </div>  
+
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Position</th>
+          <% DefinedStat.pitching.core.order(:default_display_order).pluck('name').each do |name| %>
+            <th><%= name %></th>
+          <%- end -%>
+        </tr>
+      </thead>
+      <tbody>
+          <%- @team.rosters.pitchers.for_season(@season).includes(:player,:pitching_stat).order(:status,:last_name).each do |rp| %>
+          <%- ps = rp.pitching_stat -%>
+          <tr>
+            <td><%= player_season_link(rp.player,@season) -%></td>
+            <td><%= rp.status -%></td>
+            <td><%= rp.position -%></td>
+            <% DefinedStat.pitching.core.order(:default_display_order).pluck('name').each do |name| %>
+              <%- if ps -%>
+              <td><%= display_stat(ps,name) -%></td>
+              <%- else -%>
+              <td>-</td>
+              <%- end -%>
+            <%- end -%>
           </tr>
           <%- end -%>
       </tbody>
