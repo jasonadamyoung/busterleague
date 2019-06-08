@@ -17,7 +17,7 @@ class TeamsController < ApplicationController
   end
 
   def show
-    @team = Team.where(id: params[:id]).first
+    @team = Team.find_by!(id: params[:id])
     if(@season == 'all')
       return render('showall')
     end
@@ -25,10 +25,10 @@ class TeamsController < ApplicationController
 
   def playingtime
     if(params[:id])
-    @team = Team.where(id: params[:id]).first
-    @gamescount = @team.records.final_for_season(@season).first.gamescount
-    @batters = @team.rosters.for_season(@season).current.batters.includes(:player).order(:status,:last_name)
-    @pitchers = @team.rosters.for_season(@season).current.pitchers.includes(:player).order(:status,:last_name)
+      @team = Team.find_by!(id: params[:id])
+      @gamescount = @team.records.final_for_season(@season).first.gamescount
+      @batters = @team.rosters.for_season(@season).current.batters.includes(:player).order(:status,:last_name)
+      @pitchers = @team.rosters.for_season(@season).current.pitchers.includes(:player).order(:status,:last_name)
     else
       @batters = Roster.for_season(@season).current.batters.includes(:player,:real_batting_stat,:real_pitching_stat).joins(:team).order("teams.name",:last_name)
       @pitchers = Roster.for_season(@season).current.pitchers.includes(:player,:real_batting_stat,:real_pitching_stat).joins(:team).order("teams.name",:last_name)

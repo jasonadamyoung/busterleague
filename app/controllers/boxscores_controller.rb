@@ -9,7 +9,7 @@ class BoxscoresController < ApplicationController
   end
 
   def show
-    @boxscore = Boxscore.where(id: params[:id]).first
+    @boxscore = Boxscore.find_by!(id: params[:id])
   end
 
 end
