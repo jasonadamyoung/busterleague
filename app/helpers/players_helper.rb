@@ -19,4 +19,22 @@ module PlayersHelper
     "#{integer}.#{number_with_precision((decimal*3),precision: 0)}"
   end
 
+  def display_stat(stat_object,stat_name)
+    if(stat = stat_object.send(stat_name))
+      if(stat_name == 'ip')
+        display_ip(stat)
+      elsif(stat.is_a?(Float))
+        if(!precision = DefinedStat::PRECISIONS[stat_name])
+          precision = 1
+        end
+        number_with_precision(stat,precision: precision)
+      else
+        number_with_precision(stat,precision: 0)
+      end
+    else
+      '-'
+    end
+  end
+
+
 end
