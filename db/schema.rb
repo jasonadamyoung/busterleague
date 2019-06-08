@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_01_180218) do
+ActiveRecord::Schema.define(version: 2019_06_08_152734) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,6 +111,17 @@ ActiveRecord::Schema.define(version: 2019_06_01_180218) do
     t.index ["date"], name: "boxscore_date_ndx"
     t.index ["name", "season"], name: "name_ndx", unique: true
     t.index ["season"], name: "boxscore_season_ndx"
+  end
+
+  create_table "defined_stats", force: :cascade do |t|
+    t.string "name", limit: 255
+    t.integer "player_type", default: 1, null: false
+    t.integer "category_code", default: 0, null: false
+    t.integer "sort_direction", default: 1, null: false
+    t.integer "stat_code", default: 1, null: false
+    t.integer "default_display_order", default: 999, null: false
+    t.text "definition"
+    t.index ["name", "player_type"], name: "defined_stat_ndx", unique: true
   end
 
   create_table "game_batting_stats", force: :cascade do |t|
