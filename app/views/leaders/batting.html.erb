@@ -1,0 +1,21 @@
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <h1 class="display-4">Batting Leaders</h1>
+  <p class="lead">
+    <%- if @season != 'all' -%>
+      <%= @season%> season
+    <%- end -%>
+  </p>
+</div>
+
+<% stat_fields.each do | stat_fields_row |  %>
+<div class="card-deck">
+<% stat_fields_row.each do | defined_stat |  %>
+  <div class="card">
+    <div class="card-header"><%= display_leader_label(defined_stat) -%></div>
+    <div class="card-body">
+
+    </div>
+  </div>
+<%- end -%>
+</div>
+<%- end -%>

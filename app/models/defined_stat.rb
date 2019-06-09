@@ -41,6 +41,26 @@ class DefinedStat < ApplicationRecord
     "cera" => 2
   }
 
+  def leader_order
+    # pick the opposite direction to get the "top ten"
+    sd = (sort_direction == ASCENDING) ? 'DESC' : 'ASC'
+    "#{name} #{sd}"
+  end
+
+  def leaders_for_season(season,limit)
+    case player_type
+    when BATTING
+      BattingStat.for_season(season).totals.order(leader_order).limit(limit)
+    when PITCHING
+      PitchingStat.for_season(season).totals.order(leader_order).limit(limit)
+    else 
+      nil
+    end
+  end
+
+
+
+
 
 end
 

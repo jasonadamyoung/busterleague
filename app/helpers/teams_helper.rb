@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # === COPYRIGHT:
 # Copyright (c) Jason Adam Young
 # === LICENSE:
