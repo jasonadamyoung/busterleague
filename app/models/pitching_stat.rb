@@ -12,8 +12,13 @@ class PitchingStat < ApplicationRecord
   before_save :set_singles
 
   scope :for_season, lambda {|season| where(season: season)}
+  scope :totals, ->{where(is_total: true)}
+  scope :players, ->{where("player_id <> #{NO_PLAYER}")}
+  scope :ip_eligible, ->{where("ip >= (eligible_games * 1.0)")}
+  scope :multi_team, ->{where(team_id: MULTIPLE_TEAM)}
 
   MULTIPLE_TEAM = 0
+  NO_PLAYER = 0
 
   def self.dump_data
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
@@ -82,6 +87,7 @@ class PitchingStat < ApplicationRecord
   end
 
   def self.update_total_pitching_stats_for_season(season)
+    eligible_games = Game.for_season(season).group('team_id').count.values.max
     allowed_attributes = PitchingStat.column_names
     all_pitching_data = self.get_pitching_data(season)
     total_pitching_data = all_pitching_data.select{|hashkey,data| data['team'].empty?}
@@ -92,6 +98,8 @@ class PitchingStat < ApplicationRecord
       if(!(pitching_stat = PitchingStat.where(season: season).where(roster_id: MULTIPLE_TEAM).where(team_id: MULTIPLE_TEAM).where(name: name).first))
         pitching_stat = PitchingStat.new(roster_id: MULTIPLE_TEAM, team_id: MULTIPLE_TEAM, season: season, name: name)
         pitching_stat[:player_id] = player_id
+        pitching_stat[:is_total] = true
+        pitching_stat[:eligible_games] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -99,8 +107,11 @@ class PitchingStat < ApplicationRecord
           end
         end
         pitching_stat.save!
+        pitching_stat.fix_total_flags
       else
         pitching_stat[:player_id] = player_id
+        pitching_stat[:is_total] = true
+        pitching_stat[:eligible_games] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -108,10 +119,28 @@ class PitchingStat < ApplicationRecord
           end
         end
         pitching_stat.save!
+        pitching_stat.fix_total_flags
       end
     end
     total_pitching_data
   end   
+
+  def self.fix_total_flags
+    self.multi_team.each do |stat|
+      stat.fix_total_flags
+    end
+  end
+
+  def fix_total_flags
+    return false if(self.team_id != MULTIPLE_TEAM)
+    return false if(self.player_id == NO_PLAYER)
+
+    results = self.class.where(season: self.season).where(player_id: self.player_id).where("team_id <> ?",MULTIPLE_TEAM)
+    results.each do |stat|
+      stat.update_column(:is_total,false)
+    end
+    true
+  end  
 
 end
 

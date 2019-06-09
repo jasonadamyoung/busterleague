@@ -41,6 +41,33 @@ class DefinedStat < ApplicationRecord
     "cera" => 2
   }
 
+  PA_ELIGIBLE_ONLY = ['avg','obp','spc','ops','k','tavg','sec']
+  IP_ELIGIBLE_ONLY = ['era','bb_per_9','h_per_9','r_per_9','k_per_9','hr_per_9']
+
+  def leader_order
+    # pick the opposite direction to get the "top ten"
+    sd = (sort_direction == ASCENDING) ? 'DESC' : 'ASC'
+    "#{name} #{sd}"
+  end
+
+  def leaders_for_season(season,limit)
+    case player_type
+    when BATTING
+      if(PA_ELIGIBLE_ONLY.include?(self.name))
+        BattingStat.players.for_season(season).totals.pa_eligible.order(leader_order).limit(limit)
+      else
+        BattingStat.players.for_season(season).totals.order(leader_order).limit(limit)
+      end
+    when PITCHING
+      if(PA_ELIGIBLE_ONLY.include?(self.name))
+        PitchingStat.players.for_season(season).totals.ip_eligible.order(leader_order).limit(limit)
+      else
+        PitchingStat.players.for_season(season).totals.order(leader_order).limit(limit)
+      end
+    else 
+      nil
+    end
+  end
 
 end
 

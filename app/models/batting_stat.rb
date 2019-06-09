@@ -12,8 +12,13 @@ class BattingStat < ApplicationRecord
   before_save :set_singles
 
   scope :for_season, lambda {|season| where(season: season)}
+  scope :players, ->{where("player_id <> #{NO_PLAYER}")}
+  scope :totals, ->{where(is_total: true)}
+  scope :pa_eligible, ->{where("pa >= (eligible_games * 3.1)")}
+  scope :multi_team, ->{where(team_id: MULTIPLE_TEAM)}
 
   MULTIPLE_TEAM = 0
+  NO_PLAYER = 0
 
   def self.dump_data
     self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
@@ -79,9 +84,25 @@ class BattingStat < ApplicationRecord
     end
   end
 
+  def self.fix_total_flags
+    self.multi_team.each do |stat|
+      stat.fix_total_flags
+    end
+  end
 
+  def fix_total_flags
+    return false if(self.team_id != MULTIPLE_TEAM)
+    return false if(self.player_id == NO_PLAYER)
+
+    results = self.class.where(season: self.season).where(player_id: self.player_id).where("team_id <> ?",MULTIPLE_TEAM)
+    results.each do |stat|
+      stat.update_column(:is_total,false)
+    end
+    true
+  end
 
   def self.update_total_batting_stats_for_season(season)
+    eligible_games = Game.for_season(season).group('team_id').count.values.max
     allowed_attributes = BattingStat.column_names
     all_batting_data = self.get_batting_data(season)
     total_batting_data = all_batting_data.select{|hashkey,data| data['team'].empty?}
@@ -93,6 +114,8 @@ class BattingStat < ApplicationRecord
       if(!(batting_stat = BattingStat.where(season: season).where(roster_id: MULTIPLE_TEAM).where(team_id: MULTIPLE_TEAM).where(name: name).first))
         batting_stat = BattingStat.new(roster_id: MULTIPLE_TEAM, team_id: MULTIPLE_TEAM, season: season, name: name)
         batting_stat[:player_id] = player_id
+        batting_stat[:is_total] = true
+        batting_stat[:eligible_games] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -100,8 +123,11 @@ class BattingStat < ApplicationRecord
           end
         end
         batting_stat.save!
+        batting_stat.fix_total_flags
       else
         batting_stat[:player_id] = player_id
+        batting_stat[:is_total] = true
+        batting_stat[:eligible_games] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -109,6 +135,7 @@ class BattingStat < ApplicationRecord
           end
         end
         batting_stat.save!
+        batting_stat.fix_total_flags
       end
     end
     total_batting_data

@@ -203,6 +203,7 @@ class Team < ApplicationRecord
 
 
   def update_batting_stats_for_season(season)
+    eligible_games = self.games.for_season(season).count
     allowed_attributes = BattingStat.column_names
     batting_data = self.get_batting_data(season)
     name_matcher = position_data_roster_matcher(batting_data,season)
@@ -216,6 +217,7 @@ class Team < ApplicationRecord
         else
           batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name)
         end
+        batting_stat['eligible_games'] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -224,6 +226,7 @@ class Team < ApplicationRecord
         end
         batting_stat.save!
       else
+        batting_stat['eligible_games'] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -237,6 +240,7 @@ class Team < ApplicationRecord
   end
 
   def update_pitching_stats_for_season(season)
+    eligible_games = self.games.for_season(season).count
     allowed_attributes = PitchingStat.column_names
     pitching_data = self.get_pitching_data(season)
     name_matcher = position_data_roster_matcher(pitching_data,season)
@@ -250,6 +254,7 @@ class Team < ApplicationRecord
         else
           pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name)
         end        
+        pitching_stat['eligible_games'] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
@@ -258,6 +263,7 @@ class Team < ApplicationRecord
         end
         pitching_stat.save!
       else
+        pitching_stat['eligible_games'] = eligible_games
         stats.each do |name,value|
           name = 'position' if(name == 'p') # relabel
           if(allowed_attributes.include?(name))
