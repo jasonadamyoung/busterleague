@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 2019_06_09_150340) do
     t.integer "g"
     t.integer "age"
     t.integer "player_id"
+    t.integer "eligible_games", default: 0, null: false
     t.boolean "is_total", default: true, null: false
     t.index ["roster_id", "name", "season", "team_id"], name: "batstat_ndx", unique: true
   end
@@ -376,6 +377,7 @@ ActiveRecord::Schema.define(version: 2019_06_09_150340) do
     t.string "last_name"
     t.integer "age"
     t.integer "player_id"
+    t.integer "eligible_games", default: 0, null: false
     t.boolean "is_total", default: true, null: false
     t.index ["name", "season", "team_id"], name: "pitchstat_ndx", unique: true
   end
