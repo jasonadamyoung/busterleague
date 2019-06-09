@@ -40,6 +40,12 @@ Rails.application.routes.draw do
         get :gbgraphs
       end
     end
+    resources :leaders, :only => [:index] do
+      collection do
+        get :batting
+        get :pitching
+      end
+    end
   end
 
   get '/teamlogo/:id/:filename', to: "welcome#teamlogo", :as => 'teamlogo'
