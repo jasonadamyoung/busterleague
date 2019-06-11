@@ -41,7 +41,7 @@ class DefinedStat < ApplicationRecord
     "cera" => 2
   }
 
-  PA_ELIGIBLE_ONLY = ['avg','obp','spc','ops','k','tavg','sec']
+  PA_ELIGIBLE_ONLY = ['avg','obp','spc','ops','k','tavg','sec','rc27','iso']
   IP_ELIGIBLE_ONLY = ['era','bb_per_9','h_per_9','r_per_9','k_per_9','hr_per_9']
 
   def leader_order

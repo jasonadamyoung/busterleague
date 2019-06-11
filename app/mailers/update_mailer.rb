@@ -1,7 +1,6 @@
 class UpdateMailer < ApplicationMailer
   layout 'mailer'
   helper :teams
-  helper :mailer
 
   def create_mail(options = {})
     make_bootstrap_mail(options) do |format|

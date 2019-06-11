@@ -284,7 +284,7 @@ class Team < ApplicationRecord
     rp.roster.each do |hashkey,player_details|
       Roster.create_or_update_roster_player_for_season_by_team(season,self,player_details)
     end
-    self.roster.for_season(season).count
+    self.rosters.for_season(season).count
   end
 
   def create_or_update_traded_rosters_for_season(season)
