@@ -17,6 +17,7 @@ class Team < ApplicationRecord
   has_many :batting_stats
   has_many :pitching_stats
   has_many :transaction_logs
+  has_many :team_seasons
 
 
   scope :human, lambda { where("owner_id <> #{Owner.computer_id}")}
@@ -26,9 +27,6 @@ class Team < ApplicationRecord
   scope :national, lambda { where(:league => 'National')}
   scope :east, lambda { where(:division => 'East')}
   scope :west, lambda { where(:division => 'West')}
-
-  scope :d1, lambda { where(:league => 'd1')}
-  scope :d2, lambda { where(:league => 'd2')}
 
   def logo
     StringIO.new(self.svglogo)

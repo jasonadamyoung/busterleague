@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_09_150340) do
+ActiveRecord::Schema.define(version: 2019_06_12_231615) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -560,6 +560,20 @@ ActiveRecord::Schema.define(version: 2019_06_09_150340) do
     t.datetime "updated_at", null: false
     t.index ["datafile_fingerprint"], name: "statsheet_fingerprint_ndx", unique: true
     t.index ["owner_id"], name: "index_stat_sheets_on_owner_id"
+  end
+
+  create_table "team_seasons", force: :cascade do |t|
+    t.integer "season", limit: 2, null: false
+    t.integer "team_id", limit: 2, null: false
+    t.string "abbrev", limit: 3, default: "", null: false
+    t.integer "owner_id", limit: 2, null: false
+    t.string "league", limit: 10, default: "", null: false
+    t.string "division", limit: 4, default: "", null: false
+    t.integer "web_team_id", limit: 2
+    t.boolean "div_win", default: false, null: false
+    t.boolean "lcs_win", default: false, null: false
+    t.boolean "ws_win", default: false, null: false
+    t.index ["season", "team_id"], name: "ts_ndx", unique: true
   end
 
   create_table "teams", force: :cascade do |t|
