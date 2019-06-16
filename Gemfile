@@ -52,7 +52,7 @@ gem 'jquery-datatables'
 # in place editing
 gem "best_in_place"
 # move to font-awesome
-gem "font-awesome-rails"
+gem "font-awesome-sass"
 
 # configuration
 gem 'config'

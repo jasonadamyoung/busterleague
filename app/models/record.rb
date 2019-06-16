@@ -7,7 +7,7 @@ class Record < ApplicationRecord
   include ActiveModel::AttributeAssignment
   extend CleanupTools
 
-	belongs_to :team
+  belongs_to :team
   before_save :set_win_minus_losses
 
   scope :winners, -> { where("games > 0").where("wins / games::float > .5") }
@@ -18,6 +18,10 @@ class Record < ApplicationRecord
   
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses
+  end
+
+  def team_season
+    self.team.team_seasons.for_season(self.season).first
   end
 
   def gameslist
@@ -40,8 +44,6 @@ class Record < ApplicationRecord
 
   def wl_group_idlist
     idlist = {}
-    idlist['human'] = Team.human.pluck(:id).map(&:to_s)
-    idlist['computer'] = Team.computer.pluck(:id).map(&:to_s)
     idlist['winners'] = self.class.winners.for_season(self.season).pluck(:team_id).map(&:to_s)
     idlist['losers'] = self.class.losers.for_season(self.season).pluck(:team_id).map(&:to_s)
     idlist
@@ -243,14 +245,6 @@ class Record < ApplicationRecord
     g = self.try(:road_games) || 0
     w =  self.try(:road_wins) || 0
     [w,g-w]
-  end
-
-  def human_wl
-    wl_for_group('human')
-  end
-
-  def computer_wl
-    wl_for_group('computer')
   end
 
   def winners_wl

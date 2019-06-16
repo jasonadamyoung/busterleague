@@ -15,6 +15,7 @@
     <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr>
+          <th>&nbsp;</th>
           <th>Season</th>
           <th>W-L</th>
           <th>PCT</th>
@@ -32,7 +33,17 @@
       <tbody>
         <%- Game.available_seasons.each do |season| -%>
           <tr>
-            <%- record = @team.records.for_season(season).first %>
+            <%- record = @team.records.for_season(season).first 
+                team_season = record.team_season -%>
+            <td>
+              <%= owner_icon(team_season) -%>
+              <%- if team_season.lcs_win? -%>
+                <%= lcs_win_icon -%>
+              <%- end -%>
+              <%- if team_season.ws_win? -%>
+                <%= ws_win_icon -%>
+              <%- end -%> 
+            </td>
             <td><%= link_to(season,team_path(@team,season: season)) %></td>
             <%- if record.nil? -%>
             <td colspan="13"><em>no records available</em></td>

@@ -14,7 +14,7 @@
       <h3 class="text-center"><%= display_wl([@teamrecord.wins,@teamrecord.losses]) %></h3>
       <h5 class="text-center">
       <%- if @teamrecord.gb == 0 -%>
-        <i class="fa fa-trophy fa-3x"></i> First Place!
+        <i class="fas fa-trophy fa-3x"></i> First Place!
       <%- else -%>
         <%= display_gb(@teamrecord.gb) %> Games Back
       <%- end -%>
