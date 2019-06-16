@@ -7,7 +7,9 @@ class TeamBattingStat < ApplicationRecord
   extend CleanupTools
 
   belongs_to :team
-  
+
+  before_save :set_singles
+
   scope :for_season, lambda {|season| where(season: season)}
 
   def self.rebuild_all()
@@ -17,6 +19,10 @@ class TeamBattingStat < ApplicationRecord
         team.update_team_batting_stats_for_season(season)
       end
     end
+  end
+
+  def set_singles
+    self.h1b = (h - (h3b+h2b+hr))
   end
 
 end

@@ -8,6 +8,8 @@ class TeamPitchingStat < ApplicationRecord
 
   belongs_to :team
   
+  before_save :set_singles
+
   scope :for_season, lambda {|season| where(season: season)}
 
   def self.rebuild_all
@@ -18,4 +20,12 @@ class TeamPitchingStat < ApplicationRecord
       end
     end
   end
+
+  def set_singles
+    if(!self.h3b.blank? and !self.h2b.blank? and !self.hr.blank? and !self.h.blank?)
+      self.h1b = (h - (h3b+h2b+hr))
+    end
+    true
+  end
+  
 end
