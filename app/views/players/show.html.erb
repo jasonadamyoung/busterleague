@@ -34,3 +34,24 @@
   </div>
 </div>
 
+<%- if @player.is_pitcher? -%>
+  <div class="page-header">
+    <h2>Games - Pitching</h2>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+    <%= render(:partial => 'game_pitching_table', :locals => {:player => @player, :season => @season} )%>
+    </div>
+  </div>
+<%- end -%>
+
+<div class="page-header">
+  <h2>Games - Batting</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= render(:partial => 'game_batting_table', :locals => {:player => @player, :season => @season} )%>
+  </div>
+</div>

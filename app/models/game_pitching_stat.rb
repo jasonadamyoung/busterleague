@@ -17,6 +17,10 @@ class GamePitchingStat < ApplicationRecord
   LOCATION_HOME = 1
   LOCATION_AWAY = 2
 
+  def home?
+    self.location == LOCATION_HOME
+  end
+  
   def self.rebuild_all
     self.dump_data
     Boxscore.find_each do |boxscore|

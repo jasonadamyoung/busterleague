@@ -34,6 +34,14 @@ module TeamsHelper
   end
 
 
+  def game_link(game)
+    if(game.season != 1999)
+      link_to(game.date.strftime("%b %d"), boxscore_path(game.boxscore)).html_safe
+    else
+      game.date.strftime("%b %d").html_safe
+    end
+  end
+
   def team_link(team)
     link_to(team.name, team).html_safe
   end

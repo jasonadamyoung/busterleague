@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_15_194334) do
+ActiveRecord::Schema.define(version: 2019_06_16_231937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -202,6 +202,7 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
     t.integer "lineup", default: 0, null: false
     t.string "first_name"
     t.string "last_name"
+    t.date "date"
     t.index ["boxscore_id", "name", "team_id"], name: "gbs_ndx", unique: true
   end
 
@@ -231,6 +232,7 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
     t.integer "wp"
     t.string "first_name"
     t.string "last_name"
+    t.date "date"
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
   end
 
@@ -615,6 +617,14 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
     t.index ["owner_id"], name: "index_stat_sheets_on_owner_id"
   end
 
+  create_table "svg_images", force: :cascade do |t|
+    t.integer "logoable_id"
+    t.string "logoable_type"
+    t.string "label"
+    t.text "svgdata"
+    t.index ["logoable_id", "logoable_type"], name: "logoable_ndx", unique: true
+  end
+
   create_table "team_batting_stats", force: :cascade do |t|
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
@@ -816,7 +826,6 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
     t.string "league", limit: 10, default: "", null: false
     t.string "division", limit: 4, default: "", null: false
     t.integer "web_team_id", limit: 2
-    t.text "svglogo"
     t.integer "web_team_id_nn", limit: 2
   end
 

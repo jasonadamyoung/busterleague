@@ -26,6 +26,11 @@ class Player < ApplicationRecord
   PITCHING_POSITIONS = ['sp','cl','mr']
   ADJUSTMENT_SEASON = 1999
 
+
+  def is_pitcher?
+    self.player_type == PITCHER
+  end
+
   def set_names(saveit = false)
     if((self.first_name.blank? or self.last_name.blank?))
       names = self.name.split(%r{\s+})
