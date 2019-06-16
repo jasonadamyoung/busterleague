@@ -65,7 +65,7 @@ class BattingStat < ApplicationRecord
   end
 
   def self.fix_roster_ids
-    self.where(roster_id: 0).where("name NOT IN ('Total','Pitchers','Other')").find_each do |bs|
+    self.where(roster_id: 0).find_each do |bs|
       bs.fix_roster_id
     end
   end
