@@ -4,7 +4,7 @@ require 'admin_constraint'
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/queues', :constraints => AdminConstraint.new
 
-  root :to => 'welcome#home'
+  root :to => 'home#index'
 
   resources :owners
 
@@ -48,9 +48,8 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/teamlogo/:id/:filename', to: "welcome#teamlogo", :as => 'teamlogo'
+  get '/teamlogo/:id/:filename', to: "home#teamlogo", :as => 'teamlogo'
   
-  get '/ss', to: "welcome#ss", :as => 'setseason'
 
   get '/logout' => 'sessions#end', :as => 'logout'
   match '/login' => 'sessions#start', via: [:get,:post], :as => 'login'
