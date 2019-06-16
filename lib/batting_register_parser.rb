@@ -11,7 +11,7 @@ class BattingRegisterParser
   attr_accessor :htmldoc
   attr_accessor :tables
   attr_accessor :batting_data
-  attr_accessor :batting_data_totals
+  attr_accessor :batting_data_team
 
   # Name	Team	P	Age	AVG	OBP	SPC	AB	H	2B	3B	HR	R	RBI	HBP	BB	K	SB	CS
   # Name	Team	P	Age	GS	PA	SH	SF	GDP	OPS	RC	RC27	ISO	TAVG	SEC	EBH	TB
@@ -33,7 +33,7 @@ class BattingRegisterParser
     self.htmldoc = Nokogiri::HTML(htmlcontent)
     self.tables = self.htmldoc.search('table')
     self.batting_data = {}
-    self.batting_data_totals = {}
+    self.batting_data_team = {}
     self.process_tables
   end
 
@@ -45,10 +45,10 @@ class BattingRegisterParser
                                           prefix: pt[:prefix])
       processed_data.each do |key,tabledata|
         if(tabledata['name'] and tabledata['name'] == 'Total')
-          if(self.batting_data_totals[key])
-            self.batting_data_totals[key] = self.batting_data_totals[key].merge(tabledata)
+          if(!self.batting_data_team.empty?)
+            self.batting_data_team = self.batting_data_team.merge(tabledata)
           else
-            self.batting_data_totals[key] = tabledata
+            self.batting_data_team = tabledata
           end
         else
           if(self.batting_data[key])
