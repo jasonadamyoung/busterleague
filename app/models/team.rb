@@ -20,6 +20,7 @@ class Team < ApplicationRecord
   has_many :team_seasons
   has_many :team_batting_stats
   has_many :team_pitching_stats  
+  has_one  :svg_image, :as => :logoable
 
   scope :american, lambda { where(:league => 'American')}
   scope :national, lambda { where(:league => 'National')}
@@ -27,12 +28,9 @@ class Team < ApplicationRecord
   scope :west, lambda { where(:division => 'West')}
 
   def logo
-    StringIO.new(self.svglogo)
+    StringIO.new(self.svg_image.svgdata)
   end
   
-
-
-
   def human_owned_for_season?(season)
     self.team_seasons.for_season(season).first.human_owned?
   end

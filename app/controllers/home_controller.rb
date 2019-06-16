@@ -19,7 +19,7 @@ class HomeController < ApplicationController
     @filename = params[:filename]
     @team = Team.where(id: params[:id]).first
     (width,height) = [100,100]
-    img, data = Magick::Image.from_blob(@team.svglogo) {
+    img, data = Magick::Image.from_blob(@team.svg_image.svgdata) {
       self.format = 'SVG'
       self.background_color = 'transparent'
     }
