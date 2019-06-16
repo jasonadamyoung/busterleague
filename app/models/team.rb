@@ -327,8 +327,8 @@ class Team < ApplicationRecord
         team_pitching_stat[name] = value
       end
     end
-    pitching_stat.save!
-    pitching_stat
+    team_pitching_stat.save!
+    team_pitching_stat
   end  
 
   def create_or_update_rosters_for_season(season)
