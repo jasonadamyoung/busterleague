@@ -322,7 +322,7 @@ class Team < ApplicationRecord
     if(!(team_pitching_stat = self.team_pitching_stats.where(season: season).first))
       team_pitching_stat = self.team_pitching_stats.new(season: season)
     end        
-    stats.each do |name,value|
+    pitching_data_team.each do |name,value|
       if(allowed_attributes.include?(name))
         team_pitching_stat[name] = value
       end

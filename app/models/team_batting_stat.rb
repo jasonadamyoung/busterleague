@@ -10,13 +10,10 @@ class TeamBattingStat < ApplicationRecord
   
   scope :for_season, lambda {|season| where(season: season)}
 
-  def self.rebuild_all(post_to_slack = true)
-    SlackIt.post(message: "Rebuilding team batting stats") if post_to_slack
+  def self.rebuild_all()
     self.dump_data
     Game.available_seasons.reverse.each do |season|
-      SlackIt.post(message: " Starting rebuild for season #{season}") if post_to_slack
       Team.all.each do |team|
-        SlackIt.post(message: "... Rebuilding #{season} stats for #{team.abbrev} ...") if post_to_slack
         team.update_team_batting_stats_for_season(season)
       end
     end
