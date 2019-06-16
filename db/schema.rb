@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
 
   create_table "batter_playing_times", force: :cascade do |t|
     t.integer "season", limit: 2, null: false
-    t.integer "player_id", limit: 2, null: false
+    t.integer "roster_id", limit: 2, null: false
     t.integer "total_games"
     t.integer "actual_ab"
     t.integer "qualifying_ab"
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
     t.integer "gs"
     t.integer "ab"
     t.boolean "qualified"
-    t.index ["season", "player_id"], name: "bpt_ndx", unique: true
+    t.index ["season", "roster_id"], name: "bpt_ndx", unique: true
   end
 
   create_table "batting_stats", force: :cascade do |t|
@@ -306,13 +306,13 @@ ActiveRecord::Schema.define(version: 2019_06_15_194334) do
 
   create_table "pitcher_playing_times", force: :cascade do |t|
     t.integer "season", limit: 2, null: false
-    t.integer "player_id", limit: 2, null: false
+    t.integer "roster_id", limit: 2, null: false
     t.integer "total_games"
     t.float "actual_ip"
     t.integer "qualifying_ip"
     t.float "ip"
     t.boolean "qualified"
-    t.index ["season", "player_id"], name: "ppt_ndx", unique: true
+    t.index ["season", "roster_id"], name: "ppt_ndx", unique: true
   end
 
   create_table "pitching_stats", force: :cascade do |t|

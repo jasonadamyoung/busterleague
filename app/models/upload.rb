@@ -128,6 +128,9 @@ class Upload < ApplicationRecord
     Team.update_pitching_stats_for_season(self.season)
     PitchingStat.update_total_pitching_stats_for_season(self.season)
     SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
+    Roster.create_or_update_playing_time_for_season(self.season)
+    SlackIt.post(message: "... Playing time created/updated for Season: #{self.season}")
+
     if(self.season != 1999)   
       Boxscore.download_and_store_for_season(self.season)
       SlackIt.post(message: "... Boxscores created for Season: #{self.season}")

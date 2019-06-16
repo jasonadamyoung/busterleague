@@ -14,6 +14,8 @@ class Roster < ApplicationRecord
   has_one :real_batting_stat
   has_one :real_pitching_stat
   has_many :transaction_logs
+  has_one :batter_playing_time 
+  has_one :pitcher_playing_time 
 
   before_save  :set_status_code, :set_is_pitcher
   after_create :create_or_update_player
@@ -125,58 +127,65 @@ class Roster < ApplicationRecord
       end
     end
     return ps
-  end  
-
-
+  end
+  
+  
   def playing_time
+    if(self.is_pitcher?)
+      self.pitcher_playing_time
+    else
+      self.batter_playing_time
+    end
+  end
+
+
+  def create_or_update_playing_time
     playing_time_data = {}
     total_games = self.team.records.for_season(self.season).first.gamescount
-    games_remaining = 162 - total_games
     playing_time_data['total_games'] = total_games
-    playing_time_data['remaining_games'] = games_remaining
-    playing_time_data['have_data'] = false
     if(self.is_pitcher?)
       if(rps = self.get_real_pitching_stat)
-        playing_time_data['have_data'] = true
-        playing_time_data['actual_ip'] = rps.ip
-        playing_time_data['qualifying_ip'] = (playing_time_data['actual_ip'] / 2.to_f).ceil
-        if(ps = self.get_total_pitching_stat)
-          playing_time_data['ip'] = ps.ip
-        else
-          playing_time_data['ip'] = 0
+        if(!ppt = PitcherPlayingTime.where(season: self.season).where(roster_id: self.id).first)
+          ppt = PitcherPlayingTime.new(season: self.season, roster_id: self.id)
         end
-        need_ip = playing_time_data['qualifying_ip'] -  playing_time_data['ip']
-        playing_time_data['need_ip'] = (need_ip >= 0) ? need_ip : 0
-        playing_time_data['qualified'] = (need_ip >= 0) ? false : true
+        ppt.total_games = total_games
+        ppt.actual_ip = rps.ip
+        ppt.qualifying_ip = (ppt.actual_ip / 2.to_f).ceil
+        if(ps = self.get_total_pitching_stat)
+          ppt.ip = ps.ip
+        else
+          ppt.ip = 0
+        end
+        need_ip = ppt.qualifying_ip -  ppt.ip
+        ppt.qualified = (need_ip >= 0) ? false : true
+        ppt.save!
       end
     else
       if(rbs = self.get_real_batting_stat)
-        playing_time_data['have_data'] = true
-        playing_time_data['actual_ab'] = rbs.ab
-        allowed = rbs.ab / 400.to_f
-        playing_time_data['allowed'] = (allowed < 1) ? allowed : 1
-        playing_time_data['qualifying_ab'] = (playing_time_data['actual_ab'] / 2.to_f).ceil
-        playing_time_data['allowed_starts'] = (playing_time_data['allowed'] * 162).ceil
-        if(bs = self.get_total_batting_stat) 
-          playing_time_data['played'] = (bs.gs / total_games).to_f
-          playing_time_data['starts'] = bs.gs
-          playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
-          playing_time_data['ab'] = bs.ab
-          need_ab = playing_time_data['qualifying_ab'] -  playing_time_data['ab']
-          playing_time_data['need_ab'] = (need_ab >= 0) ? need_ab : 0
-          playing_time_data['qualified'] = (need_ab >= 0) ? false : true
-        else
-          playing_time_data['played'] = 0
-          playing_time_data['starts'] = 0
-          playing_time_data['remaining_starts'] = playing_time_data['allowed_starts'] - playing_time_data['starts']
-          playing_time_data['ab'] = 0
+        if(!bpt = BatterPlayingTime.where(season: self.season).where(roster_id: self.id).first)
+          bpt = BatterPlayingTime.new(season: self.season,  roster_id: self.id)
         end
-        need_ab = playing_time_data['qualifying_ab'] -  playing_time_data['ab']
-        playing_time_data['need_ab'] = (need_ab >= 0) ? need_ab : 0
-        playing_time_data['qualified'] = (need_ab >= 0) ? false : true
+        bpt.total_games = total_games
+        bpt.actual_ab = rbs.ab
+        allowed = (rbs.ab / 400.to_f)
+        bpt.allowed_percentage = (allowed < 1) ? allowed : 1
+        bpt.qualifying_ab = (bpt.actual_ab / 2.to_f).ceil
+        bpt.allowed_starts = (bpt.allowed_percentage * 162).ceil
+        if(bs = self.get_total_batting_stat) 
+          bpt.played_percentage = (bs.gs / total_games).to_f
+          bpt.gs = bs.gs
+          bpt.ab = bs.ab
+          need_ab = bpt.qualifying_ab  -  bpt.ab
+          bpt.qualified =  (need_ab >= 0) ? false : true
+        else
+          bpt.played_percentage = 0
+          bpt.gs = 0
+          bpt.ab = 0
+          bpt.qualified = false
+        end
+        bpt.save!          
       end
     end
-    playing_time_data
   end
 
   def self.find_roster_for_name_position_team_season(name,position,team_id,season,is_fullname=false)
@@ -316,6 +325,12 @@ class Roster < ApplicationRecord
       player_details['age'] = pitching_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
     end    
+  end
+
+  def self.create_or_update_playing_time_for_season(season)
+    self.for_season(season).each do |rp|
+      rp.create_or_update_playing_time
+    end
   end
   
 

@@ -27,11 +27,8 @@ class TeamsController < ApplicationController
     if(params[:id])
       @team = Team.find_by!(id: params[:id])
       @gamescount = @team.records.for_season(@season).first.gamescount
-      @batters = @team.rosters.for_season(@season).current.batters.includes(:player).order(:status,:last_name)
-      @pitchers = @team.rosters.for_season(@season).current.pitchers.includes(:player).order(:status,:last_name)
     else
-      @batters = Roster.for_season(@season).current.batters.includes(:player,:real_batting_stat,:real_pitching_stat).joins(:team).order("teams.name",:last_name)
-      @pitchers = Roster.for_season(@season).current.pitchers.includes(:player,:real_batting_stat,:real_pitching_stat).joins(:team).order("teams.name",:last_name)
+      @teams = Team.order(:name)
       return render('fullplayingtime')
     end
   end
