@@ -16,6 +16,7 @@ class Player < ApplicationRecord
 
   after_save :fix_association_names
 
+  scope :check_names, ->{where(check_names: true)}
   scope :names_to_fix, ->{where(check_names: true).where(names_fixed: false)}
 
   # types

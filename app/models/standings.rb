@@ -5,11 +5,11 @@
 
 class Standings
 
-  attr_accessor :date, :season, :standings
+  attr_accessor :season, :standings
 
-  def initialize(season,date)
+  def initialize(season)
     self.standings = []
-    Record.on_season_date(season,date).includes(:team).order("wins_minus_losses DESC").each do |r|
+    Record.for_season(season).includes(:team).order("wins_minus_losses DESC").each do |r|
       self.standings << [r.team,r]
     end
   end

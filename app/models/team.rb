@@ -18,7 +18,8 @@ class Team < ApplicationRecord
   has_many :pitching_stats
   has_many :transaction_logs
   has_many :team_seasons
-
+  has_many :team_batting_stats
+  has_many :team_pitching_stats  
 
   scope :human, lambda { where("owner_id <> #{Owner.computer_id}")}
   scope :computer, lambda { where("owner_id = #{Owner.computer_id}")}
@@ -46,7 +47,7 @@ class Team < ApplicationRecord
   end
 
   def record_for_season(season)
-    self.records.final_for_season(season).first
+    self.records.for_season(season).first
   end
 
   def win_pct_plot_data(season)
@@ -173,6 +174,11 @@ class Team < ApplicationRecord
     brp.batting_data
   end
 
+  def get_team_batting_data(season)
+    brp = self.batting_register_parser(season)
+    brp.batting_data_team
+  end    
+
 
   def pitching_register_parser(season,table_type)
     PitchingRegisterParser.new(self.get_html(self.pitching_url(season,table_type)),table_type)
@@ -185,6 +191,12 @@ class Team < ApplicationRecord
     pitching_data
   end
 
+  def get_team_pitching_data(season)
+    batting_pitching_data_team = self.pitching_register_parser(season,"batting_tables").pitching_data_team
+    core_pitching_data_team = self.pitching_register_parser(season,"core_tables").pitching_data_team
+    pitching_data_team = batting_pitching_data_team.deep_merge(core_pitching_data_team)
+    pitching_data_team
+  end    
 
   def position_data_roster_matcher(position_data,season)
     # get the names out
@@ -211,7 +223,14 @@ class Team < ApplicationRecord
       season = season
       if(!(batting_stat = self.batting_stats.where(season: season).where(roster_id: roster_id).where(name: name).first))
         if(roster = Roster.where(id: roster_id).first)
-          batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name, player_id: roster.player_id, age: roster.age)
+          batting_stat = self.batting_stats.new(roster_id: roster_id, 
+                                                season: season, 
+                                                name: name, 
+                                                player_id: 
+                                                roster.player_id, 
+                                                age: roster.age,
+                                                first_name: roster.first_name,
+                                                last_name: roster.last_name)
         else
           batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name)
         end
@@ -248,7 +267,13 @@ class Team < ApplicationRecord
       season = season
       if(!(pitching_stat = self.pitching_stats.where(season: season).where(roster_id: roster_id).where(name: name).first))
         if(roster = Roster.where(id: roster_id).first)
-          pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name, player_id: roster.player_id, age: roster.age)
+          pitching_stat = self.pitching_stats.new(roster_id: roster_id, 
+                                                  season: season, 
+                                                  name: name, 
+                                                  player_id: roster.player_id, 
+                                                  age: roster.age,
+                                                  first_name: roster.first_name,
+                                                  last_name: roster.last_name)
         else
           pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name)
         end        
@@ -272,6 +297,38 @@ class Team < ApplicationRecord
       end
     end
     pitching_data
+  end  
+
+  def update_team_batting_stats_for_season(season)
+    allowed_attributes = TeamBattingStat.column_names
+    batting_data_team = self.get_team_batting_data(season)
+    season = season
+    if(!(team_batting_stat = self.team_batting_stats.where(season: season).first))
+      team_batting_stat = self.team_batting_stats.new( season: season)
+    end
+    batting_data_team.each do |name,value|
+      if(allowed_attributes.include?(name))
+        team_batting_stat[name] = value
+      end
+    end
+    team_batting_stat.save!
+    team_batting_stat
+  end
+
+  def update_team_pitching_stats_for_season(season)
+    allowed_attributes = TeamPitchingStat.column_names
+    pitching_data_team = self.get_team_pitching_data(season)
+    season = season
+    if(!(team_pitching_stat = self.team_pitching_stats.where(season: season).first))
+      team_pitching_stat = self.team_pitching_stats.new(season: season)
+    end        
+    stats.each do |name,value|
+      if(allowed_attributes.include?(name))
+        team_pitching_stat[name] = value
+      end
+    end
+    pitching_stat.save!
+    pitching_stat
   end  
 
   def create_or_update_rosters_for_season(season)
@@ -310,6 +367,17 @@ class Team < ApplicationRecord
     traded
   end
 
+  def rosters_for_season_with_playing_time(season,player_type)
+    case player_type
+    when Player::PITCHER
+      self.rosters.for_season(season).current.pitchers.includes(:player,:pitcher_playing_time).order(:status,:last_name)
+    when Player::BATTER
+      self.rosters.for_season(season).current.batters.includes(:player,:batter_playing_time).order(:status,:last_name)
+    else
+      nil
+    end
+  end
+
   def self.create_or_update_rosters_for_season(season)
     Team.all.each do |t|
       t.create_or_update_rosters_for_season(season)
@@ -324,13 +392,17 @@ class Team < ApplicationRecord
   def self.update_batting_stats_for_season(season)
     Team.all.each do |t|
       t.update_batting_stats_for_season(season)
+      t.update_team_batting_stats_for_season(season)
     end
+    true
   end    
 
   def self.update_pitching_stats_for_season(season)
     Team.all.each do |t|
       t.update_pitching_stats_for_season(season)
+      t.update_team_pitching_stats_for_season(season)
     end
+    true
   end
   
   def self.send_owner_emails

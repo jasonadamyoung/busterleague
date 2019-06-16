@@ -25,8 +25,6 @@
           <th>X_WL</th>
           <th>Home</th>
           <th>Road</th>
-          <th>v.Hum</th>
-          <th>v.Com</th>
           <th>v.Winners</th>
           <th>v.Losers</th>
         </tr>
@@ -34,7 +32,7 @@
       <tbody>
         <%- Game.available_seasons.each do |season| -%>
           <tr>
-            <%- record = @team.records.final_for_season(season).first %>
+            <%- record = @team.records.for_season(season).first %>
             <td><%= link_to(season,team_path(@team,season: season)) %></td>
             <%- if record.nil? -%>
             <td colspan="13"><em>no records available</em></td>
@@ -48,8 +46,6 @@
             <td><%= display_wl(record.expected_wl) %></td>
             <td><%= display_wl(record.home_wl) %></td>
             <td><%= display_wl(record.road_wl) %></td>
-            <td><%= display_wl(record.human_wl) %></td>
-            <td><%= display_wl(record.computer_wl) %></td>
             <td><%= display_wl(record.winners_wl) %></td>
             <td><%= display_wl(record.losers_wl) %></td>
             <%- end -%>

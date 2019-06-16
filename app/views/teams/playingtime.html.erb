@@ -1,0 +1,32 @@
+<% @page_title = "#{@team.name} - #{@season} Playing Time Report" %>
+
+<div class="page-header" id="overview">
+  <h1>
+    <%=  link_to(inline_svg(@team.logo, size: "200px*200px"),team_path(@team, season: @season))  -%>
+    <%= @page_title %>
+    <small class="text-muted">Total Games: <%= @gamescount -%> | Remaining Games: <%= 162 - @gamescount -%></small>
+  </h1>
+</div>
+
+  
+<div class="page-header">
+  <h1>Batters</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <%= render(:partial => 'bpt_table', :locals => {:batters => @team.rosters_for_season_with_playing_time(@season,Player::BATTER)} )%>
+  </div>
+</div>
+
+
+<div class="page-header">
+  <h1>Pitchers</h1>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <%= render(:partial => 'ppt_table', :locals => {:pitchers => @team.rosters_for_season_with_playing_time(@season,Player::PITCHER)} )%>
+  </div>
+</div>
+
+
+

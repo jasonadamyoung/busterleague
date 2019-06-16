@@ -4,23 +4,16 @@
 # see LICENSE file
 require 'rmagick'
 
-class WelcomeController < ApplicationController
+class HomeController < ApplicationController
 
-  def home
+  def index
     return redirect_to(standings_url(season: @season))
   end
 
-  def index
+  def seasons
   end
 
-  def show
-  end
 
-  def dmb
-  end
-
-  def awards
-  end
 
   def teamlogo
     @filename = params[:filename]
@@ -41,17 +34,8 @@ class WelcomeController < ApplicationController
                    :disposition => 'inline') 
       }
     end
-  end
+  end 
 
 
 
-  def ss
-    # all the work for this is actually done in the set_season before_action
-    if(!params[:currenturi].nil?)
-      return redirect_to(Base64.decode64(params[:currenturi]))
-    else
-      return redirect_to(root_url)
-    end
-  end
-  
 end

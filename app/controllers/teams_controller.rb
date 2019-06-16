@@ -6,7 +6,7 @@
 class TeamsController < ApplicationController
 
   def index
-    @standings = Standings.new(@season,@date)
+    @standings = Standings.new(@season)
     @team_display = {}
     ['American','National'].each do |league|
       @team_display[league] = {}
@@ -26,12 +26,9 @@ class TeamsController < ApplicationController
   def playingtime
     if(params[:id])
       @team = Team.find_by!(id: params[:id])
-      @gamescount = @team.records.final_for_season(@season).first.gamescount
-      @batters = @team.rosters.for_season(@season).current.batters.includes(:player).order(:status,:last_name)
-      @pitchers = @team.rosters.for_season(@season).current.pitchers.includes(:player).order(:status,:last_name)
+      @gamescount = @team.records.for_season(@season).first.gamescount
     else
-      @batters = Roster.for_season(@season).current.batters.includes(:player,:real_batting_stat,:real_pitching_stat).joins(:team).order("teams.name",:last_name)
-      @pitchers = Roster.for_season(@season).current.pitchers.includes(:player,:real_batting_stat,:real_pitching_stat).joins(:team).order("teams.name",:last_name)
+      @teams = Team.order(:name)
       return render('fullplayingtime')
     end
   end
