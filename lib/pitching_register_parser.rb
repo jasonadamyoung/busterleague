@@ -10,7 +10,7 @@ class PitchingRegisterParser
   attr_accessor :htmlcontent
   attr_accessor :htmldoc
   attr_accessor :tables
-  attr_accessor :pitching_data
+  attr_accessor :pitching_data, :pitching_data_totals
   attr_accessor :table_type
 
   CORE_TABLES = 
@@ -32,6 +32,7 @@ class PitchingRegisterParser
     self.tables = self.htmldoc.search('table')
     self.table_type = table_type
     self.pitching_data = {}
+    self.pitching_data_totals = {}
     self.process_tables
   end
 
@@ -58,10 +59,18 @@ class PitchingRegisterParser
                                           ignore_footer_rows: pt[:ignore_footer_rows],
                                           prefix: pt[:prefix])
       processed_data.each do |key,tabledata|
-        if(self.pitching_data[key])
-          self.pitching_data[key] = self.pitching_data[key].merge(tabledata)
+        if(tabledata['name'] and tabledata['name'] == 'Total')
+          if(self.pitching_data_totals[key])
+            self.pitching_data_totals[key] = self.pitching_data_totals[key].merge(tabledata)
+          else
+            self.pitching_data_totals[key] = tabledata
+          end
         else
-          self.pitching_data[key] = tabledata
+          if(self.pitching_data[key])
+            self.pitching_data[key] = self.pitching_data[key].merge(tabledata)
+          else
+            self.pitching_data[key] = tabledata
+          end
         end
       end
     end
