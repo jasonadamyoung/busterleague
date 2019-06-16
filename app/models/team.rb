@@ -21,9 +21,6 @@ class Team < ApplicationRecord
   has_many :team_batting_stats
   has_many :team_pitching_stats  
 
-  scope :human, lambda { where("owner_id <> #{Owner.computer_id}")}
-  scope :computer, lambda { where("owner_id = #{Owner.computer_id}")}
-
   scope :american, lambda { where(:league => 'American')}
   scope :national, lambda { where(:league => 'National')}
   scope :east, lambda { where(:division => 'East')}
@@ -33,8 +30,11 @@ class Team < ApplicationRecord
     StringIO.new(self.svglogo)
   end
   
-  def is_human?
-    (owner_id != Owner.computer_id)
+
+
+
+  def human_owned_for_season?(season)
+    self.team_seasons.for_season(season).first.human_owned?
   end
 
   def wins_minus_losses(season,through_date)

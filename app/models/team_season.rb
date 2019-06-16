@@ -15,4 +15,11 @@ class TeamSeason < ApplicationRecord
   scope :east, lambda { where(:division => 'East')}
   scope :west, lambda { where(:division => 'West')}
 
+  scope :for_season, lambda {|season| where(season: season)}
+  scope :division_winners, ->{where(div_win: true)}
+
+  def human_owned?
+    (self.owner_id != Owner.computer_id)
+  end
+
 end

@@ -42,5 +42,21 @@ module TeamsHelper
     link_to(team.name, team_path(team,season: season)).html_safe
   end
 
+  def owner_icon(team_season)
+    if(team_season.human_owned?)
+      '<i class="fas fa-user text-muted"></i>'.html_safe
+    else
+      '<i class="fas fa-laptop text-muted"></i>'.html_safe
+    end
+  end
+
+  def ws_win_icon
+    '<i class="fas fa-trophy text-warning"></i>'.html_safe
+  end
+
+  def lcs_win_icon
+    '<i class="fas fa-medal text-secondary"></i>'.html_safe
+  end
+
 
 end
