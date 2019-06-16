@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   include AuthenticationSystem
   has_mobile_fu false
 
-  before_action :check_for_season, :set_date
+  before_action :check_for_season
   before_action :signin_optional
   helper_method :home_url
   helper_method :home_path
@@ -22,18 +22,6 @@ class ApplicationController < ActionController::Base
     super
     payload[:ip] = request.remote_ip
     payload[:owner_id] = @currentowner if @currentowner
-  end
-
-  def set_date
-    if(params[:date])
-      begin
-        @date = Date.parse(params[:date])
-      rescue
-        @date = Game.latest_date(@season)
-      end
-    else
-      @date = Game.latest_date(@season)
-    end
   end
 
   def check_for_season

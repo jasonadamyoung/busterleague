@@ -34,7 +34,7 @@
       <tbody>
         <%- Game.available_seasons.each do |season| -%>
           <tr>
-            <%- record = @team.records.final_for_season(season).first %>
+            <%- record = @team.records.for_season(season).first %>
             <td><%= link_to(season,team_path(@team,season: season)) %></td>
             <%- if record.nil? -%>
             <td colspan="13"><em>no records available</em></td>

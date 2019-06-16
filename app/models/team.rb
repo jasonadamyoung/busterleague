@@ -46,7 +46,7 @@ class Team < ApplicationRecord
   end
 
   def record_for_season(season)
-    self.records.final_for_season(season).first
+    self.records.for_season(season).first
   end
 
   def win_pct_plot_data(season)

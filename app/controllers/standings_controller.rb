@@ -6,7 +6,7 @@
 class StandingsController < ApplicationController
 
   def index
-    @standings = Standings.new(@season,@date)
+    @standings = Standings.new(@season)
   end
 
 end

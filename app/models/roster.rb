@@ -130,7 +130,7 @@ class Roster < ApplicationRecord
 
   def playing_time
     playing_time_data = {}
-    total_games = self.team.records.final_for_season(self.season).first.gamescount
+    total_games = self.team.records.for_season(self.season).first.gamescount
     games_remaining = 162 - total_games
     playing_time_data['total_games'] = total_games
     playing_time_data['remaining_games'] = games_remaining

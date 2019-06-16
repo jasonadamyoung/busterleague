@@ -134,9 +134,9 @@ class Upload < ApplicationRecord
       Boxscore.create_data_records_for_season(self.season)
       SlackIt.post(message: "... Boxscores data records created for Season: #{self.season}")
     end
-    Record.rebuild(self.season)
+    Record.create_or_update_season_records(self.season)
     SlackIt.post(message: "... Season records rebuilt for Season : #{self.season}")
-    Record.create_or_update_final_record_for_season('all')
+    Record.create_or_update_season_records('all')
     SlackIt.post(message: "... Total records rebuilt for all seasons")
     self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
     SlackIt.post(message: "An upload has been processed: #{self.archivefile_file_name}")

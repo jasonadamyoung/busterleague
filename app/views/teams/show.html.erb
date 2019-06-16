@@ -36,7 +36,7 @@
         </thead>
         <tbody>
           <tr>
-            <%- record = @team.records.on_season_date(@season,@date).first %>
+            <%- record = @team.records.for_season(@season).first %>
             <%- if record.nil? -%>
             <td colspan="15"><em>no records available</em></td>
             <%- else -%>

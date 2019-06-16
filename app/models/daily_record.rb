@@ -3,25 +3,38 @@
 # === LICENSE:
 # see LICENSE file
 
-class Record < ApplicationRecord
+class DailyRecord < ApplicationRecord
   include ActiveModel::AttributeAssignment
   extend CleanupTools
 
+
 	belongs_to :team
+  
   before_save :set_win_minus_losses
 
   scope :winners, -> { where("games > 0").where("wins / games::float > .5") }
   scope :losers, -> { where("games > 0").where("wins / games::float <= .5") }
+  scope :on_date, lambda {|date| where("date = ?",date)}
   scope :for_season, lambda {|season| where(season: season)}
+  scope :final_for_season, lambda {|season| for_season(season).where(final_season_record: true)}
 
   ALL_SEASON = 0
+
   
+  def self.on_season_date(season,date)
+    if(season == 'all' or season == 0)
+      season = ALL_SEASON
+    end
+    for_season(season).on_date(date)
+  end
+
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses
   end
 
+
   def gameslist
-    self.team.games.for_season(self.season)
+    self.team.games.through_season_date(self.season,self.date)
   end
 
   def set_records_by_opponent
@@ -36,14 +49,15 @@ class Record < ApplicationRecord
     end
     self.update_attribute(:records_by_opponent, rbo)
     self.update_attribute(:wl_groups, wl_groups)
+
   end
 
   def wl_group_idlist
     idlist = {}
     idlist['human'] = Team.human.pluck(:id).map(&:to_s)
     idlist['computer'] = Team.computer.pluck(:id).map(&:to_s)
-    idlist['winners'] = self.class.winners.for_season(self.season).pluck(:team_id).map(&:to_s)
-    idlist['losers'] = self.class.losers.for_season(self.season).pluck(:team_id).map(&:to_s)
+    idlist['winners'] = self.class.winners.on_season_date(self.season,self.date).pluck(:team_id).map(&:to_s)
+    idlist['losers'] = self.class.losers.on_season_date(self.season,self.date).pluck(:team_id).map(&:to_s)
     idlist
   end
 
@@ -61,11 +75,13 @@ class Record < ApplicationRecord
     self.update_attribute(:wl_groups, wl_groups)
   end
 
-  def self.set_wl_groups_for_season(season)
-    self.for_season(season).each do |record|
+  def self.set_wl_groups_for_season_and_date(season,date)
+    self.on_season_date(season,date).each do |record|
       record.set_wl_groups
     end
   end
+
+
 
   # this is inefficient as all get out, I really
   # need to work out how to go backwards
@@ -98,7 +114,7 @@ class Record < ApplicationRecord
   end
   
 
-  def self.set_gb_for_season(season)
+  def self.set_gb_for_season_and_date(season,date)
     # gamesback
     overall_records = {}
     leagues = Team.group(:league).count(:league)
@@ -109,7 +125,7 @@ class Record < ApplicationRecord
         teamlist = Team.where(:league => league).where(:division => division).load
         records = {}
         teamlist.each do |team|
-          records[team] = team.records.for_season(season).first
+          records[team] = team.records.on_season_date(season,date).first
           league_records[team] = records[team]
           overall_records[team] = records[team]
         end
@@ -133,38 +149,46 @@ class Record < ApplicationRecord
   end
 
 
-  def self.create_or_update_season_records(season)
-    Team.all.each do |team|
-      record = self.create_or_update_for_season_and_team(season,team)
-      record.set_streak
-      record.set_last_ten
-      record.set_records_by_opponent
+  def self.create_or_update_records_for_season_and_dates(season,dates = 'default')
+    if(dates == 'default')
+      dates = (Game.earliest_date(season)..Game.latest_date(season)).to_a
     end
 
-    self.set_gb_for_season(season)
-    self.set_wl_groups_for_season(season)
- end
+    dates.each do |date|
+      Team.all.each do |team|
+        record = self.create_or_update_for_team_and_date(season,team,date)
+        record.set_streak
+        record.set_last_ten
+        record.set_records_by_opponent
+      end
 
-  def self.create_or_update_for_season_and_team(season,team)
-    if(!season_record = self.where(season: season).where(:team_id => team.id).first)
-      season_record = Record.new(season: season, team: team)
+      self.set_gb_for_season_and_date(season,date)
+      self.set_wl_groups_for_season_and_date(season,date)
+    end
+  end
+
+  def self.create_or_update_for_team_and_date(season,team,date)
+    latest_date_for_season = Game.latest_date(season)
+    if(!record_for_date = self.where(season: season).where(:date => date).where(:team_id => team.id).first)
+      record_for_date = Record.new(season: season, date: date, team: team)
     end
 
-    season_record.home_games = team.games.home.for_season(season).count
-    season_record.road_games = team.games.away.for_season(season).count
-    season_record.games =  season_record.home_games + season_record.road_games
-    season_record.wins = team.games.wins.for_season(season).count
-    season_record.home_wins = team.games.home.wins.for_season(season).count
-    season_record.road_wins = team.games.away.wins.for_season(season).count
-    season_record.losses = season_record.games - season_record.wins
-    season_record.home_rf = team.games.home.for_season(season).sum(:runs)
-    season_record.home_ra = team.games.home.for_season(season).sum(:opponent_runs)
-    season_record.road_rf = team.games.away.for_season(season).sum(:runs)
-    season_record.road_ra = team.games.away.for_season(season).sum(:opponent_runs)
-    season_record.rf = season_record.home_rf + season_record.road_rf
-    season_record.ra = season_record.home_ra + season_record.road_ra
-    season_record.save!
-    season_record
+    record_for_date.home_games = team.games.home.through_season_date(season,date).count
+    record_for_date.road_games = team.games.away.through_season_date(season,date).count
+    record_for_date.games =  record_for_date.home_games + record_for_date.road_games
+    record_for_date.wins = team.games.wins.through_season_date(season,date).count
+    record_for_date.home_wins = team.games.home.wins.through_season_date(season,date).count
+    record_for_date.road_wins = team.games.away.wins.through_season_date(season,date).count
+    record_for_date.losses = record_for_date.games - record_for_date.wins
+    record_for_date.home_rf = team.games.home.through_season_date(season,date).sum(:runs)
+    record_for_date.home_ra = team.games.home.through_season_date(season,date).sum(:opponent_runs)
+    record_for_date.road_rf = team.games.away.through_season_date(season,date).sum(:runs)
+    record_for_date.road_ra = team.games.away.through_season_date(season,date).sum(:opponent_runs)
+    record_for_date.rf = record_for_date.home_rf + record_for_date.road_rf
+    record_for_date.ra = record_for_date.home_ra + record_for_date.road_ra
+    record_for_date.final_season_record = (date == latest_date_for_season)
+    record_for_date.save!
+    record_for_date
   end
 
 
@@ -272,6 +296,7 @@ class Record < ApplicationRecord
     end
   end
 
+
   def record_against_opponents(opponents)
     opponent_ids = opponents.map(&:id)
     filtered_records = records_by_opponent.reject{|id,record| !(opponent_ids.include?(id.to_i))}
@@ -285,6 +310,18 @@ class Record < ApplicationRecord
       losses += record['losses']
     end
     {:wins => wins, :losses => losses}
+  end
+
+
+
+  def self.create_or_update_final_record_for_season(season)
+    latest_date_for_season = Game.latest_date(season)
+    self.create_or_update_records_for_season_and_dates(season,[latest_date_for_season])
+  end
+
+
+  def self.rebuild(season)
+    self.create_or_update_records_for_season_and_dates(season)
   end
 
 end
