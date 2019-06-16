@@ -146,7 +146,6 @@
     </div>
   </div>
 
-  <%- if @season != 1999 -%>
   <div class="page-header">
     <h1>Game Results</h1>
   </div>
@@ -166,8 +165,8 @@
     <tbody>
       <%- @team.games.for_season(@season).order("date DESC").each do |game| -%>
         <tr>
-          <td><%= link_to(game.date.strftime("%b %d"), boxscore_path(game.boxscore))%></td>
-          <td><%= (game.home? ? 'vs.' : '@')%> <%= link_to(game.opponent.name, team_season_link(game.opponent, @season))%></td>
+          <td><%= game_link(game) -%></td>
+          <td><%= (game.home? ? 'vs.' : '@')%> <%= team_season_link(game.opponent, @season) -%></td>
           <td><%= (game.win? ? 'W' : 'L')%></td>
           <td><%= display_score(game.score)%></td>
           <td><%= game.total_innings %></td>
@@ -176,6 +175,5 @@
     </tbody>
   </table>
   </div>
-  <%- end -%>
 
 </div>
