@@ -22,6 +22,10 @@ class GameBattingStat < ApplicationRecord
   LOCATION_HOME = 1
   LOCATION_AWAY = 2
 
+  def home?
+    self.location == LOCATION_HOME
+  end
+  
   def set_singles
     self.h1b = (h - (h3b+h2b+hr))
   end

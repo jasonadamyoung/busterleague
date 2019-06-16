@@ -303,6 +303,7 @@ class Boxscore < ApplicationRecord
 
     self.home_batting_stats.each do |name,stats|
       gbs = self.game_batting_stats.new
+      gbs[:date] = self.date
       gbs[:roster_id] = home_players[name]
       gbs[:name] = name
       gbs[:season] = self.season
@@ -315,6 +316,7 @@ class Boxscore < ApplicationRecord
 
     self.away_batting_stats.each do |name,stats|
       gbs = self.game_batting_stats.new
+      gbs[:date] = self.date
       gbs[:roster_id] = away_players[name]
       gbs[:name] = name
       gbs[:season] = self.season
@@ -333,6 +335,7 @@ class Boxscore < ApplicationRecord
 
     self.home_pitching_stats.each do |name,stats|
       gps = self.game_pitching_stats.new
+      gps[:date] = self.date
       gps[:roster_id] = home_players[name]
       gps[:name] = name
       gps[:season] = self.season
@@ -345,6 +348,7 @@ class Boxscore < ApplicationRecord
 
     self.away_pitching_stats.each do |name,stats|
       gps = self.game_pitching_stats.new
+      gps[:date] = self.date
       gps[:roster_id] = away_players[name]
       gps[:name] = name
       gps[:season] = self.season

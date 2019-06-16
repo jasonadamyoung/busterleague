@@ -1,0 +1,54 @@
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+    <th>Date</th>
+    <th>Team</th>
+    <th>Opponent</th>
+    <th>Win/Loss</th>
+    <th>Position</th>
+    <th>Order</th>
+    <th>AB</th>
+    <th>Hits</th>
+    <th>1B</th>
+    <th>2B</th>
+    <th>3B</th>
+    <th>HR</th>
+    <th>R</th>
+    <th>RBI</th>
+    <th>HBP</th>
+    <th>BB</th>
+    <th>K</th>
+    <th>SB</th>
+    <th>CS</th>
+    <th>SH</th>
+    <th>SF</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%- player.game_batting_stats.for_season(season).includes(:boxscore, :team, :opposing_team).order("date DESC").each do |gbs| -%>
+      <tr>
+        <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
+        <td><%= team_season_link(gbs.team,gbs.season) %></td>
+        <td><%= (gbs.home? ? 'vs.' : '@')%><%= team_season_link(gbs.opposing_team,gbs.season) %></td>
+        <td><%= ((gbs.team_id == gbs.boxscore.winning_team_id) ? 'W' : 'L')%></td>
+        <td><%= gbs.position %></td>
+        <td><%= gbs.lineup %></td>
+        <td><%= gbs.ab %></td>
+        <td><%= gbs.h %></td>
+        <td><%= gbs.h1b %></td>
+        <td><%= gbs.h2b %></td>
+        <td><%= gbs.h3b %></td>
+        <td><%= gbs.hr %></td>
+        <td><%= gbs.r %></td>
+        <td><%= gbs.rbi %></td>
+        <td><%= gbs.hbp %></td>
+        <td><%= gbs.bb %></td>
+        <td><%= gbs.k %></td>
+        <td><%= gbs.sb %></td>
+        <td><%= gbs.cs %></td>
+        <td><%= gbs.sh %></td>
+        <td><%= gbs.sf %></td>
+      </tr>
+    <%- end -%>
+  </tbody>
+</table>

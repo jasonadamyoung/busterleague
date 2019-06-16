@@ -1,0 +1,52 @@
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+    <th>Date</th>
+    <th>Team</th>
+    <th>Opponent</th>
+    <th>Win/Loss</th>
+    <th>W</th>
+    <th>L</th>
+    <th>Hold</th>
+    <th>S</th>
+    <th>BS</th>
+    <th>IP</th>
+    <th>Hits</th>
+    <th>R</th>
+    <th>ER</th>
+    <th>BB</th>
+    <th>K</th>
+    <th>Pitches</th>
+    <th>Strikes</th>
+    <th>HB</th>
+    <th>Balk</th>
+    <th>WP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%- player.game_pitching_stats.for_season(season).includes(:boxscore, :team, :opposing_team).order("date DESC").each do |gps| -%>
+      <tr>
+        <td><%= link_to(gps.boxscore.date.strftime("%b %d"), game_path(id: gps.boxscore.id))%></td>
+        <td><%= team_season_link(gps.team,gps.season) %></td>
+        <td><%= (gps.home? ? 'vs.' : '@')%> <%= team_season_link(gps.opposing_team,gps.season) %></td>
+        <td><%= ((gps.team_id == gps.boxscore.winning_team_id) ? 'W' : 'L')%></td>
+        <td><%= gps.w %></td>
+        <td><%= gps.l %></td>
+        <td><%= gps.hold %></td>
+        <td><%= gps.s %></td>
+        <td><%= gps.bs %></td>
+        <td><%= display_ip(gps.ip) %></td>
+        <td><%= gps.h %></td>
+        <td><%= gps.r %></td>
+        <td><%= gps.er %></td>
+        <td><%= gps.bb %></td>
+        <td><%= gps.k %></td>
+        <td><%= gps.pch %></td>
+        <td><%= gps.str %></td>
+        <td><%= gps.hb %></td>
+        <td><%= gps.balk %></td>
+        <td><%= gps.wp %></td>
+      </tr>
+    <%- end -%>
+  </tbody>
+</table>
