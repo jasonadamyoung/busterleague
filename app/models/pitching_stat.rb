@@ -21,16 +21,12 @@ class PitchingStat < ApplicationRecord
   MULTIPLE_TEAM = 0
   NO_PLAYER = 0
 
-  def self.rebuild_all(post_to_slack = true)
-    SlackIt.post(message: "Rebuilding pitching stats") if post_to_slack
+  def self.rebuild_all
     self.dump_data
     Game.available_seasons.reverse.each do |season|
-      SlackIt.post(message: " Starting rebuild for season #{season}") if post_to_slack
       Team.all.each do |team|
-        SlackIt.post(message: "... Rebuilding #{season} stats for #{team.abbrev} ...") if post_to_slack
         team.update_pitching_stats_for_season(season)
       end
-      SlackIt.post(message: "... Rebuilding total #{season} stats...") if post_to_slack
       self.update_total_pitching_stats_for_season(season)
     end
   end
