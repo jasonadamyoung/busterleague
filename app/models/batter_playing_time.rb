@@ -8,7 +8,7 @@ class BatterPlayingTime < ApplicationRecord
   belongs_to :roster
 
   def remaining_starts
-    162 - self.gs
+    self.allowed_starts - self.gs
   end
 
   def need_ab
