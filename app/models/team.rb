@@ -403,9 +403,11 @@ class Team < ApplicationRecord
     true
   end
   
-  def self.send_owner_emails
-    self.human.each do |team|
-      team.owner.send_update_email
+  def self.send_owner_emails_for_season(season)
+    self.all.each do |team|
+      if(team.human_owned_for_season?(season))  
+        team.owner.send_update_email
+      end
     end
     true
   end
