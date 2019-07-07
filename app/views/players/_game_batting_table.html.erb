@@ -29,7 +29,7 @@
       <tr>
         <td><%= link_to(gbs.boxscore.date.strftime("%b %d"), game_path(id: gbs.boxscore.id))%></td>
         <td><%= team_season_link(gbs.team,gbs.season) %></td>
-        <td><%= (gbs.home? ? 'vs.' : '@')%><%= team_season_link(gbs.opposing_team,gbs.season) %></td>
+        <td><%= (gbs.home? ? 'vs.' : '@')%> <%= team_season_link(gbs.opposing_team,gbs.season) %></td>
         <td><%= ((gbs.team_id == gbs.boxscore.winning_team_id) ? 'W' : 'L')%></td>
         <td><%= gbs.position %></td>
         <td><%= gbs.lineup %></td>

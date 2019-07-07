@@ -105,7 +105,7 @@ class Upload < ApplicationRecord
     self.extract_zip
     # process
     self.process_upload_data
-    Team.send_owner_emails
+    Team.send_owner_emails_for_season(self.season)
   end
 
   def process_upload_data
