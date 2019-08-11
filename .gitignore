@@ -34,5 +34,7 @@
 # Ignore database configuration
 # /config/database.yml
 
-# Ignore local settings
-/config/settings.local.yml
+# local development environment
+.envrc
+/localdev.volumes
+
