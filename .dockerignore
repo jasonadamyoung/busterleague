@@ -19,4 +19,6 @@ Thumbs.db
 .dockerignore
 /log/*.log
 /localdev.volumes
+localdev.getdata.sh
+localdev.resetdb.sh
 
