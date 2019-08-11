@@ -128,8 +128,6 @@ class Upload < ApplicationRecord
     Team.update_pitching_stats_for_season(self.season)
     PitchingStat.update_total_pitching_stats_for_season(self.season)
     SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
-    Roster.create_or_update_playing_time_for_season(self.season)
-    SlackIt.post(message: "... Playing time created/updated for Season: #{self.season}")
 
     if(self.season != 1999)   
       Boxscore.download_and_store_for_season(self.season)
@@ -139,6 +137,8 @@ class Upload < ApplicationRecord
     end
     Record.create_or_update_season_records(self.season)
     SlackIt.post(message: "... Season records rebuilt for Season : #{self.season}")
+    Roster.create_or_update_playing_time_for_season(self.season)
+    SlackIt.post(message: "... Playing time created/updated for Season: #{self.season}")
     Record.create_or_update_season_records('all')
     SlackIt.post(message: "... Total records rebuilt for all seasons")
     self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
