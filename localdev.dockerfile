@@ -5,7 +5,7 @@ ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
 # application
 COPY --chown=app:app . $APP_HOME
 # check bundle on startup
-COPY ./localdev.bundlecheck.sh /etc/my_init.d
+COPY ./build/localdev.bundlecheck.sh /etc/my_init.d
 # development version
 ENV PASSENGER_APP_ENV=development 
 
