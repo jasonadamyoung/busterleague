@@ -32,7 +32,7 @@
 /config/credentials.yml.enc
 
 # Ignore database configuration
-/config/database.yml
+# /config/database.yml
 
 # Ignore local settings
 /config/settings.local.yml
