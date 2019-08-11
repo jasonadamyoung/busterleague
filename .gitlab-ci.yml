@@ -1,0 +1,22 @@
+image: docker:stable
+
+stages:
+  - build_and_push
+
+services:
+  - docker:18.09.7-dind
+
+before_script:
+  - docker info
+
+Build:
+  stage: build_and_push
+  only:
+    - master
+  before_script:
+    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  script:
+    - docker build --build-arg BUSTERRAILS_IMAGE_SOURCE=${BUSTERRAILS_IMAGE_SOURCE} --tags ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest -f production.dockerfile .
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
+  after_script:
+    - docker logout ${CI_REGISTRY}
