@@ -21,4 +21,4 @@ Thumbs.db
 /localdev.volumes
 localdev.getdata.sh
 localdev.resetdb.sh
-
+/deployment

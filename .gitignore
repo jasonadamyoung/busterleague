@@ -38,3 +38,5 @@
 .envrc
 /localdev.volumes
 
+# ignore deployment for now
+/deployment
