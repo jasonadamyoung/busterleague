@@ -108,6 +108,9 @@ gem 'bootstrap-email'
 gem 'inline_svg'
 gem 'rmagick'
 
+# health check
+gem 'okcomputer'
+
 
 
 group :development, :test do
