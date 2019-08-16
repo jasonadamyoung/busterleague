@@ -2,6 +2,7 @@ ARG BUSTERRAILS_IMAGE_SOURCE
 FROM $BUSTERRAILS_IMAGE_SOURCE
 # extra nginx configuration
 ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
+ADD ./build/ignorehealthcheck.conf /etc/nginx/sites-extra.d/ignorehealthcheck.conf
 # application
 COPY --chown=app:app . $APP_HOME
 WORKDIR $APP_HOME

@@ -5,5 +5,7 @@ Rails.application.configure do
     params = event.payload[:params].reject { |key,_| unwanted_keys.include? key }
     {time: event.time.to_s(:db), owner_id: event.payload[:owner_id], ip: event.payload[:ip], params: params}
   end
+
+  config.lograge.ignore_actions = ['OkComputer::OkComputerController#show']
   config.lograge.logger = ActiveSupport::TaggedLogging.new(Logger.new(STDOUT))
 end
