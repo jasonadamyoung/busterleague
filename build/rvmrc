@@ -1,0 +1,2 @@
+umask u=rwx,g=rwx,o=rx
+rvm_install_on_use_flag=1
