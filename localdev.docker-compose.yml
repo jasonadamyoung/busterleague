@@ -8,8 +8,6 @@ services:
   busterleague:
     container_name: busterleague
     build:
-      args:
-        BUSTERRAILS_IMAGE_SOURCE: 'registry.gitlab.com/busterleague/busterrails:latest'
       context: .
       dockerfile: localdev.dockerfile
     environment:
