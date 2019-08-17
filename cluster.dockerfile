@@ -27,18 +27,19 @@ RUN rm -f /etc/service/nginx/down
 # workdir env
 ENV APP_HOME /home/app/webapp
 RUN mkdir $APP_HOME
-WORKDIR $APP_HOME
 
 # -=-=-=- BEGIN APP SPECIFIC CONFIG -=-=-=-
 
 # extra nginx configuration
 ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
 ADD ./build/ignorehealthcheck.conf /etc/nginx/sites-extra.d/ignorehealthcheck.conf
-# application
-COPY --chown=app:app . $APP_HOME
-# set production for the docker build
-ENV RAILS_ENV production
 # bundle install
+WORKDIR /tmp
+ADD Gemfile Gemfile
+ADD Gemfile.lock Gemfile.lock
 RUN bundle install --without development test
+# application
+WORKDIR $APP_HOME
+COPY --chown=app:app . $APP_HOME
 # assets
 RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
