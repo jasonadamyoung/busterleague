@@ -26,6 +26,7 @@ Build:
       --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
       --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
       --file cluster.dockerfile
+      .
     - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:$CI_COMMIT_REF_NAME
   after_script:
     - docker logout ${CI_REGISTRY}
