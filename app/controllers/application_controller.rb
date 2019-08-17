@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
   def append_info_to_payload(payload)
     super
     payload[:remote_ip] = request.remote_ip
-    payload[:request_ip] = request.request_ip
+    payload[:request_ip] = request.ip
     payload[:owner_id] = @currentowner if @currentowner
   end
 
