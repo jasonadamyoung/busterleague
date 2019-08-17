@@ -29,7 +29,7 @@ ENV APP_HOME /home/app/webapp
 RUN mkdir $APP_HOME
 
 # -=-=-=- BEGIN APP SPECIFIC CONFIG -=-=-=-
-
+ENV RAILS_ENV production
 # extra nginx configuration
 ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
 ADD ./build/ignorehealthcheck.conf /etc/nginx/sites-extra.d/ignorehealthcheck.conf
@@ -37,7 +37,7 @@ ADD ./build/ignorehealthcheck.conf /etc/nginx/sites-extra.d/ignorehealthcheck.co
 WORKDIR /tmp
 ADD Gemfile Gemfile
 ADD Gemfile.lock Gemfile.lock
-RUN bundle install --without development test
+RUN bundle install
 # application
 WORKDIR $APP_HOME
 COPY --chown=app:app . $APP_HOME
