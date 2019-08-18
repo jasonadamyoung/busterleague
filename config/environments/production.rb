@@ -66,7 +66,8 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   config.action_mailer.smtp_settings = {
-    address:              ENV['SMTP_RELAY_HOST']
+    address:              ENV['SMTP_RELAY_HOST'],
+    enable_starttls_auto: false
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.
