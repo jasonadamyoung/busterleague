@@ -20,13 +20,13 @@ Build:
     - production
     - development
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:latest || true 
+    - docker pull ${CI_REGISTRY_IMAGE}:production || true 
     - >
       docker build
       --pull
       --build-arg VCS_REF=${CI_COMMIT_SHA}
       --build-arg VCS_URL=${CI_PROJECT_URL}
-      --cache-from ${CI_REGISTRY_IMAGE}:latest
+      --cache-from ${CI_REGISTRY_IMAGE}:production
       --tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
       --file cluster.dockerfile
       .
