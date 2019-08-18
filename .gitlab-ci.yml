@@ -33,7 +33,7 @@ Build:
     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
 
 
-Push latest:
+Push production:
   variables:
     GIT_STRATEGY: none
   stage: push
@@ -41,8 +41,20 @@ Push latest:
     - production
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:latest
-    - docker push ${CI_REGISTRY_IMAGE}:latest    
+    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:production
+    - docker push ${CI_REGISTRY_IMAGE}:production    
+
+Push development:
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - development
+  script:
+    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
+    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:development
+    - docker push ${CI_REGISTRY_IMAGE}:development    
+
 
 Push tag:
   variables:
