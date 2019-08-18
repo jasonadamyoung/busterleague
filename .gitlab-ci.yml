@@ -40,8 +40,8 @@ Push production:
   only:
     - production
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:production
+    - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
+    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:production
     - docker push ${CI_REGISTRY_IMAGE}:production    
 
 Push development:
@@ -51,8 +51,8 @@ Push development:
   only:
     - development
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:development
+    - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
+    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:development
     - docker push ${CI_REGISTRY_IMAGE}:development    
 
 
@@ -63,8 +63,8 @@ Push tag:
   only:
     - tags
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
+    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
 
 after_script:
