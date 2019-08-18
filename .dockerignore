@@ -1,0 +1,24 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+#Icon?
+ehthumbs.db
+Thumbs.db
+# development files
+.vscode
+.git
+.gitignore
+.envrc
+.autoenv
+*.dockerfile
+*.docker-compose.yml
+.dockerignore
+/log/*.log
+/localdev.volumes
+localdev.getdata.sh
+localdev.resetdb.sh
+/deployment

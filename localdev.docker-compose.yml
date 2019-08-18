@@ -1,0 +1,81 @@
+version: '3'
+networks:
+  private:
+  public:
+    external:
+      name: traefik_webgateway
+services:
+  busterleague:
+    container_name: busterleague
+    build:
+      context: .
+      dockerfile: localdev.dockerfile
+    environment:
+      - DATABASE_POOL_SIZE=5
+      - DATABASE_NAME=${PRIVATE_DB_NAME}
+      - DATABASE_USER=${PRIVATE_DB_USER}
+      - DATABASE_PASSWORD=${PRIVATE_DB_PASSWORD}
+      - DATABASE_HOST=busterleaguedb
+      - DATABASE_PORT=5432
+      - BUSTERLEAGUE__WEB_REPORTS_BASE_URL=http://busterleague.localdev/dmbweb/
+      - BUSTERLEAGUE__URLWRITER_HOST=busterleague.localdev
+      - BUSTERLEAGUE__EMAIL_BCC_ADDRESS=localdev@busterleague.org
+      - BUSTERLEAGUE__EMAIL_FROM_ADDRESS=localdev@busterleague.org
+      - BUSTERLEAGUE__EMAIL_FROM_NAME='BusterLeague LocalDev Mailer'
+      - BUSTERLEAGUE__DEFAULT_SLACK_CHANNEL=${PRIVATE_SLACK_CHANNEL}
+      - BUSTERLEAGUE__SLACK_WEBHOOK=${PRIVATE_SLACK_HOOK}
+      - BUSTERLEAGUE__ROLLBAR_TOKEN=none
+      - BUSTERLEAGUE__LOCATION=busterleague-dev
+      - BUSTERLEAGUE__REDIS_URL=redis://busterleagueredis:6379/0
+      - BUSTERLEAGUE__UPLOAD_HASH_KEY=${PRIVATE_HASH_KEY}
+    volumes:
+      - ./:/home/app/webapp
+      - ./localdev.volumes/dmbweb:/home/app/webapp/public/dmbweb
+      - ./localdev.volumes/dmbweb:/static/dmbweb
+      - ./localdev.volumes/dmbhistorical:/static/dmbhistorical
+      - ./localdev.volumes/uploads:/home/app/webapp/public/system/uploads
+      - ./localdev.volumes/uploads:/home/app/webapp/public/system/stat_sheets
+      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.5.5@webapp
+    labels:
+      - traefik.backend=busterleague
+      - traefik.docker.network=traefik_webgateway
+      - traefik.frontend.rule=Host:busterleague.localdev
+      - traefik.port=80
+    networks:
+      - private
+      - public  
+    links:
+      - busterleaguedb
+    depends_on:
+      - busterleaguedb
+  busterleaguedb:
+    container_name: busterleaguedb
+    image: postgres:latest
+    volumes:
+      - league_data:/var/lib/postgresql/data
+      - ./localdev.volumes/db_dump:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_DB=${PRIVATE_DB_NAME}
+      - POSTGRES_USER=${PRIVATE_DB_USER}
+      - POSTGRES_PASSWORD=${PRIVATE_DB_PASSWORD}
+    labels:
+      - traefik.backend=busterleaguedb
+    ports:
+      - 5432:5432
+    networks:
+      - private
+  busterleagueredis:
+    container_name: busterleagueredis
+    image: redis:4.0-stretch
+    volumes:
+      - league_redis:/data
+    labels:
+      - traefik.backend=busterleagueredis
+    ports:
+      - 6379:6379
+    networks:
+      - private
+volumes:
+  league_data: {}
+  league_rvm_gems: {}
+  league_redis: {}
