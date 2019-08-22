@@ -39,4 +39,6 @@
 /localdev.volumes
 
 # ignore deployment for now
-/deployment
+/deployment/.envrc
+/deployment/kube*
+/deployment/vars*
