@@ -1,0 +1,42 @@
+---
+- hosts: localhost
+  become: no
+  become_method: sudo
+
+  tasks:
+  - name: "deploy {{application_location}} secrets"
+    k8s:
+      kubeconfig: "{{ k8s_auth_kubeconfig }}"
+      state: present
+      namespace: "{{ kube_namespace }}"
+      definition: "{{ lookup('template', './secretstemplate.yml') }}"
+      validate:
+        fail_on_error: no
+        strict: yes
+    tags:
+      - secrets
+        
+  - name: "deploy {{application_location}} redis"
+    k8s:
+      kubeconfig: "{{ k8s_auth_kubeconfig }}"
+      state: present
+      namespace: "{{ kube_namespace }}"
+      definition: "{{ lookup('template', './redistemplate.yml') }}"
+      validate:
+        fail_on_error: no
+        strict: yes
+    tags:
+      - redis
+
+  - name: "deploy {{application_location}} application"
+    k8s:
+      kubeconfig: "{{ k8s_auth_kubeconfig }}"
+      state: present
+      namespace: "{{ kube_namespace }}"
+      definition: "{{ lookup('template', './apptemplate.yml') }}"
+      validate:
+        fail_on_error: no
+        strict: yes
+    tags:
+      - application
+
