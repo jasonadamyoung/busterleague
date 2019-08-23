@@ -1,20 +1,21 @@
-image: docker:stable
-
+.docker_stages: &docker_stages
+  image: docker:stable
+  services:
+    - docker:18.09.7-dind
+  before_script:
+    - docker info
+    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  after_script:
+    - docker logout ${CI_REGISTRY}
 
 # push strategy comes from: https://blog.callr.tech/building-docker-images-with-gitlab-ci-best-practices/
-
 stages:
   - build
   - push
-
-services:
-  - docker:18.09.7-dind
-
-before_script:
-  - docker info
-  - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  - deploy
 
 Build:
+  <<: *docker_stages
   stage: build
   only:
     - production
@@ -32,8 +33,8 @@ Build:
       .
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
-
 Push production:
+  <<: *docker_stages
   variables:
     GIT_STRATEGY: none
   stage: push
@@ -45,6 +46,7 @@ Push production:
     - docker push ${CI_REGISTRY_IMAGE}:production    
 
 Push development:
+  <<: *docker_stages
   variables:
     GIT_STRATEGY: none
   stage: push
@@ -57,6 +59,7 @@ Push development:
 
 
 Push tag:
+  <<: *docker_stages
   variables:
     GIT_STRATEGY: none
   stage: push
@@ -67,6 +70,11 @@ Push tag:
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
 
-after_script:
-  - docker logout ${CI_REGISTRY}
-
+Deployment:
+  stage: deploy
+  image: gitlab.lrvlab.net:4567/busterleague/busterdeploy:latest
+  before_script:
+    - ansible --version
+  script:
+    - echo 'hello'
+    
