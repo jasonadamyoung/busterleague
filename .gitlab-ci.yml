@@ -33,30 +33,31 @@ Build:
       .
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
-Push production:
+Push previous:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
   stage: push
   only:
     - production
+    - development
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:production
-    - docker push ${CI_REGISTRY_IMAGE}:production    
+    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous    
 
-Push development:
+Push current:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
   stage: push
   only:
+    - production
     - development
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:development
-    - docker push ${CI_REGISTRY_IMAGE}:development    
-
+    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
 
 Push tag:
   <<: *docker_stages
@@ -72,6 +73,9 @@ Push tag:
 
 Development deployment:
   stage: deploy
+  only:
+    - production
+    - development  
   image: registry.gitlab.com/busterleague/busterdeploy:latest
   before_script:
     - ansible --version
