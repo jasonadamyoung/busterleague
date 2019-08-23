@@ -78,5 +78,6 @@ Development deployment:
   script:
     - cd deployment
     - export vars_file_var="ANSIBLE_${CI_COMMIT_REF_NAME^^}_VARS"
-    - ansible-playbook --extra-vars=@${!vars_file_var} deploy.yml
+    - export ANSIBLE_DEPLOYMENT_VARS=${!vars_file_var}
+    - ansible-playbook deploy.yml
     
