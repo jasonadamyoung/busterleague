@@ -70,11 +70,13 @@ Push tag:
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
 
-Deployment:
+Development deployment:
   stage: deploy
-  image: gitlab.lrvlab.net:4567/busterleague/busterdeploy:latest
+  image: registry.gitlab.com/busterleague/busterdeploy:latest
   before_script:
     - ansible --version
   script:
-    - echo 'hello'
+    - cd deployment
+    - export vars_file_var="ANSIBLE_${CI_COMMIT_REF_NAME^^}_VARS"
+    - ansible-playbook --extra-vars=@${!vars_file_var} deploy.yml
     
