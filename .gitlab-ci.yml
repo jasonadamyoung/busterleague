@@ -74,7 +74,6 @@ Push tag:
 Development deployment:
   stage: deploy
   only:
-    - production
     - development  
   image: registry.gitlab.com/busterleague/busterdeploy:latest
   before_script:
