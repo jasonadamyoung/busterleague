@@ -42,3 +42,4 @@
 /deployment/.envrc
 /deployment/kube*
 /deployment/vars*
+/deployment/.ansible.vaultpass
