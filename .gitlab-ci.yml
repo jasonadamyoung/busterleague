@@ -11,7 +11,8 @@
 # push strategy comes from: https://blog.callr.tech/building-docker-images-with-gitlab-ci-best-practices/
 stages:
   - build
-  - push
+  - push_previous
+  - push_current
   - deploy
 
 Build:
@@ -37,7 +38,7 @@ Push previous:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
-  stage: push
+  stage: push_previous
   only:
     - production
     - development
@@ -63,7 +64,7 @@ Push tag:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
-  stage: push
+  stage: push_current
   only:
     - tags
   script:
