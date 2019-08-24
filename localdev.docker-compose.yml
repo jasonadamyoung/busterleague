@@ -66,7 +66,7 @@ services:
       - private
   busterleagueredis:
     container_name: busterleagueredis
-    image: redis:4.0-stretch
+    image: redis:5.0-buster
     volumes:
       - league_redis:/data
     labels:

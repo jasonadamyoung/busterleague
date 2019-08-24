@@ -1,20 +1,22 @@
-image: docker:stable
-
+.docker_stages: &docker_stages
+  image: docker:stable
+  services:
+    - docker:18.09.7-dind
+  before_script:
+    - docker info
+    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  after_script:
+    - docker logout ${CI_REGISTRY}
 
 # push strategy comes from: https://blog.callr.tech/building-docker-images-with-gitlab-ci-best-practices/
-
 stages:
   - build
-  - push
-
-services:
-  - docker:18.09.7-dind
-
-before_script:
-  - docker info
-  - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  - push_previous
+  - push_current
+  - deploy
 
 Build:
+  <<: *docker_stages
   stage: build
   only:
     - production
@@ -32,34 +34,37 @@ Build:
       .
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
-
-Push production:
+Push previous:
+  <<: *docker_stages
   variables:
     GIT_STRATEGY: none
-  stage: push
+  stage: push_previous
   only:
     - production
+    - development
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:production
-    - docker push ${CI_REGISTRY_IMAGE}:production    
+    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous    
 
-Push development:
+Push current:
+  <<: *docker_stages
   variables:
     GIT_STRATEGY: none
-  stage: push
+  stage: push_current
   only:
+    - production
     - development
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:development
-    - docker push ${CI_REGISTRY_IMAGE}:development    
-
+    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
 
 Push tag:
+  <<: *docker_stages
   variables:
     GIT_STRATEGY: none
-  stage: push
+  stage: push_current
   only:
     - tags
   script:
@@ -67,6 +72,17 @@ Push tag:
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
 
-after_script:
-  - docker logout ${CI_REGISTRY}
-
+Development deployment:
+  stage: deploy
+  only:
+    - development
+    - production  
+  image: registry.gitlab.com/busterleague/busterdeploy:latest
+  before_script:
+    - ansible --version
+  script:
+    - cd deployment
+    - export vars_file_var="ANSIBLE_${CI_COMMIT_REF_NAME^^}_VARS"
+    - export ANSIBLE_DEPLOYMENT_VARS=${!vars_file_var}
+    - ansible-playbook deploy.yml
+    

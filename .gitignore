@@ -39,4 +39,7 @@
 /localdev.volumes
 
 # ignore deployment for now
-/deployment
+/deployment/.envrc
+/deployment/kube*
+/deployment/vars*
+/deployment/.ansible.vaultpass
