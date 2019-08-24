@@ -24,6 +24,11 @@ ADD build/webapp.conf /etc/nginx/sites-enabled/webapp.conf
 RUN mkdir /etc/nginx/sites-extra.d
 RUN rm -f /etc/service/nginx/down
 
+# sidekiq runit
+RUN mkdir /etc/service/sidekiq
+ADD build/run_sidekiq.sh /etc/service/sidekiq/run
+
+
 # workdir env
 ENV APP_HOME /home/app/webapp
 RUN mkdir $APP_HOME
