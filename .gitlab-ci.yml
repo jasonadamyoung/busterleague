@@ -51,7 +51,7 @@ Push current:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
-  stage: push
+  stage: push_current
   only:
     - production
     - development
