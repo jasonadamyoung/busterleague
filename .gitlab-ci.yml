@@ -80,8 +80,6 @@ Development deployment:
   image: registry.gitlab.com/busterleague/busterdeploy:latest
   before_script:
     - ansible --version
-    - echo $vars_file_var
-    - echo $ANSIBLE_DEPLOYMENT_VARS
   script:
     - cd deployment
     - export vars_file_var="ANSIBLE_${CI_COMMIT_REF_NAME^^}_VARS"
