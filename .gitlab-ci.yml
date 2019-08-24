@@ -75,7 +75,8 @@ Push tag:
 Development deployment:
   stage: deploy
   only:
-    - development  
+    - development
+    - production  
   image: registry.gitlab.com/busterleague/busterdeploy:latest
   before_script:
     - ansible --version
