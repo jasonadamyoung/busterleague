@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
   end
 
   def web_reports_url
-    "#{Settings.web_reports_base_url}/#{@season}"
+    "#{Settings.web_reports_base_url}/#{@season}/"
   end
 
 end
