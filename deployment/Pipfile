@@ -9,6 +9,9 @@ verify_ssl = true
 openshift = "*"
 ansible = "*"
 kubernetes-validate = "*"
+python-gitlab = "*"
+ipython = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"
