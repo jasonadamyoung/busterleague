@@ -91,9 +91,7 @@ class Upload < ApplicationRecord
         end
         FileUtils.mv(unzip_to, move_to, :force => true)
         # fix perms
-        perms_source = "#{Rails.root}/public/dmbweb/"
-        command = "/usr/bin/getfacl #{perms_source} | /usr/bin/setfacl --set-file=- -R #{move_to}"
-        system(command)
+        FileUtils.chmod_R(0755,move_to)
         return true
       end
     end
