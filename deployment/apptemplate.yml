@@ -84,11 +84,11 @@ spec:
             protocol: TCP
         livenessProbe:
           httpGet:
-            path: /healthcheck
+            path: /healthcheck/all
             port: http
         readinessProbe:
           httpGet:
-            path: /healthcheck
+            path: /healthcheck/all
             port: http
         envFrom:
           - secretRef:
