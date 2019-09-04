@@ -31,8 +31,8 @@ services:
     volumes:
       - ./:/home/app/webapp
       - ./localdev.volumes/dmbweb:/home/app/webapp/public/dmbweb
-      - ./localdev.volumes/dmbweb:/static/dmbweb
-      - ./localdev.volumes/dmbhistorical:/static/dmbhistorical
+      - ./localdev.volumes/dmbweb:/dmbexport/dmbweb
+      - ./localdev.volumes/dmbhistorical:/dmbexport/dmbhistorical
       - ./localdev.volumes/uploads:/home/app/webapp/public/system/uploads
       - ./localdev.volumes/uploads:/home/app/webapp/public/system/stat_sheets
       - league_rvm_gems:/usr/local/rvm/gems/ruby-2.5.5@webapp

@@ -46,5 +46,7 @@ RUN bundle install
 # application
 WORKDIR $APP_HOME
 COPY --chown=app:app . $APP_HOME
+# dmbweb symlink
+RUN ln -s /dmbexport/dmbweb $APP_HOME/public/dmbweb
 # assets
 RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
