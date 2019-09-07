@@ -15,7 +15,7 @@ stages:
   - push_current
   - deploy
 
-Build:
+Production Build:
   <<: *docker_stages
   stage: build
   only:
@@ -34,6 +34,25 @@ Build:
       .
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
+Lab Build:
+  <<: *docker_stages
+  stage: build
+  only:
+    - labdev
+  script:
+    - docker pull ${CI_REGISTRY_IMAGE}:labdev || true 
+    - >
+      docker build
+      --pull
+      --build-arg VCS_REF=${CI_COMMIT_SHA}
+      --build-arg VCS_URL=${CI_PROJECT_URL}
+      --cache-from ${CI_REGISTRY_IMAGE}:labdev
+      --tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
+      --file cluster.dockerfile
+      .
+    - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
+
+
 Push previous:
   <<: *docker_stages
   variables:
@@ -42,6 +61,7 @@ Push previous:
   only:
     - production
     - development
+    - labdev
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
@@ -55,6 +75,7 @@ Push current:
   only:
     - production
     - development
+    - labdev
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
@@ -77,6 +98,7 @@ Deployment:
   only:
     - development
     - production
+    - labdev
   image: registry.gitlab.com/busterleague/busterdeploy:latest
   before_script:
     - ansible --version
