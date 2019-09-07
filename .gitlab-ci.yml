@@ -53,19 +53,19 @@ Lab Build:
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
 
-# Push previous:
-#   <<: *docker_stages
-#   variables:
-#     GIT_STRATEGY: none
-#   stage: push_previous
-#   only:
-#     - production
-#     - development
-#     - labdev
-#   script:
-#     - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-#     - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
-#     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous    
+Push previous:
+  <<: *docker_stages
+  variables:
+    GIT_STRATEGY: none
+  stage: push_previous
+  only:
+    - production
+    - development
+    - labdev
+  script:
+    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous    
 
 Push current:
   <<: *docker_stages
