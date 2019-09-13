@@ -1,7 +1,6 @@
 FROM phusion/passenger-ruby26
 ARG VCS_REF=""
 LABEL maintainer="jay@outfielding.net"
-LABEL commit=${VCS_REF}
 # update OS
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 # make sure there's tz data
