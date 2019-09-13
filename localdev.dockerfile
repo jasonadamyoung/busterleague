@@ -1,4 +1,4 @@
-FROM phusion/passenger-ruby25
+FROM phusion/passenger-ruby26
 LABEL maintainer="jay@outfielding.net"
 
 # update OS

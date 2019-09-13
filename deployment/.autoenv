@@ -1,3 +1,3 @@
 alias set_lab_vaultpass='./set_gitlab_vars.py setvaultpassword --server=gitlablocal --project=busterleague/busterleague'
 alias set_lab_kubeconfig='./set_gitlab_vars.py setvaultedvariable --server=gitlablocal --project=busterleague/busterleague --variable=KUBECONFIG_LAB --sourcefile=kubeconfig.lab.yml'
-alias set_lab_vars='./set_gitlab_vars.py setvaultedvariable --server=gitlablocal --project=busterleague/busterleague --variable=ANSIBLE_DEVELOPMENT_VARS --sourcefile=vars.lab.yml'
+alias set_lab_vars='./set_gitlab_vars.py setvaultedvariable --server=gitlablocal --project=busterleague/busterleague --variable=ANSIBLE_LABDEV_VARS --sourcefile=vars.lab.yml'

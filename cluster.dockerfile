@@ -1,6 +1,5 @@
-FROM phusion/passenger-ruby25
+FROM phusion/passenger-ruby26
 LABEL maintainer="jay@outfielding.net"
-
 # update OS
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 # make sure there's tz data
@@ -48,5 +47,8 @@ WORKDIR $APP_HOME
 COPY --chown=app:app . $APP_HOME
 # dmbweb symlink
 RUN ln -s /dmbexport/dmbweb $APP_HOME/public/dmbweb
+# version from gitlab
+ARG VCS_REF=""
+ENV SHA=${VCS_REF}
 # assets
 RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
