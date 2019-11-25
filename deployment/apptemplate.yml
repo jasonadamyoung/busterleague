@@ -36,7 +36,7 @@ metadata:
     app: "{{ kube_resource_name }}"
   annotations:
     kubernetes.io/tls-acme: "true"
-    certmanager.k8s.io/cluster-issuer: "letsencrypt-production"
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
     nginx.ingress.kubernetes.io/proxy-body-size: "20m"
 spec:
   rules:
