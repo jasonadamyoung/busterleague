@@ -62,19 +62,19 @@ spec:
   selector:
     matchLabels:
       app: "{{ kube_resource_name }}"
-  strategy: 
+  strategy:
     type: RollingUpdate
   replicas: 1
   template:
     metadata:
       labels:
         app: "{{ kube_resource_name }}"
-    spec:      
+    spec:
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
         - "status.localhost"
-      containers:  
+      containers:
       - name: {{ kube_resource_name }}-app
         image: {{ image_repository }}:{{ image_tag }}
         imagePullPolicy: {{ image_pull_policy }}
@@ -96,14 +96,14 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 512Mi                        
+            memory: 512Mi
         volumeMounts:
         - mountPath: /dmbexport
           name: {{ kube_resource_name }}-pv
           subPath: dmbexport
         - mountPath: /home/app/webapp/public/system
           name: {{ kube_resource_name }}-pv
-          subPath: uploads                          
+          subPath: uploads
       volumes:
       - name: {{ kube_resource_name }}-pv
         persistentVolumeClaim:
