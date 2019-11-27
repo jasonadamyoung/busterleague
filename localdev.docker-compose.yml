@@ -35,7 +35,7 @@ services:
       - ./localdev.volumes/dmbhistorical:/dmbexport/dmbhistorical
       - ./localdev.volumes/uploads:/home/app/webapp/public/system/uploads
       - ./localdev.volumes/uploads:/home/app/webapp/public/system/stat_sheets
-      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.6.3@webapp
+      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.6.5@webapp
     labels:
       - traefik.backend=busterleague
       - traefik.docker.network=traefik_webgateway
@@ -43,14 +43,14 @@ services:
       - traefik.port=80
     networks:
       - private
-      - public  
+      - public
     links:
       - busterleaguedb
     depends_on:
       - busterleaguedb
   busterleaguedb:
     container_name: busterleaguedb
-    image: postgres:latest
+    image: postgres:11
     volumes:
       - league_data:/var/lib/postgresql/data
       - ./localdev.volumes/db_dump:/docker-entrypoint-initdb.d
