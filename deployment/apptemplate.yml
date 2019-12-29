@@ -82,6 +82,14 @@ spec:
           - name: http
             containerPort: 80
             protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthcheck/all
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /healthcheck/all
+            port: http
         envFrom:
           - secretRef:
               name: {{ kube_resource_name }}-secrets
