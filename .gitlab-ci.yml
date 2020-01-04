@@ -66,6 +66,7 @@ Push previous:
     - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
     - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
+  allow_failure: true
 
 Push current:
   <<: *docker_stages
