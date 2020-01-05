@@ -22,7 +22,7 @@ Production Build:
     - production
     - development
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:production || true 
+    - docker pull ${CI_REGISTRY_IMAGE}:production || true
     - >
       docker build
       --pull
@@ -40,7 +40,7 @@ Lab Build:
   only:
     - labdev
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:labdev || true 
+    - docker pull ${CI_REGISTRY_IMAGE}:labdev || true
     - >
       docker build
       --pull
@@ -65,7 +65,8 @@ Push previous:
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous    
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
+  allow_failure: true
 
 Push current:
   <<: *docker_stages
@@ -79,7 +80,7 @@ Push current:
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
 
 Push tag:
   <<: *docker_stages
@@ -91,7 +92,7 @@ Push tag:
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}    
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
 
 Deployment:
   stage: deploy
@@ -107,4 +108,3 @@ Deployment:
     - export vars_file_var="ANSIBLE_${CI_COMMIT_REF_NAME^^}_VARS"
     - export ANSIBLE_DEPLOYMENT_VARS=${!vars_file_var}
     - ansible-playbook deploy.yml
-    
