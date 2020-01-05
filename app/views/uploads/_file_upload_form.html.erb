@@ -1,47 +1,9 @@
 <div class="row">
-  <div class="col-md-12">
-    <div class="col-lg-5">
-      <!-- The global file processing state -->
-      <span class="fileupload-process">
-        <div id="total-progress" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
-        </div>
-      </span>
-    </div>
-  </div>
-</div>
 
-<div id="actions" class="row">
-  <div class="col-md-12">
-    <!-- The fileinput-button span is used to style the file input field as button -->
-    <button class="btn btn-success fileinput-button">
-        <i class="fas fa-plus"></i>
-        <span>Select file...</span>
-    </button>
-    <button type="submit" class="btn btn-primary start">
-        <i class="fas fa-cloud-upload-alt"></i>
-        <span>Start upload</span>
-    </button>
-    <button type="reset" class="btn btn-warning cancel">
-        <i class="fas fa-ban-circle"></i>
-        <span>Clear Upload Queue</span>
-    </button>
-  </div>
-</div>
+  <%= simple_form_for(@upload, html: { class: 'form-inline' }) do |f| -%>
+    <%= f.input :archive, as: :hidden, input_html: { value: @upload.cached_archive_data } -%>
+    <%= f.input :archive, as: :file -%>
+    <%= f.button :submit -%>
+  <% end %>
 
-
-<div class="table table-striped" class="files" id="previews">
-
-  <div id="template" class="file-row">
-    <!-- This is used as the file preview template -->
-    <div>
-        <span class="preview"><i class="fas fa-file-archive fa-5x"></i></span>
-    </div>
-    <div class="dz-details">
-      <div class="dz-filename"><p data-dz-name></p></div>
-      <div class="dz-size" data-dz-size></div>
-      <strong class="error text-danger" data-dz-errormessage></strong>
-    </div>
-    <div class="queuestatus">Queued for Upload</div>
-  </div>
 </div>

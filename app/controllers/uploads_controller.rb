@@ -7,7 +7,7 @@ class UploadsController < ApplicationController
   before_action :signin_required
 
   def index
-    @uploads = Upload.order(:archivefile_updated_at)
+    @uploads = Upload.order(:archive_updated_at)
     @upload = Upload.new
   end
 
@@ -16,7 +16,7 @@ class UploadsController < ApplicationController
       returninformation = {'msg' => "Unable to upload file: #{@upload.errors.join(',')}"}
       return render :json => returninformation.to_json, :status => 400
     end
-    
+
     create_params = upload_params.merge(owner_id: @currentowner.id)
     if(@upload = Upload.create(create_params))
       SlackIt.post(message: "#{@currentowner.nickname} uploaded a new archive file.")
