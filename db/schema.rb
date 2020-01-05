@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_16_231937) do
+ActiveRecord::Schema.define(version: 2020_01_05_172538) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -606,13 +606,11 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
 
   create_table "stat_sheets", force: :cascade do |t|
     t.bigint "owner_id"
-    t.string "datafile_file_name"
-    t.string "datafile_content_type"
-    t.bigint "datafile_file_size"
-    t.datetime "datafile_updated_at"
     t.string "datafile_fingerprint"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "sheet_data"
+    t.datetime "sheet_updated_at"
     t.index ["datafile_fingerprint"], name: "statsheet_fingerprint_ndx", unique: true
     t.index ["owner_id"], name: "index_stat_sheets_on_owner_id"
   end
@@ -850,10 +848,6 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
 
   create_table "uploads", force: :cascade do |t|
     t.bigint "owner_id"
-    t.string "archivefile_file_name"
-    t.string "archivefile_content_type"
-    t.bigint "archivefile_file_size"
-    t.datetime "archivefile_updated_at"
     t.string "archivefile_fingerprint"
     t.integer "processing_status", default: 0
     t.integer "rebuild_id"
@@ -861,6 +855,9 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
     t.datetime "updated_at", null: false
     t.integer "season", default: 0, null: false
     t.datetime "latest_game_date"
+    t.jsonb "archive_data"
+    t.integer "archive_size"
+    t.datetime "archive_updated_at"
     t.index ["archivefile_fingerprint"], name: "fingerprint_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end

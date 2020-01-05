@@ -5,14 +5,7 @@
 require 'zip'
 
 class Upload < ApplicationRecord
-  has_attached_file :archivefile, {
-    url: "/system/:class/:hash.:extension",
-    hash_data: ":class/:attachment/:id/:updated_at",
-    hash_secret: Settings.upload_hash_key
-  }
-
-  validates_attachment_content_type :archivefile, content_type: ["application/zip"]
-  validates_uniqueness_of :archivefile_fingerprint
+  include ArchiveUploader::Attachment(:archive)
 
   # status values
   NOT_YET_PROCESSED  = 0
@@ -32,7 +25,7 @@ class Upload < ApplicationRecord
   belongs_to :owner
 
   after_create :check_for_processing
-  
+
   def check_for_processing
     if(Settings.redis_enabled)
       # let the processing be manual post-create if we aren't backgrounding
@@ -83,9 +76,9 @@ class Upload < ApplicationRecord
           if(season_header =~ %r{DMB(\d+)})
             season = $1
           end
-        end  
+        end
         self.update_attribute(:season, season)
-        move_to = "#{Rails.root}/public/dmbweb/#{self.season}/"     
+        move_to = "#{Rails.root}/public/dmbweb/#{self.season}/"
         if(Dir.exist?(move_to))
           FileUtils.remove_dir(move_to, force: true)
         end
@@ -113,7 +106,7 @@ class Upload < ApplicationRecord
     SlackIt.post(message: "... Game Results created/updated for Season : #{self.season}")
     if(self.season == 1999)
       GameResult.create_data_records_for_season(self.season)
-      SlackIt.post(message: "... Game Result data records created/updated for Season : #{self.season}")      
+      SlackIt.post(message: "... Game Result data records created/updated for Season : #{self.season}")
     else
       TransactionLog.create_or_update_logs_for_season(self.season)
       SlackIt.post(message: "... Transaction logs created/updated for Season : #{self.season}")
@@ -127,7 +120,7 @@ class Upload < ApplicationRecord
     PitchingStat.update_total_pitching_stats_for_season(self.season)
     SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
 
-    if(self.season != 1999)   
+    if(self.season != 1999)
       Boxscore.download_and_store_for_season(self.season)
       SlackIt.post(message: "... Boxscores created for Season: #{self.season}")
       Boxscore.create_data_records_for_season(self.season)

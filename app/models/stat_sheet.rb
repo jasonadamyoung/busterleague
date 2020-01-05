@@ -5,15 +5,12 @@
 require 'zip'
 
 class StatSheet < ApplicationRecord
-  has_attached_file :datafile
-
-  validates_attachment_file_name :datafile, matches: [/\.xlsx?$/]
-  validates_uniqueness_of :datafile_fingerprint
+  include SheetUploader::Attachment(:sheet)
 
   belongs_to :owner
   after_create :check_for_processing
-  
-  
+
+
   def check_for_processing
     if(Settings.redis_enabled)
       # let the processing be manual post-create if we aren't backgrounding

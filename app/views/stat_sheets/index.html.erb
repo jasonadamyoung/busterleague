@@ -8,7 +8,4 @@
 
 <%- if @currentowner.is_admin? -%>
 <%= render(:partial => 'file_upload_form' )%>
-<script>
-    <%= render(partial: 'shared/dropzone.js', :locals => {post_controller: 'stat_sheets', param_name: 'stat_sheet[datafile]', accepted_file_extensions: '.xlsx,.xls'}) -%>
-</script>
 <%- end -%>

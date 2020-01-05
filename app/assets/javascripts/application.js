@@ -16,5 +16,4 @@
 //= require jqplot-plugins/jqplot.categoryAxisRenderer
 //= require jqplot-plugins/jqplot.pointLabels
 //= require alerts
-//= require dropzone
 //= require datatables

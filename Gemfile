@@ -89,9 +89,9 @@ gem "slack-notifier"
 gem 'thor'
 
 # uploads
+gem 'mimemagic'
 gem 'rubyzip'
-gem 'paperclip'
-gem 'dropzonejs-rails'
+gem "shrine", "~> 3.0"
 
 # xlsx file processing
 gem 'roo', '~> 2'
