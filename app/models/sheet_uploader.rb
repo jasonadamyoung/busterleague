@@ -9,7 +9,7 @@ class SheetUploader < Shrine
         validate_extension %w[xls xlsx]
     end
 
-    Attacher.metadata_attributes :updated_at => :updated_at
+    Attacher.metadata_attributes  :size => :size, :signature => :signature
 
     add_metadata :signature do |io|
         calculate_signature(io, :md5)

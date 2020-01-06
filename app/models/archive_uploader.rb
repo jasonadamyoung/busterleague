@@ -9,7 +9,7 @@ class ArchiveUploader < Shrine
         validate_mime_type %w[application/zip]
     end
 
-    Attacher.metadata_attributes :size => :size, :updated_at => :updated_at
+    Attacher.metadata_attributes :size => :size, :signature => :signature
 
     add_metadata :signature do |io|
         calculate_signature(io, :md5)

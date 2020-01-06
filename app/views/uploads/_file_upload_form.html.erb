@@ -1,9 +1,0 @@
-<div class="row">
-
-  <%= simple_form_for(@upload, html: { class: 'form-inline' }) do |f| -%>
-    <%= f.input :archive, as: :hidden, input_html: { value: @upload.cached_archive_data } -%>
-    <%= f.input :archive, as: :file -%>
-    <%= f.button :submit -%>
-  <% end %>
-
-</div>

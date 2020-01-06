@@ -7,7 +7,7 @@ class UploadsController < ApplicationController
   before_action :signin_required
 
   def index
-    @uploads = Upload.order(:archive_updated_at)
+    @uploads = Upload.order(:updated_at)
     @upload = Upload.new
   end
 
@@ -31,7 +31,7 @@ class UploadsController < ApplicationController
   private
 
   def upload_params
-    params[:upload].permit(:archivefile)
+    params[:upload].permit(:archive)
   end
 
 end

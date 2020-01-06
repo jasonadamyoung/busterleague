@@ -3,7 +3,6 @@
     <tr>
         <th>Filename</th>
         <th>Size</th>
-        <th>File Date</th>
         <th>Uploaded At</th>
         <th>Uploaded By</th>
         <th>Status</th>
@@ -13,9 +12,8 @@
   <tbody>
     <%- @uploads.each do |upload| -%>
         <tr>
-          <td><%= upload.archive.file_name %></td>
-          <td><%= humanize_bytes(upload.archive.size) %></td>
-          <td><%= upload.archive.updated_at %></td>
+          <td><%= upload.archive.metadata['filename'] %></td>
+          <td><%= humanize_bytes(upload.archive_size) %></td>
           <td><%= upload.created_at %></td>
           <td><%= upload.owner.nickname -%></td>
           <td><%= upload.processing_status_to_s -%></td>

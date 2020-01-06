@@ -606,13 +606,13 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
 
   create_table "stat_sheets", force: :cascade do |t|
     t.bigint "owner_id"
-    t.string "datafile_fingerprint"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "sheet_data"
-    t.datetime "sheet_updated_at"
-    t.index ["datafile_fingerprint"], name: "statsheet_fingerprint_ndx", unique: true
+    t.integer "sheet_size"
+    t.string "sheet_signature"
     t.index ["owner_id"], name: "index_stat_sheets_on_owner_id"
+    t.index ["sheet_signature"], name: "sheet_signature_ndx", unique: true
   end
 
   create_table "svg_images", force: :cascade do |t|
@@ -848,7 +848,6 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
 
   create_table "uploads", force: :cascade do |t|
     t.bigint "owner_id"
-    t.string "archivefile_fingerprint"
     t.integer "processing_status", default: 0
     t.integer "rebuild_id"
     t.datetime "created_at", null: false
@@ -857,8 +856,9 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
     t.datetime "latest_game_date"
     t.jsonb "archive_data"
     t.integer "archive_size"
+    t.string "archive_signature"
     t.datetime "archive_updated_at"
-    t.index ["archivefile_fingerprint"], name: "fingerprint_ndx", unique: true
+    t.index ["archive_signature"], name: "archve_signature_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end
 
