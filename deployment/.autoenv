@@ -1,3 +1,7 @@
 alias set_lab_vaultpass='./set_gitlab_vars.py setvaultpassword --server=gitlablocal --project=busterleague/busterleague'
 alias set_lab_kubeconfig='./set_gitlab_vars.py setvaultedvariable --server=gitlablocal --project=busterleague/busterleague --variable=KUBECONFIG_LAB --sourcefile=kubeconfig.lab.yml'
 alias set_lab_vars='./set_gitlab_vars.py setvaultedvariable --server=gitlablocal --project=busterleague/busterleague --variable=ANSIBLE_LABDEV_VARS --sourcefile=vars.lab.yml'
+alias set_prod_vaultpass='./set_gitlab_vars.py setvaultpassword --server=gitlab --project=jayo/busterleague'
+alias set_prod_kubeconfig='./set_gitlab_vars.py setvaultedvariable --server=gitlab --project=jayo/busterleague --variable=KUBECONFIG_PRODUCTION --sourcefile=kubeconfig.prod.yml'
+alias set_prod_vars='./set_gitlab_vars.py setvaultedvariable --server=gitlab --project=jayo/busterleague --variable=ANSIBLE_PRODUCTION_VARS --sourcefile=vars.prod.yml'
+alias set_demo_vars='./set_gitlab_vars.py setvaultedvariable --server=gitlab --project=jayo/busterleague --variable=ANSIBLE_DEVELOPMENT_VARS --sourcefile=vars.demo.yml'
