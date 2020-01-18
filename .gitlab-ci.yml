@@ -100,7 +100,7 @@ Deployment:
     - development
     - production
     - labdev
-  image: registry.gitlab.com/busterleague/busterdeploy:latest
+  image: registry.gitlab.com/jayo/busterdeploy:latest
   before_script:
     - ansible --version
   script:
