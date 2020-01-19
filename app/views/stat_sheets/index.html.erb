@@ -7,5 +7,41 @@
 </div>
 
 <%- if @currentowner.is_admin? -%>
-<%= render(:partial => 'file_upload_form' )%>
+<div class="row">
+  <div class="col-md-2 mx-auto">
+    <div class="p-5 bg-white shadow rounded-lg">
+      <h6 class="text-center mb-4 text-muted">
+        Select an xls or xlsx stat sheet for upload:
+      </h6>
+
+    <%= form_for(@stat_sheet, :html => {:class => 'form-horizontal'}) do |form| -%>
+      <%= form.hidden_field(:sheet, {:value => @stat_sheet.cached_sheet_data}) %>
+      <div class="row justify-content-center">
+        <div class="col text-center">
+          <label for="fileUpload" class="file-upload btn btn-lg btn-secondary btn-block rounded-pill shadow" id="fileUploadLabel">
+            <div id="fileUploadButton">Browse for xls/xlsx file ...</div></label>
+            <%= form.file_field(:sheet, accept: 'application/xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', id: 'fileUpload', style: 'display: none;') -%>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col text-center">
+          <button class="btn btn-sm btn-primary mx-auto" type="submit"><i class="fa fa-upload mr-2"></i> Upload!</button>
+        </div>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$('#fileUpload').on("change", function() {
+  console.log("change fire");
+  var i = $(this).prev('label').clone();
+  var file = $('#fileUpload')[0].files[0].name;
+  console.log(file);
+  $('#fileUploadLabel').html('Selected File: ' + file);
+});
+</script>
+
+
 <%- end -%>
