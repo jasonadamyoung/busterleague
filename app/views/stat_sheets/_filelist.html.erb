@@ -11,7 +11,7 @@
   <tbody>
     <%- @stat_sheets.each do |stat_sheet| -%>
         <tr>
-          <td><%= link_to(stat_sheet.datafile_file_name,stat_sheet.datafile.url) %></td>
+          <td><%= link_to(stat_sheet.sheet.metadata['filename'],stat_sheet.sheet_url) %></td>
           <td><%= humanize_bytes(stat_sheet.sheet_size) %></td>
           <td><%= stat_sheet.created_at %></td>
           <td><%= stat_sheet.owner.nickname -%></td>
