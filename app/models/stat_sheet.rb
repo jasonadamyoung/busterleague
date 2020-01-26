@@ -68,7 +68,8 @@ class StatSheet < ApplicationRecord
 
   def get_xlsx_data
     returndata = []
-    xlsx = Roo::Spreadsheet.open(self.sheet.path)
+    sheet_path = self.sheet.storage.path(self.sheet.id).to_s
+    xlsx = Roo::Spreadsheet.open(sheet_path)
     # get the first sheet name
     sheet = xlsx.sheet(xlsx.sheets.first)
     parsed_data = sheet.parse(headers: true,clean: true)
