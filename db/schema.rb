@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_05_172538) do
+ActiveRecord::Schema.define(version: 2020_01_28_003736) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
     t.string "flag", limit: 1, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.float "avg"
     t.float "obp"
     t.float "spc"
@@ -323,7 +323,7 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
     t.string "flag", limit: 1, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.float "era"
     t.integer "w"
     t.integer "l"
@@ -458,10 +458,10 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
   create_table "real_batting_stats", force: :cascade do |t|
     t.integer "roster_id", limit: 2
     t.integer "season", limit: 2, null: false
-    t.integer "team_id", limit: 2, null: false
+    t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
     t.string "last_name", limit: 255, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.integer "age", limit: 2, null: false
     t.string "bats", limit: 2, default: "", null: false
     t.float "avg"
@@ -504,10 +504,10 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
   create_table "real_pitching_stats", force: :cascade do |t|
     t.integer "roster_id", limit: 2
     t.integer "season", limit: 2, null: false
-    t.integer "team_id", limit: 2, null: false
+    t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
     t.string "last_name", limit: 255, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.integer "age", limit: 2, null: false
     t.string "throws", limit: 2, default: "", null: false
     t.float "era"
@@ -586,7 +586,7 @@ ActiveRecord::Schema.define(version: 2020_01_05_172538) do
     t.string "name", limit: 255, default: "", null: false
     t.string "end_name", limit: 255, default: "", null: false
     t.integer "age", limit: 2, null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.string "bats", limit: 3, default: "", null: false
     t.string "throws", limit: 1, default: "", null: false
     t.jsonb "contract_data"
