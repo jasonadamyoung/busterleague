@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class GamePitchingStat < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :roster, optional: true
   has_one :player, through: :roster
@@ -20,16 +21,12 @@ class GamePitchingStat < ApplicationRecord
   def home?
     self.location == LOCATION_HOME
   end
-  
+
   def self.rebuild_all
     self.dump_data
     Boxscore.find_each do |boxscore|
       boxscore.create_game_pitching_stats
     end
-  end
-
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
 
   def fix_roster_id

@@ -4,12 +4,10 @@
 # see LICENSE file
 
 class Inning < ApplicationRecord
+  extend CleanupTools
+
   belongs_to :team
   belongs_to :boxscore
-  
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
-  end
 
   def self.rebuild_all
     self.dump_data

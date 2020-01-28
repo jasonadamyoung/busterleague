@@ -26,6 +26,18 @@ class Player < ApplicationRecord
   PITCHING_POSITIONS = ['sp','cl','mr']
   ADJUSTMENT_SEASON = 1999
 
+  def self.dump_all_data
+    self.dump_data
+    Roster.dump_data
+    BattingStat.dump_data
+    GameBattingStat.dump_data
+    GamePitchingstat.dump_data
+    TransactionLog.dump_data
+    TeamBattingStat.dump_data
+    TeamPitchingStat.dump_data
+    BatterPlayingTime.dump_data
+    PitcherPlayingTime.dump_data
+  end
 
   def is_pitcher?
     self.player_type == PITCHER
@@ -47,7 +59,7 @@ class Player < ApplicationRecord
       else
         self.check_names = false
         self.first_name = names[0]
-        self.last_name = names[1]  
+        self.last_name = names[1]
       end
 
       if(saveit)

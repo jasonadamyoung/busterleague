@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class BatterPlayingTime < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :roster
 
@@ -15,5 +16,5 @@ class BatterPlayingTime < ApplicationRecord
     need_ab = (self.qualifying_ab - self.ab)
     (need_ab >= 0) ? (need_ab) : 0
   end
-  
+
 end

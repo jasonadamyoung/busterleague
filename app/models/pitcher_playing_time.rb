@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class PitcherPlayingTime < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :roster
 
@@ -11,5 +12,5 @@ class PitcherPlayingTime < ApplicationRecord
     need_ip = (self.qualifying_ip - self.ip)
     (need_ip >= 0) ? (need_ip) : 0
   end
-  
+
 end

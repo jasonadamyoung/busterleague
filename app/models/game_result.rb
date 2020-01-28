@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class GameResult < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :boxscore, optional: true
   belongs_to :home_team, :class_name => 'Team'
@@ -24,7 +25,7 @@ class GameResult < ApplicationRecord
     end
     true
   end
-  
+
   def create_games
     # home team's game
     home_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
@@ -48,7 +49,7 @@ class GameResult < ApplicationRecord
     away_game.total_innings = self.total_innings
     away_game.save!
     true
-  end  
+  end
 
   def self.game_results_url(season)
     if(season != 1999)
@@ -75,8 +76,8 @@ class GameResult < ApplicationRecord
 
   def self.get_teams(hash_data)
     return_data = {}
-    return_data['home_team_id'] = Team.id_for_abbreviation(hash_data['home_team_string'])  
-    return_data['away_team_id'] = Team.id_for_abbreviation(hash_data['away_team_string']) 
+    return_data['home_team_id'] = Team.id_for_abbreviation(hash_data['home_team_string'])
+    return_data['away_team_id'] = Team.id_for_abbreviation(hash_data['away_team_string'])
     return_data
   end
 
@@ -101,11 +102,11 @@ class GameResult < ApplicationRecord
           gameres = self.new(season: season)
           gameres.assign_attributes(hash_data)
           gameres.save!
-        end       
+        end
     end
     true
   end
 
-  
+
 
 end

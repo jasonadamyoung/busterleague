@@ -22,4 +22,5 @@ class RealPitchingStat < ApplicationRecord
     (integer,decimal) = ip.divmod(1)
     write_attribute(:ip, (integer+ ((decimal*10) / 3.to_f)))
   end
+
 end
