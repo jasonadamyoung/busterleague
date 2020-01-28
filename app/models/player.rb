@@ -31,7 +31,7 @@ class Player < ApplicationRecord
     Roster.dump_data
     BattingStat.dump_data
     GameBattingStat.dump_data
-    GamePitchingstat.dump_data
+    GamePitchingStat.dump_data
     TransactionLog.dump_data
     TeamBattingStat.dump_data
     TeamPitchingStat.dump_data
