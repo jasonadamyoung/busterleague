@@ -19,7 +19,7 @@ class Boxscore < ApplicationRecord
   scope :by_team_id, lambda {|team_id| where("home_team_id = #{team_id} or away_team_id = #{team_id}")}
   scope :waiting_for_data_records, -> {where(data_records_created: false)}
 
-  def self.clear_all_data
+  def self.dump_all_data
     Game.dump_data
     GameResult.dump_data
     Inning.dump_data
