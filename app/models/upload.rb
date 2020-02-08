@@ -53,10 +53,18 @@ class Upload < ApplicationRecord
     end
   end
 
+  def archive_path
+    self.archive.storage.path(self.archive.id).to_s
+  end
+
+  def archive_filename
+    self.archive.metadata['filename']
+  end
+
   def extract_zip
     # unzip to tmp directory
     unzip_to = Dir.mktmpdir
-    Zip::File.open(self.archivefile.path) do |zip_file|
+    Zip::File.open(self.archive_path) do |zip_file|
       zip_file.each do |f|
         output_fname = File.basename(f.name)
         fpath = File.join(unzip_to, output_fname)
@@ -102,12 +110,14 @@ class Upload < ApplicationRecord
     self.extract_zip
     # process
     self.process_upload_data
-    Team.send_owner_emails_for_season(self.season)
+    if(self.season == Game.current_season)
+      Team.send_owner_emails_for_season(self.season)
+    end
   end
 
   def process_upload_data
     self.update_attribute(:processing_status, PROCESSING_STARTED)
-    SlackIt.post(message: "Starting processing for : #{self.archivefile_file_name}")
+    SlackIt.post(message: "Starting processing for : #{self.archive_filename}")
     GameResult.create_or_update_results_for_season(self.season)
     SlackIt.post(message: "... Game Results created/updated for Season : #{self.season}")
     if(self.season == 1999)
@@ -145,7 +155,7 @@ class Upload < ApplicationRecord
     Record.create_or_update_season_records('all')
     SlackIt.post(message: "... Total records rebuilt for all seasons")
     self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
-    SlackIt.post(message: "An upload has been processed: #{self.archivefile_file_name}")
+    SlackIt.post(message: "An upload has been processed: #{self.archive_filename}")
   end
 
 
