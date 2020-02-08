@@ -11,13 +11,13 @@ class Game < ApplicationRecord
   belongs_to :team
   belongs_to :opponent, :class_name => 'Team'
   has_many :innings, :through => :boxscores
-  
+
   scope :wins, -> { where(:win => true) }
   scope :losses, -> { where(:win => false) }
   scope :home, -> { where(:home => true) }
   scope :away, -> { where(:home => false) }
   scope :for_season, lambda {|season| where(season: season)}
-  scope :through_date, lambda {|date| where("date <= ?",date)} 
+  scope :through_date, lambda {|date| where("date <= ?",date)}
   scope :zero_hits, -> { where(:hits => 0) }
   scope :zero_errors, -> { where(:errs => 0) }
   scope :opponent_zero_hits, -> { where(:opponent_hits => 0) }
@@ -25,10 +25,10 @@ class Game < ApplicationRecord
   scope :no_hitters, -> { wins.opponent_zero_hits }
   scope :perfects, -> { wins.opponent_zero_hits.zero_errors }
 
-
+  # TODO: fix this
   ALLOWED_SEASONS = (1999..2018)
   FIRST_SEASON = 1999
-  
+
   def self.current_season
     Date.today.year - 1
   end
