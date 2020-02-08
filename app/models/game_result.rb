@@ -13,13 +13,13 @@ class GameResult < ApplicationRecord
   scope :for_season, lambda {|season| where(season: season)}
 
 
-  def self.create_data_records_for_season(season)
-    self.for_season(season).each do |gr|
-      gr.create_data_records
+  def self.create_ninety_nine_games
+    self.for_season(1999).each do |gr|
+      gr.create_ninety_nine_games
     end
   end
 
-  def create_data_records
+  def create_ninety_nine_games
     if(self.season == 1999)
       self.create_games
     end
@@ -28,7 +28,9 @@ class GameResult < ApplicationRecord
 
   def create_games
     # home team's game
-    home_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
+    if(!(home_game = Game.where(boxscore_id: 0).where(game_result_id: self.id).where(home: true).first))
+      home_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
+    end
     home_game.team_id = self.home_team_id
     home_game.home = true
     home_game.opponent_id = self.away_team_id
@@ -39,7 +41,9 @@ class GameResult < ApplicationRecord
     home_game.save!
 
     # away team's game
-    away_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
+    if(!(away_game = Game.where(boxscore_id: 0).where(game_result_id: self.id).where(home: false).first))
+      away_game = Game.new(:boxscore_id => 0, :game_result_id => self.id, :date => self.date, :season => self.season)
+    end
     away_game.team_id = self.away_team_id
     away_game.home = false
     away_game.opponent_id = self.home_team_id
