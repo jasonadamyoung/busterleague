@@ -50,6 +50,8 @@ class StatSheet < ApplicationRecord
 
 
   def fix_xlsx_header_field(field)
+    # position fields
+    position_fields = ['c','1b','2b','3b','ss','lf','cf','rf']
     # replace chars
     returnfield = field.downcase.gsub('/','_per_').gsub('+','plus').gsub('-','_').gsub(' ','_')
     case returnfield
@@ -61,6 +63,8 @@ class StatSheet < ApplicationRecord
       'bats'
     when 't'
       'throws'
+    when *position_fields
+      "pos_#{returnfield}"
     else
       returnfield
     end
