@@ -29,6 +29,8 @@ class Player < ApplicationRecord
   def self.dump_all_data
     self.dump_data
     Roster.dump_data
+    PitchingStat.dump_data
+    BattingStat.dump_data
     BattingStat.dump_data
     GameBattingStat.dump_data
     GamePitchingStat.dump_data
