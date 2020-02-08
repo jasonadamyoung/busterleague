@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_28_003736) do
+ActiveRecord::Schema.define(version: 2020_02_08_184332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -435,7 +435,7 @@ ActiveRecord::Schema.define(version: 2020_01_28_003736) do
     t.integer "player_id"
     t.integer "eligible_games", default: 0, null: false
     t.boolean "is_total", default: true, null: false
-    t.index ["name", "season", "team_id"], name: "pitchstat_ndx", unique: true
+    t.index ["roster_id", "name", "season", "team_id"], name: "pitchstat_ndx", unique: true
   end
 
   create_table "players", force: :cascade do |t|
