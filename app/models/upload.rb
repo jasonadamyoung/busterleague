@@ -145,8 +145,10 @@ class Upload < ApplicationRecord
     if(self.season != 1999)
       Boxscore.download_and_store_for_season(self.season)
       SlackIt.post(message: "... Boxscores created for Season: #{self.season}")
-      Boxscore.create_data_records_for_season(self.season)
-      SlackIt.post(message: "... Boxscores data records created for Season: #{self.season}")
+      if(Settings.process_boxscore_data)
+        Boxscore.create_data_records_for_season(self.season)
+        SlackIt.post(message: "... Boxscores data records created for Season: #{self.season}")
+      end
     end
     Record.create_or_update_season_records(self.season)
     SlackIt.post(message: "... Season records rebuilt for Season : #{self.season}")
