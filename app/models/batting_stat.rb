@@ -110,7 +110,7 @@ class BattingStat < ApplicationRecord
   end
 
   def self.update_total_batting_stats_for_season(season)
-    eligible_games = Game.for_season(season).group('team_id').count.values.max
+    eligible_games = Game.for_season(season).group('team_id').count.values.max || 162
     allowed_attributes = BattingStat.column_names
     all_batting_data = self.get_batting_data(season)
     total_batting_data = all_batting_data.select{|hashkey,data| data['team'].empty?}
@@ -154,4 +154,3 @@ class BattingStat < ApplicationRecord
 
 
 end
-
