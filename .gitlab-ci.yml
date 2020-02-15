@@ -1,7 +1,10 @@
 .docker_stages: &docker_stages
   image: docker:stable
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   services:
-    - docker:18.09.7-dind
+    - docker:19.03.5-dind
   before_script:
     - docker info
     - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
@@ -57,6 +60,8 @@ Push previous:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   stage: push_previous
   only:
     - production
@@ -72,6 +77,8 @@ Push current:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   stage: push_current
   only:
     - production
@@ -86,6 +93,8 @@ Push tag:
   <<: *docker_stages
   variables:
     GIT_STRATEGY: none
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   stage: push_current
   only:
     - tags
