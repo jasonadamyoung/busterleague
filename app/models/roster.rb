@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class Roster < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :team
   belongs_to :player, optional: true
@@ -14,8 +15,8 @@ class Roster < ApplicationRecord
   has_one :real_batting_stat
   has_one :real_pitching_stat
   has_many :transaction_logs
-  has_one :batter_playing_time 
-  has_one :pitcher_playing_time 
+  has_one :batter_playing_time
+  has_one :pitcher_playing_time
 
   before_save  :set_status_code, :set_is_pitcher
   after_create :create_or_update_player
@@ -64,11 +65,6 @@ class Roster < ApplicationRecord
 
   def set_is_pitcher
     self.is_pitcher = PITCHING_POSITIONS.include?(self.position)
-  end
-
-
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
 
   def self.position_list
@@ -128,8 +124,8 @@ class Roster < ApplicationRecord
     end
     return ps
   end
-  
-  
+
+
   def playing_time
     if(self.is_pitcher?)
       self.pitcher_playing_time
@@ -171,7 +167,7 @@ class Roster < ApplicationRecord
         bpt.allowed_percentage = (allowed < 1) ? allowed : 1
         bpt.qualifying_ab = (bpt.actual_ab / 2.to_f).ceil
         bpt.allowed_starts = (bpt.allowed_percentage * 162).ceil
-        if(bs = self.get_total_batting_stat) 
+        if(bs = self.get_total_batting_stat)
           bpt.played_percentage = (bs.gs / total_games).to_f
           bpt.gs = bs.gs
           bpt.ab = bs.ab
@@ -183,7 +179,7 @@ class Roster < ApplicationRecord
           bpt.ab = 0
           bpt.qualified = false
         end
-        bpt.save!          
+        bpt.save!
       end
     end
   end
@@ -202,7 +198,7 @@ class Roster < ApplicationRecord
         if !startswith.nil?
           startswith = self.idiotic_shorthand_startswith_translations(startswith)
         end
-      end 
+      end
       nameparts = lastname.split("'")
       finder = nameparts.max_by(&:length)
       end_name = finder.downcase.split(' ').last
@@ -307,12 +303,28 @@ class Roster < ApplicationRecord
       team = Team.abbreviation_finder(batting_details['team'])
       player_details = {}
       player_details['status'] = 'present'
-      player_details['name'] = batting_details['name']
+      # exception handling
+      if(batting_details['name'] == 'Brian Hunter')
+        player_details['name'] = 'Brian Lee Hunter'
+      else
+        player_details['name'] = batting_details['name']
+      end
       player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = batting_details['p']
       player_details['age'] = batting_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
     end
+
+    # special case for Jerry Hairston
+    team = Team.abbreviation_finder('OAK')
+    player_details = {}
+    player_details['status'] = 'present'
+    player_details['name'] = 'Jerry Hairston'
+    player_details['end_name'] = player_details['name'].split(' ').last
+    player_details['position'] = '2b'
+    player_details['age'] = 23
+    self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
+
 
     pitching_data = PitchingStat.get_pitching_data(1999)
     pitching_data.each do |key,pitching_details|
@@ -324,7 +336,7 @@ class Roster < ApplicationRecord
       player_details['position'] = pitching_details['p']
       player_details['age'] = pitching_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
-    end    
+    end
   end
 
   def self.create_or_update_playing_time_for_season(season)
@@ -332,6 +344,6 @@ class Roster < ApplicationRecord
       rp.create_or_update_playing_time
     end
   end
-  
+
 
 end

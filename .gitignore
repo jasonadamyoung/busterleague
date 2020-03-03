@@ -43,3 +43,9 @@
 /deployment/kube*
 /deployment/vars*
 /deployment/.ansible.vaultpass
+
+# ignore editor config
+.vscode
+
+# ignore local dev settings
+/config/settings.local.yml

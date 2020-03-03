@@ -5,15 +5,12 @@
 require 'zip'
 
 class StatSheet < ApplicationRecord
-  has_attached_file :datafile
-
-  validates_attachment_file_name :datafile, matches: [/\.xlsx?$/]
-  validates_uniqueness_of :datafile_fingerprint
+  include SheetUploader::Attachment(:sheet)
 
   belongs_to :owner
   after_create :check_for_processing
-  
-  
+
+
   def check_for_processing
     if(Settings.redis_enabled)
       # let the processing be manual post-create if we aren't backgrounding
@@ -71,7 +68,8 @@ class StatSheet < ApplicationRecord
 
   def get_xlsx_data
     returndata = []
-    xlsx = Roo::Spreadsheet.open(self.datafile.path)
+    sheet_path = self.sheet.storage.path(self.sheet.id).to_s
+    xlsx = Roo::Spreadsheet.open(sheet_path)
     # get the first sheet name
     sheet = xlsx.sheet(xlsx.sheets.first)
     parsed_data = sheet.parse(headers: true,clean: true)

@@ -8,7 +8,7 @@ module ApplicationHelper
     when 'warning'
       "#{baseclass} alert-warning"
     when 'error'
-      "#{baseclass} alert-error"
+      "#{baseclass} alert-danger"
     when 'notice'
       "#{baseclass} alert-info"
     when 'success'
@@ -37,7 +37,7 @@ module ApplicationHelper
     path = teams_path
     nav_item(path,'Teams')
   end
-    
+
   def team_nav_dropdown_item(team)
     path = team_path(team)
     nav_dropdown_item(path,team.name)
@@ -45,5 +45,5 @@ module ApplicationHelper
 
 
 
- 
+
 end

@@ -5,6 +5,7 @@
 
 class Boxscore < ApplicationRecord
   include ActiveModel::AttributeAssignment
+  extend CleanupTools
   serialize :content
   belongs_to :home_team, :class_name => 'Team'
   belongs_to :away_team, :class_name => 'Team'
@@ -17,6 +18,17 @@ class Boxscore < ApplicationRecord
   scope :for_season, lambda {|season| where(season: season)}
   scope :by_team_id, lambda {|team_id| where("home_team_id = #{team_id} or away_team_id = #{team_id}")}
   scope :waiting_for_data_records, -> {where(data_records_created: false)}
+
+  def self.dump_all_data
+    Game.dump_data
+    GameResult.dump_data
+    Inning.dump_data
+    GameBattingStat.dump_data
+    GamePitchingStat.dump_data
+    Record.dump_data
+    DailyRecord.dump_data
+    self.dump_data
+  end
 
   def self.create_data_records_for_season(season,post_to_slack=true)
     processed_count = 0
@@ -36,7 +48,7 @@ class Boxscore < ApplicationRecord
     self.create_game_batting_stats
     self.create_game_pitching_stats
     self.update_attribute(:data_records_created, true)
-  end     
+  end
 
   def self.team_test_set(limit = 5)
     return_set = []
@@ -46,15 +58,6 @@ class Boxscore < ApplicationRecord
       end
     end
     return_set.uniq
-  end
-         
-  def self.dump_data
-    Game.dump_data
-    Inning.dump_data
-    GameBattingStat.dump_data
-    GamePitchingStat.dump_data
-    Record.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
 
   def self.download_and_store_for_season(season = Game.current_season)
@@ -136,7 +139,7 @@ class Boxscore < ApplicationRecord
     innings_totals = bp.innings_totals
     self.home_runs = bp.innings_totals['home_runs']
     self.away_runs = bp.innings_totals['away_runs']
-    self.total_innings = bp.innings_totals['total_innings']   
+    self.total_innings = bp.innings_totals['total_innings']
     self.game_stats['innings_totals'] = innings_totals
     self.game_stats['batting_stats'] = bp.batting_stats
     self.game_stats['pitching_stats'] = bp.pitching_stats
@@ -161,14 +164,14 @@ class Boxscore < ApplicationRecord
           boxscore.date = dtb_data['date']
         end
         boxscore.ballpark = dtb_data['ballpark']
-        boxscore.home_team_id = Team.id_for_abbreviation(dtb_data['home_team']) 
-        boxscore.away_team_id = Team.id_for_abbreviation(dtb_data['away_team']) 
+        boxscore.home_team_id = Team.id_for_abbreviation(dtb_data['home_team'])
+        boxscore.away_team_id = Team.id_for_abbreviation(dtb_data['away_team'])
         boxscore.game_stats = {}
         innings_totals = bp.innings_totals
         boxscore.home_runs = bp.innings_totals['home_runs']
         boxscore.away_runs = bp.innings_totals['away_runs']
         boxscore.total_innings = bp.innings_totals['total_innings']
-        
+
 
         boxscore.game_stats['innings_totals'] = innings_totals
         boxscore.game_stats['batting_stats'] = bp.batting_stats
@@ -181,7 +184,7 @@ class Boxscore < ApplicationRecord
       end
     else
       return false
-    end   
+    end
   end
 
   def update_boxscore_stats
@@ -248,9 +251,9 @@ class Boxscore < ApplicationRecord
     home_game.runs = self.home_runs
     home_game.opponent_runs = self.away_runs
     home_game.hits = self.home_team_stats["hits"]
-    home_game.opponent_hits = self.away_team_stats["hits"]  
+    home_game.opponent_hits = self.away_team_stats["hits"]
     home_game.errs = self.home_team_stats["errors"]
-    home_game.opponent_errs = self.away_team_stats["errors"]  
+    home_game.opponent_errs = self.away_team_stats["errors"]
     home_game.total_innings = self.total_innings
     home_game.save!
 
@@ -263,9 +266,9 @@ class Boxscore < ApplicationRecord
     away_game.runs = self.away_runs
     away_game.opponent_runs = self.home_runs
     away_game.hits = self.away_team_stats["hits"]
-    away_game.opponent_hits = self.home_team_stats["hits"]  
+    away_game.opponent_hits = self.home_team_stats["hits"]
     away_game.errs = self.away_team_stats["errors"]
-    away_game.opponent_errs = self.home_team_stats["errors"]      
+    away_game.opponent_errs = self.home_team_stats["errors"]
     away_game.total_innings = self.total_innings
     away_game.save!
 

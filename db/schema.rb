@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_16_231937) do
+ActiveRecord::Schema.define(version: 2020_02_08_184332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
     t.string "flag", limit: 1, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.float "avg"
     t.float "obp"
     t.float "spc"
@@ -323,7 +323,7 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
     t.string "flag", limit: 1, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.float "era"
     t.integer "w"
     t.integer "l"
@@ -435,7 +435,7 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
     t.integer "player_id"
     t.integer "eligible_games", default: 0, null: false
     t.boolean "is_total", default: true, null: false
-    t.index ["name", "season", "team_id"], name: "pitchstat_ndx", unique: true
+    t.index ["roster_id", "name", "season", "team_id"], name: "pitchstat_ndx", unique: true
   end
 
   create_table "players", force: :cascade do |t|
@@ -458,10 +458,10 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
   create_table "real_batting_stats", force: :cascade do |t|
     t.integer "roster_id", limit: 2
     t.integer "season", limit: 2, null: false
-    t.integer "team_id", limit: 2, null: false
+    t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
     t.string "last_name", limit: 255, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.integer "age", limit: 2, null: false
     t.string "bats", limit: 2, default: "", null: false
     t.float "avg"
@@ -504,10 +504,10 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
   create_table "real_pitching_stats", force: :cascade do |t|
     t.integer "roster_id", limit: 2
     t.integer "season", limit: 2, null: false
-    t.integer "team_id", limit: 2, null: false
+    t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
     t.string "last_name", limit: 255, default: "", null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.integer "age", limit: 2, null: false
     t.string "throws", limit: 2, default: "", null: false
     t.float "era"
@@ -586,7 +586,7 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
     t.string "name", limit: 255, default: "", null: false
     t.string "end_name", limit: 255, default: "", null: false
     t.integer "age", limit: 2, null: false
-    t.string "position", limit: 2, default: "", null: false
+    t.string "position", limit: 3, default: "", null: false
     t.string "bats", limit: 3, default: "", null: false
     t.string "throws", limit: 1, default: "", null: false
     t.jsonb "contract_data"
@@ -606,15 +606,13 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
 
   create_table "stat_sheets", force: :cascade do |t|
     t.bigint "owner_id"
-    t.string "datafile_file_name"
-    t.string "datafile_content_type"
-    t.bigint "datafile_file_size"
-    t.datetime "datafile_updated_at"
-    t.string "datafile_fingerprint"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["datafile_fingerprint"], name: "statsheet_fingerprint_ndx", unique: true
+    t.jsonb "sheet_data"
+    t.integer "sheet_size"
+    t.string "sheet_signature"
     t.index ["owner_id"], name: "index_stat_sheets_on_owner_id"
+    t.index ["sheet_signature"], name: "sheet_signature_ndx", unique: true
   end
 
   create_table "svg_images", force: :cascade do |t|
@@ -850,18 +848,17 @@ ActiveRecord::Schema.define(version: 2019_06_16_231937) do
 
   create_table "uploads", force: :cascade do |t|
     t.bigint "owner_id"
-    t.string "archivefile_file_name"
-    t.string "archivefile_content_type"
-    t.bigint "archivefile_file_size"
-    t.datetime "archivefile_updated_at"
-    t.string "archivefile_fingerprint"
     t.integer "processing_status", default: 0
     t.integer "rebuild_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "season", default: 0, null: false
     t.datetime "latest_game_date"
-    t.index ["archivefile_fingerprint"], name: "fingerprint_ndx", unique: true
+    t.jsonb "archive_data"
+    t.integer "archive_size"
+    t.string "archive_signature"
+    t.datetime "archive_updated_at"
+    t.index ["archive_signature"], name: "archve_signature_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end
 

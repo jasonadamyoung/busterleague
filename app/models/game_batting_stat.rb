@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class GameBattingStat < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :roster, optional: true
   has_one :player, through: :roster
@@ -25,7 +26,7 @@ class GameBattingStat < ApplicationRecord
   def home?
     self.location == LOCATION_HOME
   end
-  
+
   def set_singles
     self.h1b = (h - (h3b+h2b+hr))
   end
@@ -35,10 +36,6 @@ class GameBattingStat < ApplicationRecord
     Boxscore.find_each do |boxscore|
       boxscore.create_game_batting_stats
     end
-  end
-
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
   end
 
   def fix_roster_id

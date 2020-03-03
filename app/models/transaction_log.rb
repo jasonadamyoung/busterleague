@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class TransactionLog < ApplicationRecord
+  extend CleanupTools
 
   belongs_to :roster, optional: true
   belongs_to :team, optional: true
@@ -36,10 +37,6 @@ class TransactionLog < ApplicationRecord
     ACQUIRED_TRADE => 'Acquired via trade'
   }
 
-
-  def self.dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
-  end
 
   def self.transactions_url(season)
     base_url = "#{Settings.web_reports_base_url}/#{season}"
@@ -86,9 +83,9 @@ class TransactionLog < ApplicationRecord
 
 
   def set_teams
-    self.team_id = Team.id_for_abbreviation(self.team_string)  
+    self.team_id = Team.id_for_abbreviation(self.team_string)
     if(!self.other_team_string.blank?)
-      self.other_team_id = Team.id_for_abbreviation(self.other_team_string) 
+      self.other_team_id = Team.id_for_abbreviation(self.other_team_string)
     end
     true
   end
@@ -112,7 +109,7 @@ class TransactionLog < ApplicationRecord
         stl = self.new(hashid: hashid, season: season)
         stl.assign_attributes(data)
         stl.save!
-      end       
+      end
     end
     true
   end

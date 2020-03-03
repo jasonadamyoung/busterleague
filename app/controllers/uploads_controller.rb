@@ -7,31 +7,48 @@ class UploadsController < ApplicationController
   before_action :signin_required
 
   def index
-    @uploads = Upload.order(:archivefile_updated_at)
+    @uploads = Upload.order(:updated_at)
     @upload = Upload.new
   end
 
   def create
     if(!@currentowner.is_admin?)
-      returninformation = {'msg' => "Unable to upload file: #{@upload.errors.join(',')}"}
-      return render :json => returninformation.to_json, :status => 400
+      flash[:error] = "You must be an application admin to upload archives."
+      return redirect_to uploads_url
     end
-    
+
+
+    if(upload_params[:archive].blank?)
+      flash[:error] = "No file provided."
+      return redirect_to uploads_url
+    end
+
     create_params = upload_params.merge(owner_id: @currentowner.id)
-    if(@upload = Upload.create(create_params))
-      SlackIt.post(message: "#{@currentowner.nickname} uploaded a new archive file.")
-      returninformation = {'msg' => 'OK!'}
-      return render :json => returninformation.to_json, :status => 200
-    else
-      returninformation = {'msg' => "Unable to upload file: #{@upload.errors.join(',')}"}
-      return render :json => returninformation.to_json, :status => 400
+
+
+    begin
+      @upload = Upload.create(create_params)
+    rescue ActiveRecord::RecordNotUnique => exception
+      flash[:error] = "You have already uploaded this archive file."
+      return redirect_to uploads_url
     end
+
+    if(@upload.valid?)
+      flash[:success] = "Your file has been uploaded."
+      return redirect_to uploads_url
+    else
+      flash[:error] = @upload.errors.join(',')
+      return redirect_to uploads_url
+    end
+
   end
+
+
 
   private
 
   def upload_params
-    params[:upload].permit(:archivefile)
+    params[:upload].permit(:archive)
   end
 
 end
