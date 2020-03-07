@@ -16,7 +16,7 @@ class Upload < ApplicationRecord
   PROCESSED            = 42
 
   PROCESSING_STATUS_STRINGS = {
-    NOT_YET_PROCESSED    => "Not yet extracted",
+    NOT_YET_EXTRACTED    => "Not yet extracted",
     EXTRACTION_QUEUED    => "Extraction queued",
     READY_FOR_PROCESSING => "Ready for processing",
     PROCESSING_STARTED   => "Processing started",
