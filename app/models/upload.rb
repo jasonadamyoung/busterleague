@@ -52,7 +52,7 @@ class Upload < ApplicationRecord
     elsif(self.processing_status >= READY_FOR_PROCESSING)
       # do background stuff
     elsif(self.processing_status == READY_FOR_ROSTERS && self.season == Game.current_season)
-      # current season? background it
+      # process rosters,
     end
   end
 
@@ -131,11 +131,6 @@ class Upload < ApplicationRecord
   #   if(self.season == 1999)
   #     GameResult.create_ninety_nine_games
   #     SlackIt.post(message: "... Game Result data records created/updated for Season : #{self.season}")
-  #   else
-  #     TransactionLog.create_or_update_logs_for_season(self.season)
-  #     SlackIt.post(message: "... Transaction logs created/updated for Season : #{self.season}")
-  #     Team.create_or_update_rosters_for_season(self.season)
-  #     SlackIt.post(message: "... Rosters created/updated for Season : #{self.season}")
   #   end
   #   Team.update_batting_stats_for_season(self.season)
   #   BattingStat.update_total_batting_stats_for_season(self.season)
@@ -143,12 +138,6 @@ class Upload < ApplicationRecord
   #   Team.update_pitching_stats_for_season(self.season)
   #   PitchingStat.update_total_pitching_stats_for_season(self.season)
   #   SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
-  #   if(self.season == 1999)
-  #     Roster.create_ninety_nine_rosters
-  #     BattingStat.fix_roster_ids
-  #     PitchingStat.fix_roster_ids
-  #     SlackIt.post(message: "... Handled 1999 Rosters")
-  #   end
 
   #   if(self.season != 1999)
   #     Boxscore.download_and_store_for_season(self.season)
