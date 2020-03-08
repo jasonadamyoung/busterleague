@@ -8,7 +8,7 @@ class Team < ApplicationRecord
 
   belongs_to :owner
   has_many :records
-  has_many :games
+  has_many :team_games
   has_many :innings
   has_many :rosters
   has_many :players, through: :rosters

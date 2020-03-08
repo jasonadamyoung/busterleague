@@ -15,7 +15,7 @@ class Record < ApplicationRecord
   scope :for_season, lambda {|season| where(season: season)}
 
   ALL_SEASON = 0
-  
+
   def set_win_minus_losses
     self.wins_minus_losses = self.wins - self.losses
   end
@@ -25,7 +25,7 @@ class Record < ApplicationRecord
   end
 
   def gameslist
-    self.team.games.for_season(self.season)
+    self.team.team_games.for_season(self.season)
   end
 
   def set_records_by_opponent
@@ -57,7 +57,7 @@ class Record < ApplicationRecord
       idlist.each do |key,ids|
         if ids.include?(id)
           wl_groups[key][id] = wl
-        end 
+        end
       end
     end
     self.update_attribute(:wl_groups, wl_groups)
@@ -98,7 +98,7 @@ class Record < ApplicationRecord
     end
     self.update_attribute(:last_ten, [last_wins,last_losses])
   end
-  
+
 
   def self.set_gb_for_season(season)
     # gamesback
@@ -152,17 +152,17 @@ class Record < ApplicationRecord
       season_record = Record.new(season: season, team: team)
     end
 
-    season_record.home_games = team.games.home.for_season(season).count
-    season_record.road_games = team.games.away.for_season(season).count
+    season_record.home_games = team.team_games.home.for_season(season).count
+    season_record.road_games = team.team_games.away.for_season(season).count
     season_record.games =  season_record.home_games + season_record.road_games
-    season_record.wins = team.games.wins.for_season(season).count
-    season_record.home_wins = team.games.home.wins.for_season(season).count
-    season_record.road_wins = team.games.away.wins.for_season(season).count
+    season_record.wins = team.team_games.wins.for_season(season).count
+    season_record.home_wins = team.team_games.home.wins.for_season(season).count
+    season_record.road_wins = team.team_games.away.wins.for_season(season).count
     season_record.losses = season_record.games - season_record.wins
-    season_record.home_rf = team.games.home.for_season(season).sum(:runs)
-    season_record.home_ra = team.games.home.for_season(season).sum(:opponent_runs)
-    season_record.road_rf = team.games.away.for_season(season).sum(:runs)
-    season_record.road_ra = team.games.away.for_season(season).sum(:opponent_runs)
+    season_record.home_rf = team.team_games.home.for_season(season).sum(:runs)
+    season_record.home_ra = team.team_games.home.for_season(season).sum(:opponent_runs)
+    season_record.road_rf = team.team_games.away.for_season(season).sum(:runs)
+    season_record.road_ra = team.team_games.away.for_season(season).sum(:opponent_runs)
     season_record.rf = season_record.home_rf + season_record.road_rf
     season_record.ra = season_record.home_ra + season_record.road_ra
     season_record.save!
