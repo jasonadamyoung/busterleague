@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: "25Gi"
-  storageClassName: "nfs-client"
+  storageClassName: "{{ app_storage_class }}"
 ---
 apiVersion: v1
 kind: Service

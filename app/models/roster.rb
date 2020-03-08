@@ -285,6 +285,25 @@ class Roster < ApplicationRecord
   end
 
 
+  def self.create_or_update_for_season(season)
+    if(season == 1999)
+      self.create_ninety_nine_rosters
+    else
+      Team.all.each do |t|
+        t.create_or_update_rosters_for_season(season)
+      end
+
+      # get the transaction logs
+      TransactionLog.create_or_update_logs_for_season(season)
+
+      # adjust for traded players
+      Team.all.each do |t|
+        t.create_or_update_traded_rosters_for_season(season)
+      end
+    end
+  end
+
+
   def self.create_or_update_roster_player_for_season_by_team(season,team,player_details)
     rp = self.for_season(season).by_team(team).where(name: player_details['name']).first
     if(!rp)
@@ -344,6 +363,9 @@ class Roster < ApplicationRecord
       rp.create_or_update_playing_time
     end
   end
+
+
+
 
 
 end
