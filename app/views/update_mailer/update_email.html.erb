@@ -10,7 +10,7 @@
       <h2 class="text-center"><%= @team.name -%></h2>
       <hr/>
 
-  
+
       <h3 class="text-center"><%= display_wl([@teamrecord.wins,@teamrecord.losses]) %></h3>
       <h5 class="text-center">
       <%- if @teamrecord.gb == 0 -%>
@@ -23,7 +23,7 @@
       <h5 class="text-center">Recent Games</h5>
       <table class="table table-striped">
         <tbody>
-            <%- @team.games.for_season(Game.current_season).order("date DESC").limit(10).each do |game| -%>
+            <%- @team.team_games.for_season(Game.current_season).order("date DESC").limit(10).each do |game| -%>
             <tr>
               <td><%= link_to((game.home? ? 'vs.' : '@') + " #{game.opponent.name}",  boxscore_url(game.boxscore))%></td>
               <td><%= (game.win? ? 'W' : 'L')%></td>
@@ -40,22 +40,22 @@
     <div class="card-body">
       <div class="row">
         <div class="col-sm">
-            <div class="text-center">         
+            <div class="text-center">
               <%= link_to("#{Game.current_season} Standings", standings_url(season: Game.current_season), class: 'btn btn-primary') -%>
             </div>
         </div>
 
         <div class="col-sm">
-            <div class="text-center">         
+            <div class="text-center">
             <%= link_to("Team Details", team_url(@team,season: Game.current_season), class: 'btn btn-primary') -%>
             </div>
         </div>
 
         <div class="col-sm">
-            <div class="text-center">         
+            <div class="text-center">
             <%= link_to("Playing Time Report", playingtime_team_url(@team,season: Game.current_season), class: 'btn btn-primary') -%>
             </div>
-        </div>    
+        </div>
       </div>
     </div>
   </div>
