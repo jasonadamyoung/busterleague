@@ -10,43 +10,56 @@ class Upload < ApplicationRecord
   # status values
   NOT_YET_EXTRACTED    = 0
   EXTRACTION_QUEUED    = 1
-  READY_FOR_PROCESSING = 11
-  PROCESSING_STARTED   = 21
-  WILL_NOT_PROCESS     = 41
+  EXTRACTION_FAILED    = 2
+  PROCESSING_FAILED    = 3
+  READY_FOR_ROSTERS    = 11
+  READY_FOR_PROCESSING = 21
+  PROCESSING_STARTED   = 31
   PROCESSED            = 42
 
   PROCESSING_STATUS_STRINGS = {
     NOT_YET_EXTRACTED    => "Not yet extracted",
     EXTRACTION_QUEUED    => "Extraction queued",
+    EXTRACTION_FAILED    => "Extraction failed",
+    PROCESSING_FAILED    => "Processing failed",
+    READY_FOR_ROSTERS    => "Ready to process rosters",
     READY_FOR_PROCESSING => "Ready for processing",
     PROCESSING_STARTED   => "Processing started",
-    WILL_NOT_PROCESS     => "Will not process",
     PROCESSED            => "Processed"
   }
 
   belongs_to :owner
 
-  after_create :check_for_extraction
+  after_create :queue_extraction
+  after_update :check_for_processing
 
-  def check_for_extraction
-    if(Settings.redis_enabled)
-      # let the processing be manual post-create if we aren't backgrounding
-      self.queue_extraction
-    end
-    true
+  def self.available_seasons
+    self.distinct.pluck(:season).sort
+  end
+
+  def reset_status(status: NOT_YET_EXTRACTED)
+    self.update_attribute(:processing_status, status)
   end
 
   def processing_status_to_s
     PROCESSING_STATUS_STRINGS[self.processing_status]
   end
 
+  def check_for_processing
+    if(self.processing_status == PROCESSED && self.season == Game.current_season)
+      # send background emails
+      # Team.send_owner_emails_for_season(self.season)
+    elsif(self.processing_status >= READY_FOR_PROCESSING)
+      # do background stuff
+    elsif(self.processing_status == READY_FOR_ROSTERS && self.season == Game.current_season)
+      # current season? background it
+    end
+  end
+
   def queue_extraction
     self.update_attribute(:processing_status, EXTRACTION_QUEUED)
-    if(!Settings.redis_enabled)
-      self.extract_zip
-    else
-      self.class.delay_for(5.seconds).delayed_extraction(self.id)
-    end
+    self.class.delay_for(5.seconds).delayed_extraction(self.id)
+    true
   end
 
   def self.delayed_extraction(record_id)
@@ -101,23 +114,14 @@ class Upload < ApplicationRecord
         FileUtils.mv(unzip_to, move_to, :force => true)
         # fix perms
         FileUtils.chmod_R(0755,move_to)
-        self.update_attribute(:processing_status, READY_FOR_PROCESSING)
+        self.update_attribute(:processing_status, READY_FOR_ROSTERS)
         return true
       end
     end
-    self.update_attribute(:processing_status, WILL_NOT_PROCESS)
+    self.update_attribute(:processing_status, EXTRACTION_FAILED)
     return false
   end
 
-  # def unzip_and_process
-  #   # unzip
-  #   self.extract_zip
-  #   # process
-  #   self.process_upload_data
-  #   if(self.season == Game.current_season)
-  #     Team.send_owner_emails_for_season(self.season)
-  #   end
-  # end
 
   # def process_upload_data
   #   self.update_attribute(:processing_status, PROCESSING_STARTED)

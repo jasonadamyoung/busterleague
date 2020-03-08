@@ -225,8 +225,7 @@ class Team < ApplicationRecord
           batting_stat = self.batting_stats.new(roster_id: roster_id,
                                                 season: season,
                                                 name: name,
-                                                player_id:
-                                                roster.player_id,
+                                                player_id: roster.player_id,
                                                 age: roster.age,
                                                 first_name: roster.first_name,
                                                 last_name: roster.last_name)
@@ -376,17 +375,6 @@ class Team < ApplicationRecord
       nil
     end
   end
-
-  def self.create_or_update_rosters_for_season(season)
-    Team.all.each do |t|
-      t.create_or_update_rosters_for_season(season)
-    end
-
-    Team.all.each do |t|
-      t.create_or_update_traded_rosters_for_season(season)
-    end
-  end
-
 
   def self.update_batting_stats_for_season(season)
     Team.all.each do |t|
