@@ -60,7 +60,7 @@ class Boxscore < ApplicationRecord
     return_set.uniq
   end
 
-  def self.download_and_store_for_season(season = Game.current_season)
+  def self.download_and_store_for_season(season)
     web_reports_url = "#{Settings.web_reports_base_url}/#{season}"
     all_boxscores = self.download_boxscores_for_season(season)
     stored = 0

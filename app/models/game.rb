@@ -25,16 +25,16 @@ class Game < ApplicationRecord
   scope :no_hitters, -> { wins.opponent_zero_hits }
   scope :perfects, -> { wins.opponent_zero_hits.zero_errors }
 
-  # TODO: fix this
-  ALLOWED_SEASONS = (1999..2018)
-  FIRST_SEASON = 1999
-
   def self.current_season
     Date.today.year - 1
   end
 
-  def self.allowed_seasons
-    ALLOWED_SEASONS.to_a
+  def self.available_seasons
+    self.distinct.pluck(:season).sort
+  end
+
+  def self.latest_season
+    self.maximum(:season)
   end
 
   def self.through_season_date(season,date)
@@ -43,10 +43,6 @@ class Game < ApplicationRecord
     else
       for_season(season).through_date(date)
     end
-  end
-
-  def self.available_seasons
-    (self.distinct.pluck(:season) + [self.current_season]).uniq.sort.reverse
   end
 
   def self.earliest_date(season)

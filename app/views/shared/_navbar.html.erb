@@ -11,9 +11,9 @@
 				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					Seasons
 				</a>
-				
+
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<%- Game.available_seasons.each do |season| %>
+					<%- Game.available_seasons.reverse.each do |season| %>
 						<%= nav_dropdown_item(standings_path(season: season),"#{season}") -%>
 					<%- end -%>
 				</div>
