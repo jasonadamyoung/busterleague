@@ -8,6 +8,7 @@ class SlackIt
   attr_accessor :message, :attachments, :slack, :icon_emoji
 
   def initialize(options = {})
+
     username = options[:username] || "BusterBot"
     channel = options[:channel] || Settings.default_slack_channel
     @slack = Slack::Notifier.new(Settings.slack_webhook) do
@@ -36,7 +37,11 @@ class SlackIt
       post_parameters[:icon_emoji] = ':baseball:'
     end
 
-    self.slack.ping(self.message, post_parameters)
+    begin
+      self.slack.ping(self.message, post_parameters)
+    rescue StandardError => error
+      Rollbar.log('error', e)
+    end
 
   end
 
