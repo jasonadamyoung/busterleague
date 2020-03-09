@@ -17,10 +17,12 @@ class UploadStatsWorker
     raise UploadError unless ( upload.processing_status == Upload::READY_FOR_STATS )
 
     SlackIt.post(message: "[UID:#{upload.id}] Starting processing stats for season #{upload.season}")
-    Team.update_batting_stats_for_season(self.season)
-    BattingStat.update_total_batting_stats_for_season(self.season)
-    Team.update_pitching_stats_for_season(self.season)
-    PitchingStat.update_total_pitching_stats_for_season(self.season)
+    Team.update_batting_stats_for_season(upload.season)
+    BattingStat.update_total_batting_stats_for_season(upload.season)
+    Team.update_pitching_stats_for_season(upload.season)
+    PitchingStat.update_total_pitching_stats_for_season(upload.season)
+    # update playing time
+    Roster.create_or_update_playing_time_for_season(upload.season)
     SlackIt.post(message: "[UID:#{upload.id}] Finished processing stats for season #{upload.season}")
     upload.set_status(Upload::PROCESSED_STATS)
   end

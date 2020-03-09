@@ -18,7 +18,7 @@ class UploadRosterWorker
 
     SlackIt.post(message: "[UID:#{upload.id}] Starting processing rosters for season #{upload.season}")
     Roster.create_or_update_for_season(upload.season)
-    SlackIt.post(message: "[UID:#{upload.id}]  Finished processing rosters for season #{upload.season}")
+    SlackIt.post(message: "[UID:#{upload.id}] Finished processing rosters for season #{upload.season}")
     upload.set_status(Upload::PROCESSED_ROSTERS)
   end
 end

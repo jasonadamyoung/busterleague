@@ -18,7 +18,8 @@ class UploadGamesWorker
 
     SlackIt.post(message: "[UID:#{upload.id}] Starting processing games for season #{upload.season}")
     Game.create_or_update_for_season(upload.season)
-    SlackIt.post(message: "[UID:#{upload.id}]  Finished processing games for season #{upload.season}")
+    Record.create_or_update_season_records(upload.season)
+    SlackIt.post(message: "[UID:#{upload.id}] Finished processing games for season #{upload.season}")
     upload.set_status(Upload::PROCESSED_GAMES)
   end
 end

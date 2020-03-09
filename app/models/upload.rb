@@ -41,7 +41,14 @@ class Upload < ApplicationRecord
   belongs_to :owner
 
   after_create :queue_extraction
-  after_update :check_for_processing
+  after_update :schedule_processing_check
+
+  def schedule_processing_check
+    self.class.delay_for(5.seconds).delayed_processing_check(self.id)
+    true
+  end
+
+  scope :not_processed, -> {where("processing_status <> #{Upload::PROCESSED}")}
 
   def self.available_seasons
     self.distinct.pluck(:season).sort
@@ -49,9 +56,12 @@ class Upload < ApplicationRecord
 
   def self.process_rosters
     self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
-      SlackIt.post(message: "Starting rosters for season #{upload.season} (Upload ID: #{upload.id})...")
+      SlackIt.post(message: "[UID:#{upload.id}] Starting processing rosters for season #{upload.season}")
       Roster.create_or_update_for_season(upload.season)
-      SlackIt.post(message: ".... finished processing rosters for season #{upload.season} (Upload ID: #{upload.id})")
+      SlackIt.post(message: "[UID:#{upload.id}] Finished processing rosters for season #{upload.season}")
+    end
+    # once they are all processed, update status
+    self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
       upload.set_status(Upload::PROCESSED_ROSTERS)
     end
   end
@@ -67,6 +77,12 @@ class Upload < ApplicationRecord
 
   def processing_status_to_s
     PROCESSING_STATUS_STRINGS[self.processing_status]
+  end
+
+  def self.delayed_processing_check(record_id)
+    if(record = find_by_id(record_id))
+      record.check_for_processing
+    end
   end
 
   def check_for_processing
@@ -92,7 +108,8 @@ class Upload < ApplicationRecord
     when PROCESSED_GAME_STATS
       return self.set_status(PROCESSED)
     when PROCESSED
-      # TeamOwnerEmailWorker.perform_async(self.id) if self.season == Game.current_season
+      UploadNotifierWorker.perform_async(self.id) if self.season == Game.current_season
+      UploadOverallStatsWorker.perform_async unless self.class.not_processed.count > 0
       return true
     else
       # do nothing

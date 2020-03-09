@@ -212,7 +212,7 @@ class Team < ApplicationRecord
 
 
   def update_batting_stats_for_season(season)
-    eligible_games = self.games.for_season(season).count || 162
+    eligible_games = self.team_games.for_season(season).count || 162
     allowed_attributes = BattingStat.column_names
     batting_data = self.get_batting_data(season)
     name_matcher = position_data_roster_matcher(batting_data,season)
@@ -255,7 +255,7 @@ class Team < ApplicationRecord
   end
 
   def update_pitching_stats_for_season(season)
-    eligible_games = self.games.for_season(season).count
+    eligible_games = self.team_games.for_season(season).count
     allowed_attributes = PitchingStat.column_names
     pitching_data = self.get_pitching_data(season)
     name_matcher = position_data_roster_matcher(pitching_data,season)
