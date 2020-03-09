@@ -13,8 +13,13 @@ class Upload < ApplicationRecord
   EXTRACTION_FAILED    = 2
   PROCESSING_FAILED    = 3
   READY_FOR_ROSTERS    = 11
-  READY_FOR_PROCESSING = 21
-  PROCESSING_STARTED   = 31
+  PROCESSED_ROSTERS    = 12
+  READY_FOR_GAMES      = 16
+  PROCESSED_GAMES      = 17
+  READY_FOR_STATS      = 21
+  PROCESSED_STATS      = 22
+  READY_FOR_GAME_STATS = 26
+  PROCESSED_GAME_STATS = 27
   PROCESSED            = 42
 
   PROCESSING_STATUS_STRINGS = {
@@ -23,8 +28,13 @@ class Upload < ApplicationRecord
     EXTRACTION_FAILED    => "Extraction failed",
     PROCESSING_FAILED    => "Processing failed",
     READY_FOR_ROSTERS    => "Ready to process rosters",
-    READY_FOR_PROCESSING => "Ready for processing",
-    PROCESSING_STARTED   => "Processing started",
+    PROCESSED_ROSTERS    => "Processed rosters",
+    READY_FOR_GAMES      => "Ready to process games",
+    PROCESSED_GAMES      => "Processed games",
+    READY_FOR_STATS      => "Ready to process stats",
+    PROCESSED_STATS      => "Processed stats",
+    READY_FOR_GAME_STATS => "Ready to process game stats",
+    PROCESSED_GAME_STATS => "Processed game stats",
     PROCESSED            => "Processed"
   }
 
@@ -37,22 +47,56 @@ class Upload < ApplicationRecord
     self.distinct.pluck(:season).sort
   end
 
-  def reset_status(status: NOT_YET_EXTRACTED)
+  def self.process_rosters
+    self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
+      SlackIt.post(message: "Starting rosters for season #{upload.season} (Upload ID: #{upload.id})...")
+      Roster.create_or_update_for_season(upload.season)
+      SlackIt.post(message: ".... finished processing rosters for season #{upload.season} (Upload ID: #{upload.id})")
+      upload.set_status(Upload::PROCESSED_ROSTERS)
+    end
+  end
+
+  def reset_status(status = NOT_YET_EXTRACTED)
     self.update_attribute(:processing_status, status)
   end
+
+  def set_status(status)
+    self.update_attribute(:processing_status, status)
+  end
+
 
   def processing_status_to_s
     PROCESSING_STATUS_STRINGS[self.processing_status]
   end
 
   def check_for_processing
-    if(self.processing_status == PROCESSED && self.season == Game.current_season)
-      # send background emails
-      # Team.send_owner_emails_for_season(self.season)
-    elsif(self.processing_status >= READY_FOR_PROCESSING)
-      # do background stuff
-    elsif(self.processing_status == READY_FOR_ROSTERS && self.season == Game.current_season)
-      # process rosters,
+    case self.processing_status
+    when READY_FOR_ROSTERS
+      RosterParserWorker.perform_async(self.id) if self.season == Game.current_season
+      return true
+    when PROCESSED_ROSTERS
+      return self.set_status(READY_FOR_GAMES)
+    when READY_FOR_GAMES
+      # background it
+      return true
+    when PROCESSED_GAMES
+      return self.set_status(READY_FOR_STATS)
+    when READY_FOR_STATS
+      # background it
+      return true
+    when PROCESSED_STATS
+      return self.set_status(READY_FOR_GAME_STATS)
+    when READY_FOR_GAME_STATS
+      # background it
+      return true
+    when PROCESSED_GAME_STATS
+      return self.set_status(PROCESSED)
+    when PROCESSED
+      # TeamOwnerEmailWorker.perform_async(self.id) if self.season == Game.current_season
+      return true
+    else
+      # do nothing
+      return true
     end
   end
 
