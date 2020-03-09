@@ -3,7 +3,7 @@
 # === LICENSE:
 # see LICENSE file
 
-class RosterParserWorker
+class UploadRosterWorker
   include Sidekiq::Worker
 
   def perform(upload_id)
@@ -16,9 +16,9 @@ class RosterParserWorker
 
     raise UploadError unless ( upload.processing_status == Upload::READY_FOR_ROSTERS )
 
-    SlackIt.post(message: "Starting rosters for season #{upload.season} (Upload ID: #{upload.id})...")
+    SlackIt.post(message: "[UID:#{upload.id}] Starting processing rosters for season #{upload.season}")
     Roster.create_or_update_for_season(upload.season)
-    SlackIt.post(message: ".... finished processing rosters for season #{upload.season} (Upload ID: #{upload.id})")
+    SlackIt.post(message: "[UID:#{upload.id}]  Finished processing rosters for season #{upload.season}")
     upload.set_status(Upload::PROCESSED_ROSTERS)
   end
 end

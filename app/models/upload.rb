@@ -72,22 +72,22 @@ class Upload < ApplicationRecord
   def check_for_processing
     case self.processing_status
     when READY_FOR_ROSTERS
-      RosterParserWorker.perform_async(self.id) if self.season == Game.current_season
+      UploadRosterWorker.perform_async(self.id) if self.season == Game.current_season
       return true
     when PROCESSED_ROSTERS
       return self.set_status(READY_FOR_GAMES)
     when READY_FOR_GAMES
-      # background it
+      UploadGamesWorker.perform_async(self.id)
       return true
     when PROCESSED_GAMES
       return self.set_status(READY_FOR_STATS)
     when READY_FOR_STATS
-      # background it
+      UploadStatsWorker.perform_async(self.id)
       return true
     when PROCESSED_STATS
       return self.set_status(READY_FOR_GAME_STATS)
     when READY_FOR_GAME_STATS
-      # background it
+      UploadGameStatsWorker.perform_async(self.id)
       return true
     when PROCESSED_GAME_STATS
       return self.set_status(PROCESSED)
@@ -165,42 +165,6 @@ class Upload < ApplicationRecord
     self.update_attribute(:processing_status, EXTRACTION_FAILED)
     return false
   end
-
-
-  # def process_upload_data
-  #   self.update_attribute(:processing_status, PROCESSING_STARTED)
-  #   SlackIt.post(message: "Starting processing for : #{self.archive_filename}")
-  #   GameResult.create_or_update_results_for_season(self.season)
-  #   SlackIt.post(message: "... Game Results created/updated for Season : #{self.season}")
-  #   if(self.season == 1999)
-  #     GameResult.create_ninety_nine_games
-  #     SlackIt.post(message: "... Game Result data records created/updated for Season : #{self.season}")
-  #   end
-  #   Team.update_batting_stats_for_season(self.season)
-  #   BattingStat.update_total_batting_stats_for_season(self.season)
-  #   SlackIt.post(message: "... Batting stats created/updated for Season: #{self.season}")
-  #   Team.update_pitching_stats_for_season(self.season)
-  #   PitchingStat.update_total_pitching_stats_for_season(self.season)
-  #   SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
-
-  #   if(self.season != 1999)
-  #     Boxscore.download_and_store_for_season(self.season)
-  #     SlackIt.post(message: "... Boxscores created for Season: #{self.season}")
-  #     if(Settings.process_boxscore_data)
-  #       Boxscore.create_data_records_for_season(self.season)
-  #       SlackIt.post(message: "... Boxscores data records created for Season: #{self.season}")
-  #     end
-  #   end
-  #   Record.create_or_update_season_records(self.season)
-  #   SlackIt.post(message: "... Season records rebuilt for Season : #{self.season}")
-  #   Roster.create_or_update_playing_time_for_season(self.season)
-  #   SlackIt.post(message: "... Playing time created/updated for Season: #{self.season}")
-  #   Record.create_or_update_season_records('all')
-  #   SlackIt.post(message: "... Total records rebuilt for all seasons")
-  #   self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
-  #   SlackIt.post(message: "An upload has been processed: #{self.archive_filename}")
-  # end
-
 
 
 end
