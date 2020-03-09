@@ -100,9 +100,6 @@ gem "shrine", "~> 3.0"
 # xlsx file processing
 gem 'roo', '~> 2'
 
-# mathn is removed in ruby 2.5
-gem 'mathn'
-
 # nice emails
 gem 'bootstrap-email'
 
