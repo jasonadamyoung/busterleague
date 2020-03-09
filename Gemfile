@@ -86,6 +86,7 @@ gem 'lograge'
 #gem 'redis-rails'
 
 # slack integration
+#gem "slack-ruby-client"
 gem "slack-notifier"
 
 # scripts
