@@ -52,9 +52,9 @@ class Team < ApplicationRecord
     win_pcts = []
     x_pcts = []
     self.records.for_season(season).where('games > 0').order('date ASC').each do |record|
-      win_pcts << [record.date,(record.wins / record.games).to_f]
-      exponent = ((record.rf + record.ra) / record.games )**0.287
-      x_pcts << [record.date, ((record.rf**(exponent)) / ( (record.rf**(exponent)) + (record.ra**(exponent)) )).to_f]
+      win_pcts << [record.date,(record.wins / record.games.to_f).to_f]
+      exponent = ((record.rf + record.ra) / record.games.to_f )**0.287
+      x_pcts << [record.date, ((record.rf**(exponent)) / ( (record.rf**(exponent)) + (record.ra**(exponent)) ).to_f).to_f]
     end
     {:labels => ['Win %','Expected %'],:data => [win_pcts] + [x_pcts]}
   end
@@ -67,7 +67,7 @@ class Team < ApplicationRecord
         labels << team.name
         win_pcts = []
         team.records.for_season(season).where('games >= 7').order('date ASC').each do |record|
-          win_pcts << [record.date,(record.wins / record.games).to_f]
+          win_pcts << [record.date,(record.wins / record.games.to_f).to_f]
         end
         data << win_pcts
       end

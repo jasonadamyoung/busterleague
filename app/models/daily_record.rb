@@ -244,8 +244,8 @@ class DailyRecord < ApplicationRecord
 
   def expected_pct
     if(self.gamescount > 0)
-      exponent = ((rf + ra) / gamescount )**0.287
-     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) )
+      exponent = ((rf + ra) / gamescount.to_f )**0.287
+     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) ).to_f
     else
       0
     end
