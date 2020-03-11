@@ -192,7 +192,7 @@ class Record < ApplicationRecord
   end
 
   def win_pct
-    self.gamescount > 0 ? (self.wins/self.gamescount) : 0
+    self.gamescount > 0 ? (self.wins/self.gamescount.to_f) : 0
   end
 
   def rf
