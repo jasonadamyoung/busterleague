@@ -192,7 +192,7 @@ class Record < ApplicationRecord
   end
 
   def win_pct
-    self.gamescount > 0 ? (self.wins/self.gamescount) : 0
+    self.gamescount > 0 ? (self.wins/self.gamescount.to_f) : 0
   end
 
   def rf
@@ -222,8 +222,8 @@ class Record < ApplicationRecord
 
   def expected_pct
     if(self.gamescount > 0)
-      exponent = ((rf + ra) / gamescount )**0.287
-     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) )
+      exponent = ((rf + ra) / gamescount.to_f )**0.287
+     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) ).to_f
     else
       0
     end

@@ -52,9 +52,9 @@ class Team < ApplicationRecord
     win_pcts = []
     x_pcts = []
     self.records.for_season(season).where('games > 0').order('date ASC').each do |record|
-      win_pcts << [record.date,(record.wins / record.games).to_f]
-      exponent = ((record.rf + record.ra) / record.games )**0.287
-      x_pcts << [record.date, ((record.rf**(exponent)) / ( (record.rf**(exponent)) + (record.ra**(exponent)) )).to_f]
+      win_pcts << [record.date,(record.wins / record.games.to_f).to_f]
+      exponent = ((record.rf + record.ra) / record.games.to_f )**0.287
+      x_pcts << [record.date, ((record.rf**(exponent)) / ( (record.rf**(exponent)) + (record.ra**(exponent)) ).to_f).to_f]
     end
     {:labels => ['Win %','Expected %'],:data => [win_pcts] + [x_pcts]}
   end
@@ -67,7 +67,7 @@ class Team < ApplicationRecord
         labels << team.name
         win_pcts = []
         team.records.for_season(season).where('games >= 7').order('date ASC').each do |record|
-          win_pcts << [record.date,(record.wins / record.games).to_f]
+          win_pcts << [record.date,(record.wins / record.games.to_f).to_f]
         end
         data << win_pcts
       end
@@ -212,7 +212,7 @@ class Team < ApplicationRecord
 
 
   def update_batting_stats_for_season(season)
-    eligible_games = self.games.for_season(season).count || 162
+    eligible_games = self.team_games.for_season(season).count || 162
     allowed_attributes = BattingStat.column_names
     batting_data = self.get_batting_data(season)
     name_matcher = position_data_roster_matcher(batting_data,season)
@@ -255,7 +255,7 @@ class Team < ApplicationRecord
   end
 
   def update_pitching_stats_for_season(season)
-    eligible_games = self.games.for_season(season).count
+    eligible_games = self.team_games.for_season(season).count
     allowed_attributes = PitchingStat.column_names
     pitching_data = self.get_pitching_data(season)
     name_matcher = position_data_roster_matcher(pitching_data,season)

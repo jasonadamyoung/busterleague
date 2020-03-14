@@ -168,7 +168,7 @@ class Roster < ApplicationRecord
         bpt.qualifying_ab = (bpt.actual_ab / 2.to_f).ceil
         bpt.allowed_starts = (bpt.allowed_percentage * 162).ceil
         if(bs = self.get_total_batting_stat)
-          bpt.played_percentage = (bs.gs / total_games).to_f
+          bpt.played_percentage = (bs.gs / total_games.to_f).to_f
           bpt.gs = bs.gs
           bpt.ab = bs.ab
           need_ab = bpt.qualifying_ab  -  bpt.ab

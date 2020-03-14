@@ -94,7 +94,7 @@ class PitchingStat < ApplicationRecord
   end
 
   def self.update_total_pitching_stats_for_season(season)
-    eligible_games = Game.for_season(season).group('team_id').count.values.max || 162
+    eligible_games = TeamGame.for_season(season).group('team_id').count.values.max || 162
     allowed_attributes = PitchingStat.column_names
     all_pitching_data = self.get_pitching_data(season)
     total_pitching_data = all_pitching_data.select{|hashkey,data| data['team'].empty?}
