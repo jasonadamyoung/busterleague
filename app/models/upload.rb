@@ -8,55 +8,139 @@ class Upload < ApplicationRecord
   include ArchiveUploader::Attachment(:archive)
 
   # status values
-  NOT_YET_PROCESSED  = 0
-  PROCESSING_QUEUED  = 1
-  PROCESSING_STARTED = 11
-  WILL_NOT_PROCESS   = 21
-  PROCESSED          = 42
+  NOT_YET_EXTRACTED    = 0
+  EXTRACTION_QUEUED    = 1
+  EXTRACTION_FAILED    = 2
+  PROCESSING_FAILED    = 3
+  READY_FOR_ROSTERS    = 11
+  PROCESSED_ROSTERS    = 12
+  READY_FOR_GAMES      = 16
+  PROCESSED_GAMES      = 17
+  READY_FOR_STATS      = 21
+  PROCESSED_STATS      = 22
+  READY_FOR_GAME_STATS = 26
+  PROCESSED_GAME_STATS = 27
+  PROCESSED            = 42
 
   PROCESSING_STATUS_STRINGS = {
-    NOT_YET_PROCESSED  => "Not yet processed",
-    PROCESSING_QUEUED  => "Processing queued",
-    PROCESSING_STARTED => "Processing started",
-    WILL_NOT_PROCESS   => "Will not process",
-    PROCESSED          => "Processed"
+    NOT_YET_EXTRACTED    => "Not yet extracted",
+    EXTRACTION_QUEUED    => "Extraction queued",
+    EXTRACTION_FAILED    => "Extraction failed",
+    PROCESSING_FAILED    => "Processing failed",
+    READY_FOR_ROSTERS    => "Ready to process rosters",
+    PROCESSED_ROSTERS    => "Processed rosters",
+    READY_FOR_GAMES      => "Ready to process games",
+    PROCESSED_GAMES      => "Processed games",
+    READY_FOR_STATS      => "Ready to process stats",
+    PROCESSED_STATS      => "Processed stats",
+    READY_FOR_GAME_STATS => "Ready to process game stats",
+    PROCESSED_GAME_STATS => "Processed game stats",
+    PROCESSED            => "Processed"
   }
 
   belongs_to :owner
 
-  after_create :check_for_processing
+  after_create :queue_extraction
+  after_update :schedule_processing_check
 
-  def check_for_processing
-    if(Settings.redis_enabled)
-      # let the processing be manual post-create if we aren't backgrounding
-      self.queue_unzip_and_process
-    end
+  def schedule_processing_check
+    self.class.delay_for(5.seconds).delayed_processing_check(self.id)
     true
   end
+
+  scope :not_processed, -> {where("processing_status <> #{Upload::PROCESSED}")}
+
+  def self.available_seasons
+    self.distinct.pluck(:season).sort
+  end
+
+  def self.process_rosters
+    self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
+      SlackIt.post(message: "[UID:#{upload.id}] Starting processing rosters for season #{upload.season}")
+      Roster.create_or_update_for_season(upload.season)
+      SlackIt.post(message: "[UID:#{upload.id}] Finished processing rosters for season #{upload.season}")
+    end
+    # once they are all processed, update status
+    self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
+      upload.set_status(Upload::PROCESSED_ROSTERS)
+    end
+  end
+
+  def reset_status(status = NOT_YET_EXTRACTED)
+    self.update_attribute(:processing_status, status)
+  end
+
+  def set_status(status)
+    self.update_attribute(:processing_status, status)
+  end
+
 
   def processing_status_to_s
     PROCESSING_STATUS_STRINGS[self.processing_status]
   end
 
-  def queue_unzip_and_process
-    self.update_attribute(:processing_status, PROCESSING_QUEUED)
-    if(!Settings.redis_enabled)
-      self.unzip_and_process
-    else
-      self.class.delay_for(5.seconds).delayed_unzip_and_process(self.id)
+  def self.delayed_processing_check(record_id)
+    if(record = find_by_id(record_id))
+      record.check_for_processing
     end
   end
 
-  def self.delayed_unzip_and_process(record_id)
-    if(record = find_by_id(record_id))
-      record.unzip_and_process
+  def check_for_processing
+    case self.processing_status
+    when READY_FOR_ROSTERS
+      UploadRosterWorker.perform_async(self.id) if self.season == Game.current_season
+      return true
+    when PROCESSED_ROSTERS
+      return self.set_status(READY_FOR_GAMES)
+    when READY_FOR_GAMES
+      UploadGamesWorker.perform_async(self.id)
+      return true
+    when PROCESSED_GAMES
+      return self.set_status(READY_FOR_STATS)
+    when READY_FOR_STATS
+      UploadStatsWorker.perform_async(self.id)
+      return true
+    when PROCESSED_STATS
+      return self.set_status(READY_FOR_GAME_STATS)
+    when READY_FOR_GAME_STATS
+      UploadGameStatsWorker.perform_async(self.id)
+      return true
+    when PROCESSED_GAME_STATS
+      return self.set_status(PROCESSED)
+    when PROCESSED
+      UploadNotifierWorker.perform_async(self.id) if self.season == Game.current_season
+      UploadOverallStatsWorker.perform_async unless self.class.not_processed.count > 0
+      return true
+    else
+      # do nothing
+      return true
     end
+  end
+
+  def queue_extraction
+    self.update_attribute(:processing_status, EXTRACTION_QUEUED)
+    self.class.delay_for(5.seconds).delayed_extraction(self.id)
+    true
+  end
+
+  def self.delayed_extraction(record_id)
+    if(record = find_by_id(record_id))
+      record.extract_zip
+    end
+  end
+
+  def archive_path
+    self.archive.storage.path(self.archive.id).to_s
+  end
+
+  def archive_filename
+    self.archive.metadata['filename']
   end
 
   def extract_zip
     # unzip to tmp directory
     unzip_to = Dir.mktmpdir
-    Zip::File.open(self.archivefile.path) do |zip_file|
+    Zip::File.open(self.archive_path) do |zip_file|
       zip_file.each do |f|
         output_fname = File.basename(f.name)
         fpath = File.join(unzip_to, output_fname)
@@ -64,7 +148,13 @@ class Upload < ApplicationRecord
       end
     end
 
-    index_file = File.join(unzip_to, "index.htm")
+    # check for the 1999 index
+    index_1999_file = File.join(unzip_to, "orgindex1_1999.htm")
+    if(File.exist?(index_1999_file))
+      index_file = index_1999_file
+    else
+      index_file = File.join(unzip_to, "index.htm")
+    end
     if(File.exist?(index_file))
       index_data = File.read(index_file)
       doc = Nokogiri::HTML(index_data)
@@ -85,57 +175,13 @@ class Upload < ApplicationRecord
         FileUtils.mv(unzip_to, move_to, :force => true)
         # fix perms
         FileUtils.chmod_R(0755,move_to)
+        self.update_attribute(:processing_status, READY_FOR_ROSTERS)
         return true
       end
     end
+    self.update_attribute(:processing_status, EXTRACTION_FAILED)
     return false
   end
-
-  def unzip_and_process
-    # unzip
-    self.extract_zip
-    # process
-    self.process_upload_data
-    Team.send_owner_emails_for_season(self.season)
-  end
-
-  def process_upload_data
-    self.update_attribute(:processing_status, PROCESSING_STARTED)
-    SlackIt.post(message: "Starting processing for : #{self.archivefile_file_name}")
-    GameResult.create_or_update_results_for_season(self.season)
-    SlackIt.post(message: "... Game Results created/updated for Season : #{self.season}")
-    if(self.season == 1999)
-      GameResult.create_data_records_for_season(self.season)
-      SlackIt.post(message: "... Game Result data records created/updated for Season : #{self.season}")
-    else
-      TransactionLog.create_or_update_logs_for_season(self.season)
-      SlackIt.post(message: "... Transaction logs created/updated for Season : #{self.season}")
-      Team.create_or_update_rosters_for_season(self.season)
-      SlackIt.post(message: "... Rosters created/updated for Season : #{self.season}")
-    end
-    Team.update_batting_stats_for_season(self.season)
-    BattingStat.update_total_batting_stats_for_season(self.season)
-    SlackIt.post(message: "... Batting stats created/updated for Season: #{self.season}")
-    Team.update_pitching_stats_for_season(self.season)
-    PitchingStat.update_total_pitching_stats_for_season(self.season)
-    SlackIt.post(message: "... Pitching stats created/updated for Season: #{self.season}")
-
-    if(self.season != 1999)
-      Boxscore.download_and_store_for_season(self.season)
-      SlackIt.post(message: "... Boxscores created for Season: #{self.season}")
-      Boxscore.create_data_records_for_season(self.season)
-      SlackIt.post(message: "... Boxscores data records created for Season: #{self.season}")
-    end
-    Record.create_or_update_season_records(self.season)
-    SlackIt.post(message: "... Season records rebuilt for Season : #{self.season}")
-    Roster.create_or_update_playing_time_for_season(self.season)
-    SlackIt.post(message: "... Playing time created/updated for Season: #{self.season}")
-    Record.create_or_update_season_records('all')
-    SlackIt.post(message: "... Total records rebuilt for all seasons")
-    self.update_attributes(processing_status: PROCESSED, latest_game_date: Game.latest_date(self.season))
-    SlackIt.post(message: "An upload has been processed: #{self.archivefile_file_name}")
-  end
-
 
 
 end

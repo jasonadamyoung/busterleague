@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: "25Gi"
-  storageClassName: "nfs-client"
+  storageClassName: "{{ app_storage_class }}"
 ---
 apiVersion: v1
 kind: Service
@@ -101,7 +101,7 @@ spec:
         - mountPath: /dmbexport
           name: {{ kube_resource_name }}-pv
           subPath: dmbexport
-        - mountPath: /home/app/webapp/public/system
+        - mountPath: /home/app/webapp/public/uploads
           name: {{ kube_resource_name }}-pv
           subPath: uploads
       volumes:

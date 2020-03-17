@@ -31,9 +31,9 @@
         </tr>
       </thead>
       <tbody>
-        <%- Game.available_seasons.each do |season| -%>
+        <%- Game.available_seasons.reverse.each do |season| -%>
           <tr>
-            <%- record = @team.records.for_season(season).first 
+            <%- record = @team.records.for_season(season).first
                 team_season = record.team_season -%>
             <td>
               <%= owner_icon(team_season) -%>
@@ -42,12 +42,12 @@
               <%- end -%>
               <%- if team_season.ws_win? -%>
                 <%= ws_win_icon -%>
-              <%- end -%> 
+              <%- end -%>
             </td>
             <td><%= link_to(season,team_path(@team,season: season)) %></td>
             <%- if record.nil? -%>
             <td colspan="13"><em>no records available</em></td>
-            <%- else -%>            
+            <%- else -%>
             <td><%= display_wl([record.wins,record.losses]) %></td>
             <td><%= number_with_precision(record.win_pct.to_f,:precision => 3)%></td>
             <td><%= display_gb(record.gb) %></td>
@@ -66,5 +66,3 @@
     </table>
   </div>
 </div>
-
-

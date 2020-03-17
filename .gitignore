@@ -46,3 +46,6 @@
 
 # ignore editor config
 .vscode
+
+# ignore local dev settings
+/config/settings.local.yml

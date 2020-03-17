@@ -34,7 +34,7 @@ class BoxscoreParser
   attr_accessor :pitching_stats
 
 
-  
+
   def initialize(content)
     self.content = content
     self.date_teams_ballpark_data = []
@@ -52,7 +52,7 @@ class BoxscoreParser
     self.weather_data = []
     self.process_parts
     self.process_data
-    self    
+    self
   end
 
   def process_parts
@@ -74,7 +74,7 @@ class BoxscoreParser
     ## at_bat data
     at_bat_block = []
     while((array_content.first =~ %r{INN\s+H\s+R\s+ER}).nil?)
-      line = more_mass_name_nonsense(array_content.shift)    
+      line = more_mass_name_nonsense(array_content.shift)
       at_bat_block << line unless line.strip.empty?
     end
     at_bat_block.each do |line|
@@ -90,11 +90,11 @@ class BoxscoreParser
     # pop off summary lines
     self.away_at_bat_data.pop
     self.home_at_bat_data.pop
-    
+
     ## pitching_data
     # away
     while(!array_content.first.strip.empty?)
-      line = more_mass_name_nonsense(array_content.shift)    
+      line = more_mass_name_nonsense(array_content.shift)
       self.away_pitching_data << line
     end
     # pop off the summary line
@@ -106,7 +106,7 @@ class BoxscoreParser
 
     # home
     while(!array_content.first.strip.empty?)
-      line = more_mass_name_nonsense(array_content.shift)    
+      line = more_mass_name_nonsense(array_content.shift)
       self.home_pitching_data << line
     end
     # pop off the summary line
@@ -119,7 +119,7 @@ class BoxscoreParser
     # substitution_data
     if(array_content.first =~ %r{^[a-zA-Z\s]+:})
       while(!array_content.first.strip.empty?)
-        line = array_content.shift      
+        line = array_content.shift
         self.substitution_data << line unless line.strip.empty?
       end
     end
@@ -131,7 +131,7 @@ class BoxscoreParser
     game_stat_data_block = []
     # game_stat_data
     while(!(array_content.first =~ %r{^[a-zA-Z\s]+:}) and !(array_content.first =~ %r{injured}) and !(array_content.first =~ %r{removed}) and !(array_content.first =~ %r{ejected}) and !array_content.first.nil?)
-      line = more_mass_name_nonsense(array_content.shift)    
+      line = more_mass_name_nonsense(array_content.shift)
       game_stat_data_block << line unless line.strip.empty?
     end
 
@@ -142,21 +142,21 @@ class BoxscoreParser
     while(!array_content.first.nil? and !(array_content.first == self.date_teams_ballpark_data))
       # injury data
       while(array_content.first =~ %r{injured})
-        line = array_content.shift      
+        line = array_content.shift
         self.injury_data << line unless line.strip.empty?
       end
 
       # removed data
       while(array_content.first =~ %r{removed})
-        line = array_content.shift      
+        line = array_content.shift
         self.removed_data << line unless line.strip.empty?
       end
 
       # ejected data
       while(array_content.first =~ %r{ejected})
-        line = array_content.shift      
+        line = array_content.shift
         self.ejected_data << line unless line.strip.empty?
-      end    
+      end
 
       # GWRBI
       if(array_content.first =~ %r{^GWRBI:})
@@ -200,7 +200,7 @@ class BoxscoreParser
 
     self.date_teams_ballpark = returndata
   end
-  
+
   def process_innings_totals
     home_team_stats = {}
     away_team_stats = {}
@@ -261,7 +261,7 @@ class BoxscoreParser
         if(namedata =~ %r{(\D+)(\d+)})
           statcount = $2.to_i
           name = $1.strip
-        else 
+        else
           statcount = 1
           name = namedata.strip
         end
@@ -309,7 +309,7 @@ class BoxscoreParser
     ab_data = (home_or_away == 'home') ? self.home_at_bat_data.dup :  self.away_at_bat_data.dup
     ab_data.shift # ignore header row
     lineup = 0
-    ab_data.each do |dataline| 
+    ab_data.each do |dataline|
       (name,position_and_stats) = [dataline[0..17].strip,dataline[18..-1].split(%r{\s+})]
       name = name_transforms(name)
       if(dataline =~ %r{^\s+})
@@ -373,7 +373,7 @@ class BoxscoreParser
       name.gsub!(%r{[\(\)]},'')
 
       (int,frac) = stats[0].split('.')
-      data_hash['ip'] = int.to_f + (frac.to_f / 3)
+      data_hash['ip'] = int.to_f + (frac.to_f / 3.to_f)
       data_hash['h'] = stats[1].to_i
       data_hash['r'] = stats[2].to_i
       data_hash['er'] = stats[3].to_i
@@ -382,7 +382,7 @@ class BoxscoreParser
       data_hash['pch'] = stats[6].to_i
       data_hash['str'] = stats[7].to_i
       pitching_data_hash[name] = data_hash
-    end  
+    end
     pitching_data_hash
   end
 
@@ -401,7 +401,7 @@ class BoxscoreParser
         pitching_stats[:unknown_pitching_stats][name] = game_stat_data
       end
     end
-  
+
     self.pitching_stats = pitching_stats
   end
 

@@ -13,19 +13,19 @@ class PitchingRegisterParser
   attr_accessor :pitching_data, :pitching_data_team
   attr_accessor :table_type
 
-  CORE_TABLES = 
+  CORE_TABLES =
   [{table_label: 'primary', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
    {table_label: 'secondary', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
    {table_label: 'analytical', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
    {table_label: 'start', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
    {table_label: 'relief', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil}]
 
-   BATTING_TABLES = 
+   BATTING_TABLES =
    [{table_label: 'primary', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
     {table_label: 'analytical', ignore_header_rows: 1, ignore_footer_rows: 0, prefix: nil},
     {table_label: 'lhb', ignore_header_rows: 2, ignore_footer_rows: 0, prefix: 'l_'},
     {table_label: 'rhb', ignore_header_rows: 2, ignore_footer_rows: 0, prefix: 'r_'}]
- 
+
 
   def initialize(htmlcontent,table_type)
     self.htmldoc = Nokogiri::HTML(htmlcontent)
@@ -84,7 +84,7 @@ class PitchingRegisterParser
     prefix = options[:prefix].nil? ? '' : options[:prefix]
 
     rows = table.search('tr')
-    header_cells = rows[ignore_header_rows].search('td').map{|c| convert_field(c.text.strip,prefix)}   
+    header_cells = rows[ignore_header_rows].search('td').map{|c| convert_field(c.text.strip,prefix)}
     rows[(ignore_header_rows+1)..((ignore_footer_rows+1)*-1)].each do |row|
       cells = row.search('td')
       player_details = {}
@@ -100,7 +100,7 @@ class PitchingRegisterParser
           end
         elsif(label == 'ip')
           (int,frac) = table_cell.text.strip.downcase.split('.')
-          player_details[label] = int.to_f + (frac.to_f / 3)      
+          player_details[label] = int.to_f + (frac.to_f / 3.to_f)
         else
           player_details[label] = convert_numeric(table_cell.text.strip.downcase)
         end
@@ -113,5 +113,5 @@ class PitchingRegisterParser
     returnhash
   end
 
-  
+
 end

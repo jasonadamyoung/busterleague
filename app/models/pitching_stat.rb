@@ -23,7 +23,7 @@ class PitchingStat < ApplicationRecord
 
   def self.rebuild_all
     self.dump_data
-    Game.available_seasons.reverse.each do |season|
+    Game.available_seasons.each do |season|
       Team.all.each do |team|
         team.update_pitching_stats_for_season(season)
       end
@@ -78,7 +78,7 @@ class PitchingStat < ApplicationRecord
       ps.fix_roster_id
     end
   end
- 
+
   def self.find_player_id(player_details)
     if(!player_details['p'].blank?)
       position = player_details['p']
@@ -94,12 +94,12 @@ class PitchingStat < ApplicationRecord
   end
 
   def self.update_total_pitching_stats_for_season(season)
-    eligible_games = Game.for_season(season).group('team_id').count.values.max
+    eligible_games = TeamGame.for_season(season).group('team_id').count.values.max || 162
     allowed_attributes = PitchingStat.column_names
     all_pitching_data = self.get_pitching_data(season)
     total_pitching_data = all_pitching_data.select{|hashkey,data| data['team'].empty?}
     total_pitching_data.each do |hashkey,stats|
-      player_id = self.find_player_id(stats)    
+      player_id = self.find_player_id(stats)
       name = stats['name']
       season = season
       if(!(pitching_stat = PitchingStat.where(season: season).where(roster_id: MULTIPLE_TEAM).where(team_id: MULTIPLE_TEAM).where(name: name).first))
@@ -130,7 +130,7 @@ class PitchingStat < ApplicationRecord
       end
     end
     total_pitching_data
-  end   
+  end
 
   def self.fix_total_flags
     self.multi_team.each do |stat|
@@ -147,7 +147,6 @@ class PitchingStat < ApplicationRecord
       stat.update_column(:is_total,false)
     end
     true
-  end  
+  end
 
 end
-

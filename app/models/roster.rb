@@ -168,7 +168,7 @@ class Roster < ApplicationRecord
         bpt.qualifying_ab = (bpt.actual_ab / 2.to_f).ceil
         bpt.allowed_starts = (bpt.allowed_percentage * 162).ceil
         if(bs = self.get_total_batting_stat)
-          bpt.played_percentage = (bs.gs / total_games).to_f
+          bpt.played_percentage = (bs.gs / total_games.to_f).to_f
           bpt.gs = bs.gs
           bpt.ab = bs.ab
           need_ab = bpt.qualifying_ab  -  bpt.ab
@@ -285,6 +285,25 @@ class Roster < ApplicationRecord
   end
 
 
+  def self.create_or_update_for_season(season)
+    if(season == 1999)
+      self.create_ninety_nine_rosters
+    else
+      Team.all.each do |t|
+        t.create_or_update_rosters_for_season(season)
+      end
+
+      # get the transaction logs
+      TransactionLog.create_or_update_logs_for_season(season)
+
+      # adjust for traded players
+      Team.all.each do |t|
+        t.create_or_update_traded_rosters_for_season(season)
+      end
+    end
+  end
+
+
   def self.create_or_update_roster_player_for_season_by_team(season,team,player_details)
     rp = self.for_season(season).by_team(team).where(name: player_details['name']).first
     if(!rp)
@@ -303,12 +322,28 @@ class Roster < ApplicationRecord
       team = Team.abbreviation_finder(batting_details['team'])
       player_details = {}
       player_details['status'] = 'present'
-      player_details['name'] = batting_details['name']
+      # exception handling
+      if(batting_details['name'] == 'Brian Hunter')
+        player_details['name'] = 'Brian Lee Hunter'
+      else
+        player_details['name'] = batting_details['name']
+      end
       player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = batting_details['p']
       player_details['age'] = batting_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
     end
+
+    # special case for Jerry Hairston
+    team = Team.abbreviation_finder('OAK')
+    player_details = {}
+    player_details['status'] = 'present'
+    player_details['name'] = 'Jerry Hairston'
+    player_details['end_name'] = player_details['name'].split(' ').last
+    player_details['position'] = '2b'
+    player_details['age'] = 23
+    self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
+
 
     pitching_data = PitchingStat.get_pitching_data(1999)
     pitching_data.each do |key,pitching_details|
@@ -328,6 +363,9 @@ class Roster < ApplicationRecord
       rp.create_or_update_playing_time
     end
   end
+
+
+
 
 
 end

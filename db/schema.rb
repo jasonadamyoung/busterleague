@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_28_003736) do
+ActiveRecord::Schema.define(version: 2020_03_08_183409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -125,7 +125,9 @@ ActiveRecord::Schema.define(version: 2020_01_28_003736) do
     t.text "content"
     t.jsonb "game_stats"
     t.boolean "data_records_created", default: false, null: false
+    t.integer "game_id", default: 0, null: false
     t.index ["date"], name: "boxscore_date_ndx"
+    t.index ["game_id"], name: "boxscore_game_ndx", unique: true
     t.index ["name", "season"], name: "name_ndx", unique: true
     t.index ["season"], name: "boxscore_season_ndx"
   end
@@ -236,11 +238,10 @@ ActiveRecord::Schema.define(version: 2020_01_28_003736) do
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
   end
 
-  create_table "game_results", force: :cascade do |t|
+  create_table "games", force: :cascade do |t|
     t.integer "season"
     t.date "date"
     t.string "boxscore_name", limit: 255
-    t.integer "boxscore_id"
     t.integer "home_team_id"
     t.string "home_team_string", limit: 4
     t.integer "home_runs"
@@ -256,29 +257,11 @@ ActiveRecord::Schema.define(version: 2020_01_28_003736) do
     t.integer "save_pitcher_id"
     t.string "gwrbi_name", limit: 255
     t.integer "gwrbi_id"
+    t.integer "home_hits"
+    t.integer "away_hits"
+    t.integer "home_errs"
+    t.integer "away_errs"
     t.index ["date", "season", "home_team_id", "away_team_id"], name: "game_results_ndx", unique: true
-  end
-
-  create_table "games", force: :cascade do |t|
-    t.integer "boxscore_id"
-    t.date "date"
-    t.integer "season"
-    t.boolean "home"
-    t.integer "team_id"
-    t.integer "opponent_id"
-    t.boolean "win"
-    t.integer "runs"
-    t.integer "opponent_runs"
-    t.integer "total_innings"
-    t.integer "hits"
-    t.integer "opponent_hits"
-    t.integer "errs"
-    t.integer "opponent_errs"
-    t.integer "game_result_id", default: 0, null: false
-    t.index ["date"], name: "game_date_ndx"
-    t.index ["game_result_id", "boxscore_id", "home"], name: "boxscore_game_ndx", unique: true
-    t.index ["season"], name: "game_season_ndx"
-    t.index ["team_id", "opponent_id", "win"], name: "team_win_ndx"
   end
 
   create_table "innings", force: :cascade do |t|
@@ -435,7 +418,7 @@ ActiveRecord::Schema.define(version: 2020_01_28_003736) do
     t.integer "player_id"
     t.integer "eligible_games", default: 0, null: false
     t.boolean "is_total", default: true, null: false
-    t.index ["name", "season", "team_id"], name: "pitchstat_ndx", unique: true
+    t.index ["roster_id", "name", "season", "team_id"], name: "pitchstat_ndx", unique: true
   end
 
   create_table "players", force: :cascade do |t|
@@ -690,6 +673,27 @@ ActiveRecord::Schema.define(version: 2020_01_28_003736) do
     t.integer "r_bb"
     t.integer "r_k"
     t.index ["season", "team_id"], name: "team_batstat_ndx", unique: true
+  end
+
+  create_table "team_games", force: :cascade do |t|
+    t.date "date"
+    t.integer "season"
+    t.boolean "home"
+    t.integer "team_id"
+    t.integer "opponent_id"
+    t.boolean "win"
+    t.integer "runs"
+    t.integer "opponent_runs"
+    t.integer "total_innings"
+    t.integer "hits"
+    t.integer "opponent_hits"
+    t.integer "errs"
+    t.integer "opponent_errs"
+    t.integer "game_id", default: 0, null: false
+    t.index ["date"], name: "game_date_ndx"
+    t.index ["game_id", "home"], name: "teamgame_game_ndx", unique: true
+    t.index ["season"], name: "game_season_ndx"
+    t.index ["team_id", "opponent_id", "win"], name: "team_win_ndx"
   end
 
   create_table "team_pitching_stats", force: :cascade do |t|

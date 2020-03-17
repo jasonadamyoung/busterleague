@@ -26,19 +26,22 @@ class ApplicationController < ActionController::Base
   end
 
   def check_for_season
+    @allowed_seasons = Game.available_seasons unless @allowed_seasons
+    @latest_season = Game.latest_season unless @latest_season
+
     if(!params[:season].nil?)
       if(params[:season] == 'all')
         @season = 'all'
-      elsif(Game.allowed_seasons.include?(params[:season].to_i))
+      elsif(@allowed_seasons.include?(params[:season].to_i))
         @season = params[:season].to_i
       else
-        @season = Game.current_season
+        @season = @latest_season
       end
     else
-      @season = Game.current_season
+      @season = @latest_season
     end
     return true
-  end  
+  end
 
 
   def home_url

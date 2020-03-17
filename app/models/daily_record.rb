@@ -9,7 +9,7 @@ class DailyRecord < ApplicationRecord
 
 
 	belongs_to :team
-  
+
   before_save :set_win_minus_losses
 
   scope :winners, -> { where("games > 0").where("wins / games::float > .5") }
@@ -20,7 +20,7 @@ class DailyRecord < ApplicationRecord
 
   ALL_SEASON = 0
 
-  
+
   def self.on_season_date(season,date)
     if(season == 'all' or season == 0)
       season = ALL_SEASON
@@ -34,7 +34,7 @@ class DailyRecord < ApplicationRecord
 
 
   def gameslist
-    self.team.games.through_season_date(self.season,self.date)
+    self.team.team_games.through_season_date(self.season,self.date)
   end
 
   def set_records_by_opponent
@@ -69,7 +69,7 @@ class DailyRecord < ApplicationRecord
       idlist.each do |key,ids|
         if ids.include?(id)
           wl_groups[key][id] = wl
-        end 
+        end
       end
     end
     self.update_attribute(:wl_groups, wl_groups)
@@ -112,7 +112,7 @@ class DailyRecord < ApplicationRecord
     end
     self.update_attribute(:last_ten, [last_wins,last_losses])
   end
-  
+
 
   def self.set_gb_for_season_and_date(season,date)
     # gamesback
@@ -173,17 +173,17 @@ class DailyRecord < ApplicationRecord
       record_for_date = Record.new(season: season, date: date, team: team)
     end
 
-    record_for_date.home_games = team.games.home.through_season_date(season,date).count
-    record_for_date.road_games = team.games.away.through_season_date(season,date).count
+    record_for_date.home_games = team.team_games.home.through_season_date(season,date).count
+    record_for_date.road_games = team.team_games.away.through_season_date(season,date).count
     record_for_date.games =  record_for_date.home_games + record_for_date.road_games
-    record_for_date.wins = team.games.wins.through_season_date(season,date).count
-    record_for_date.home_wins = team.games.home.wins.through_season_date(season,date).count
-    record_for_date.road_wins = team.games.away.wins.through_season_date(season,date).count
+    record_for_date.wins = team.team_games.wins.through_season_date(season,date).count
+    record_for_date.home_wins = team.team_games.home.wins.through_season_date(season,date).count
+    record_for_date.road_wins = team.team_games.away.wins.through_season_date(season,date).count
     record_for_date.losses = record_for_date.games - record_for_date.wins
-    record_for_date.home_rf = team.games.home.through_season_date(season,date).sum(:runs)
-    record_for_date.home_ra = team.games.home.through_season_date(season,date).sum(:opponent_runs)
-    record_for_date.road_rf = team.games.away.through_season_date(season,date).sum(:runs)
-    record_for_date.road_ra = team.games.away.through_season_date(season,date).sum(:opponent_runs)
+    record_for_date.home_rf = team.team_games.home.through_season_date(season,date).sum(:runs)
+    record_for_date.home_ra = team.team_games.home.through_season_date(season,date).sum(:opponent_runs)
+    record_for_date.road_rf = team.team_games.away.through_season_date(season,date).sum(:runs)
+    record_for_date.road_ra = team.team_games.away.through_season_date(season,date).sum(:opponent_runs)
     record_for_date.rf = record_for_date.home_rf + record_for_date.road_rf
     record_for_date.ra = record_for_date.home_ra + record_for_date.road_ra
     record_for_date.final_season_record = (date == latest_date_for_season)
@@ -244,8 +244,8 @@ class DailyRecord < ApplicationRecord
 
   def expected_pct
     if(self.gamescount > 0)
-      exponent = ((rf + ra) / gamescount )**0.287
-     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) )
+      exponent = ((rf + ra) / gamescount.to_f )**0.287
+     (rf**(exponent)) / ( (rf**(exponent)) + (ra**(exponent)) ).to_f
     else
       0
     end

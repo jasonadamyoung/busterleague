@@ -21,7 +21,7 @@ class StatSheet < ApplicationRecord
 
   def queue_processdata
     if(!Settings.redis_enabled)
-      self.unzip_and_process
+      self.processdata
     else
       self.class.delay_for(5.seconds).delayed_processdata(self.id)
     end

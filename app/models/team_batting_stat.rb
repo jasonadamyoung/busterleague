@@ -14,7 +14,7 @@ class TeamBattingStat < ApplicationRecord
 
   def self.rebuild_all()
     self.dump_data
-    Game.available_seasons.reverse.each do |season|
+    Game.available_seasons.each do |season|
       Team.all.each do |team|
         team.update_team_batting_stats_for_season(season)
       end
