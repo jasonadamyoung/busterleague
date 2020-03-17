@@ -19,7 +19,6 @@ class Game < ApplicationRecord
 
   def self.dump_all_data
     self.dump_data
-    GameResult.dump_data
     TeamGame.dump_data
     Boxscore.dump_data
     Inning.dump_data
