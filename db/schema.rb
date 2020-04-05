@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_08_183409) do
+ActiveRecord::Schema.define(version: 2020_03_28_184925) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -481,6 +481,21 @@ ActiveRecord::Schema.define(version: 2020_03_08_183409) do
     t.float "r_spc"
     t.float "r_ops"
     t.integer "r_pa"
+    t.integer "player_id", default: 0
+    t.string "abbrev", limit: 3
+    t.string "injury", limit: 10
+    t.string "stl", limit: 10
+    t.string "run", limit: 10
+    t.string "pos_c", limit: 10
+    t.string "pos_1b", limit: 10
+    t.string "pos_2b", limit: 10
+    t.string "pos_3b", limit: 10
+    t.string "pos_ss", limit: 10
+    t.string "pos_lf", limit: 10
+    t.string "pos_rf", limit: 10
+    t.string "pos_cf", limit: 10
+    t.string "cthr", limit: 10
+    t.string "othr", limit: 10
     t.index ["roster_id"], name: "rbs_roster_ndx", unique: true
   end
 
@@ -531,6 +546,11 @@ ActiveRecord::Schema.define(version: 2020_03_08_183409) do
     t.float "r_spc"
     t.float "r_ops"
     t.integer "r_pa"
+    t.integer "player_id", default: 0
+    t.string "abbrev", limit: 3
+    t.string "injury", limit: 10
+    t.string "rdur", limit: 10
+    t.string "sdur", limit: 10
     t.index ["roster_id"], name: "rps_roster_ndx", unique: true
   end
 

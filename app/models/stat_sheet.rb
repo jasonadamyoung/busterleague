@@ -8,48 +8,10 @@ class StatSheet < ApplicationRecord
   include SheetUploader::Attachment(:sheet)
 
   belongs_to :owner
-  after_create :check_for_processing
-
-
-  def check_for_processing
-    if(Settings.redis_enabled)
-      # let the processing be manual post-create if we aren't backgrounding
-      self.queue_processdata
-    end
-    true
-  end
-
-  def queue_processdata
-    if(!Settings.redis_enabled)
-      self.processdata
-    else
-      self.class.delay_for(5.seconds).delayed_processdata(self.id)
-    end
-  end
-
-  def self.delayed_processdata(record_id)
-    if(record = find_by_id(record_id))
-      record.processdata
-    end
-  end
-
-
-  def processdata
-    data_to_process = self.get_xlsx_data
-    first_row = data_to_process.shift
-    if(!first_row['whip'].nil?)
-      data_to_process.each do |datahash|
-        RealPitchingStat.create_or_update_stat(datahash)
-      end
-    else
-      data_to_process.each do |datahash|
-        RealBattingStat.create_or_update_stat(datahash)
-      end
-    end
-  end
-
 
   def fix_xlsx_header_field(field)
+    # position fields
+    position_fields = ['c','1b','2b','3b','ss','lf','cf','rf']
     # replace chars
     returnfield = field.downcase.gsub('/','_per_').gsub('+','plus').gsub('-','_').gsub(' ','_')
     case returnfield
@@ -61,6 +23,8 @@ class StatSheet < ApplicationRecord
       'bats'
     when 't'
       'throws'
+    when *position_fields
+      "pos_#{returnfield}"
     else
       returnfield
     end
