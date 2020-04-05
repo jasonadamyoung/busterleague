@@ -109,7 +109,7 @@ Deployment:
     - development
     - production
     - labdev
-  image: registry.gitlab.com/jayo/busterdeploy:latest
+  image: registry.gitlab.com/outfielding/ansible-deployer:latest
   before_script:
     - ansible --version
   script:
