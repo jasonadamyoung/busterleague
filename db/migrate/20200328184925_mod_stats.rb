@@ -1,5 +1,11 @@
 class ModStats < ActiveRecord::Migration[5.2]
   def change
+    add_column(:real_batting_stats,:player_id,:integer, default: 0)
+    add_column(:real_pitching_stats,:player_id,:integer, default: 0)
+
+    add_column(:real_batting_stats,:abbrev,:string, limit: 3)
+    add_column(:real_pitching_stats,:abbrev,:string, limit: 3)
+
     # modify real batting stats with quality values
     add_column(:real_batting_stats,:injury,:string, limit: 10)
     add_column(:real_batting_stats,:stl,:string, limit: 10)
@@ -16,8 +22,8 @@ class ModStats < ActiveRecord::Migration[5.2]
     add_column(:real_batting_stats,:othr,:string, limit: 10)
 
     # modify real pitching stats with quality values
-    add_column(:real_batting_stats,:injury,:string, limit: 10)
-    add_column(:real_batting_stats,:rdur,:string, limit: 10)
-    add_column(:real_batting_stats,:sdur,:string, limit: 10)
+    add_column(:real_pitching_stats,:injury,:string, limit: 10)
+    add_column(:real_pitching_stats,:rdur,:string, limit: 10)
+    add_column(:real_pitching_stats,:sdur,:string, limit: 10)
   end
 end

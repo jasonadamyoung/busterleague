@@ -8,7 +8,7 @@ class RealPitchingStat < ApplicationRecord
   extend CleanupTools
 
   belongs_to :roster, optional: true
-  has_one :player, through: :roster
+  belongs_to :player, optional: true
   belongs_to :team, optional: true
 
   scope :for_season, lambda {|season| where(season: season)}
