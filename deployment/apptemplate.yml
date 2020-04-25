@@ -90,7 +90,7 @@ spec:
         #   httpGet:
         #     path: /healthcheck/all
         #     port: http
-        # envFrom:
+        envFrom:
           - secretRef:
               name: {{ kube_resource_name }}-secrets
         resources:
