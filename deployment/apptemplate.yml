@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ kube_resource_name }}
+  name: "{{ kube_resource_name }}-pvc"
   labels:
     app: "{{ kube_resource_name }}"
 spec:
@@ -107,4 +107,4 @@ spec:
       volumes:
       - name: {{ kube_resource_name }}-pv
         persistentVolumeClaim:
-          claimName: {{ kube_resource_name }}
+          claimName: "{{ kube_resource_name }}-pvc"
