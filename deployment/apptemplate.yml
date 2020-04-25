@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ kube_resource_name }}
+  name: "{{ kube_resource_name }}-pvc"
   labels:
     app: "{{ kube_resource_name }}"
 spec:
   accessModes:
-    - "ReadWriteMany"
+    - "ReadWriteOnce"
   resources:
     requests:
       storage: "25Gi"
@@ -82,14 +82,14 @@ spec:
           - name: http
             containerPort: 80
             protocol: TCP
-        livenessProbe:
-          httpGet:
-            path: /healthcheck/all
-            port: http
-        readinessProbe:
-          httpGet:
-            path: /healthcheck/all
-            port: http
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthcheck/all
+        #     port: http
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthcheck/all
+        #     port: http
         envFrom:
           - secretRef:
               name: {{ kube_resource_name }}-secrets
@@ -98,13 +98,9 @@ spec:
             cpu: 100m
             memory: 512Mi
         volumeMounts:
-        - mountPath: /dmbexport
+        - mountPath: /data
           name: {{ kube_resource_name }}-pv
-          subPath: dmbexport
-        - mountPath: /home/app/webapp/public/uploads
-          name: {{ kube_resource_name }}-pv
-          subPath: uploads
       volumes:
       - name: {{ kube_resource_name }}-pv
         persistentVolumeClaim:
-          claimName: {{ kube_resource_name }}
+          claimName: "{{ kube_resource_name }}-pvc"

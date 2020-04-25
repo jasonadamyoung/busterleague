@@ -45,10 +45,11 @@ RUN bundle install
 # application
 WORKDIR $APP_HOME
 COPY --chown=app:app . $APP_HOME
-# dmbweb symlink
-RUN ln -s /dmbexport/dmbweb $APP_HOME/public/dmbweb
 # version from gitlab
 ARG VCS_REF=""
 ENV SHA=${VCS_REF}
 # assets
 RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
+# pv symlinks
+RUN rm -rfv $APP_HOME/public/dmbweb && ln -s /data/dmbweb $APP_HOME/public/dmbweb
+RUN rm -rfv $APP_HOME/public/uploads && ln -s /data/uploads $APP_HOME/public/uploads
