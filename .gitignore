@@ -49,3 +49,6 @@
 
 # ignore local dev settings
 /config/settings.local.yml
+
+# ignore uploads
+/uploads
