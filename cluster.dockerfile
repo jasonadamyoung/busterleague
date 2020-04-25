@@ -46,8 +46,8 @@ RUN bundle install
 WORKDIR $APP_HOME
 COPY --chown=app:app . $APP_HOME
 # pv symlinks
-RUN ln -s /data/dmbweb $APP_HOME/public/dmbweb
-RUN ln -s /data/uploads $APP_HOME/public/uploads
+RUN rm -rfv $APP_HOME/public/dmbweb && ln -s /data/dmbweb $APP_HOME/public/dmbweb
+RUN rm -rfv $APP_HOME/public/uploads && ln -s /data/uploads $APP_HOME/public/uploads
 # version from gitlab
 ARG VCS_REF=""
 ENV SHA=${VCS_REF}
