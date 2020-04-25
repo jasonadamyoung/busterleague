@@ -45,8 +45,9 @@ RUN bundle install
 # application
 WORKDIR $APP_HOME
 COPY --chown=app:app . $APP_HOME
-# dmbweb symlink
-RUN ln -s /dmbexport/dmbweb $APP_HOME/public/dmbweb
+# pv symlinks
+RUN ln -s /data/dmbweb $APP_HOME/public/dmbweb
+RUN ln -s /data/uploads $APP_HOME/public/uploads
 # version from gitlab
 ARG VCS_REF=""
 ENV SHA=${VCS_REF}

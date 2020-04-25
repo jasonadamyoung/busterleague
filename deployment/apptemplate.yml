@@ -98,12 +98,8 @@ spec:
             cpu: 100m
             memory: 512Mi
         volumeMounts:
-        - mountPath: /dmbexport
+        - mountPath: /data
           name: {{ kube_resource_name }}-pv
-          subPath: dmbexport
-        - mountPath: /home/app/webapp/public/uploads
-          name: {{ kube_resource_name }}-pv
-          subPath: uploads
       volumes:
       - name: {{ kube_resource_name }}-pv
         persistentVolumeClaim:
