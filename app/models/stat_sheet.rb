@@ -47,5 +47,18 @@ class StatSheet < ApplicationRecord
     returndata
   end
 
+  def processdata
+    data_to_process = self.get_xlsx_data
+    first_row = data_to_process.shift
+    if(!first_row['whip'].nil?)
+      data_to_process.each do |datahash|
+        RealPitchingStat.create_or_update_stat(datahash)
+      end
+    else
+      data_to_process.each do |datahash|
+        RealBattingStat.create_or_update_stat(datahash)
+      end
+    end
+  end
 
 end

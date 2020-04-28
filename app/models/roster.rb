@@ -185,8 +185,13 @@ class Roster < ApplicationRecord
   end
 
   def self.find_roster_for_name_position_team_season(name,position,team_id,season,is_fullname=false)
+    player_finder = self.where(season: season)
+    if(!team_id.nil?)
+      player_finder = player_finder.where(team_id: team_id)
+    end
+
     if(is_fullname)
-      player_finder = self.where(season: season).where(team_id: team_id).where("name ILIKE ?","%#{name}%")
+      player_finder = player_finder.where("name ILIKE ?","%#{name}%")
       startswith = name.first
     else
       namefinder = self.idiotic_shorthand_name_translations(name.dup)
@@ -202,7 +207,7 @@ class Roster < ApplicationRecord
       nameparts = lastname.split("'")
       finder = nameparts.max_by(&:length)
       end_name = finder.downcase.split(' ').last
-      player_finder = self.where(season: season).where(team_id: team_id).where("end_name ILIKE ?","%#{end_name}%")
+      player_finder = player_finder.where("end_name ILIKE ?","%#{end_name}%")
     end
     if(position == 'p')
       player_finder = player_finder.pitchers
