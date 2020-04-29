@@ -17,16 +17,16 @@ class Game < ApplicationRecord
 
   after_create :create_or_update_boxscore,:create_or_update_team_games
 
-  # def self.dump_all_data
-  #   Game.dump_data
-  #   GameResult.dump_data
-  #   Inning.dump_data
-  #   GameBattingStat.dump_data
-  #   GamePitchingStat.dump_data
-  #   Record.dump_data
-  #   DailyRecord.dump_data
-  #   self.dump_data
-  # end
+  def self.dump_all_data
+    self.dump_data
+    TeamGame.dump_data
+    Boxscore.dump_data
+    Inning.dump_data
+    GameBattingStat.dump_data
+    GamePitchingStat.dump_data
+    Record.dump_data
+    DailyRecord.dump_data
+  end
 
   def self.current_season
     Date.today.year - 1

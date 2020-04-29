@@ -22,4 +22,15 @@ class TeamSeason < ApplicationRecord
     (self.owner_id != Owner.computer_id)
   end
 
+  def self.create_for_season_and_team(season,team)
+    ts = self.new(season: season,
+                  team: team,
+                  abbrev: team.abbrev,
+                  owner_id: team.owner_id,
+                  league: team.league,
+                  division: team.division,
+                  web_team_id: team.web_team_id)
+    ts.save!
+  end
+
 end
