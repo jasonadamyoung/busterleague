@@ -2,6 +2,7 @@ FROM phusion/passenger-ruby26
 LABEL maintainer="jay@outfielding.net"
 
 # update OS
+COPY build/localdev.aptproxy /etc/apt/apt.conf.d/00proxy
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 # make sure there's tz data
 RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick
@@ -42,6 +43,4 @@ COPY --chown=app:app . $APP_HOME
 # check bundle on startup
 COPY ./build/localdev.bundlecheck.sh /etc/my_init.d
 # development version
-ENV PASSENGER_APP_ENV=development 
-
-
+ENV PASSENGER_APP_ENV=development
