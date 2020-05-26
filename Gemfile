@@ -110,9 +110,12 @@ gem 'rmagick'
 # health check
 gem 'okcomputer'
 
-
 # pull pry out of the development set
 gem 'pry-rails'
+
+# state machine
+gem 'state_machines'
+gem 'state_machines-activerecord'
 
 
 group :development, :test do
