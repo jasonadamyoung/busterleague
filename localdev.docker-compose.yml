@@ -34,7 +34,7 @@ services:
       - ./localdev.volumes/dmbweb:/dmbexport/dmbweb
       - ./localdev.volumes/dmbhistorical:/dmbexport/dmbhistorical
       - ./localdev.volumes/uploads:/home/app/webapp/public/uploads
-      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.6.5@webapp
+      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.6.6@webapp
     labels:
       - traefik.backend=busterleague
       - traefik.docker.network=traefik_webgateway
