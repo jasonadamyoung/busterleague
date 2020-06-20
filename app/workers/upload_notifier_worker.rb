@@ -15,6 +15,7 @@ class UploadNotifierWorker
     end
 
     raise UploadError unless upload.finished_processing?
+    upload.send_notifications!
 
     SlackIt.post(message: "[UID:#{upload.id}] Sending owner emails for season #{upload.season}")
     Team.send_owner_emails_for_season(upload.season)

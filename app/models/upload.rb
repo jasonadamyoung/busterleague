@@ -84,6 +84,10 @@ class Upload < ApplicationRecord
       transition processing_game_stats: :finished_processing
     end
 
+    event :send_notifications do
+      transition finished_processing: :sending_notifications
+    end
+
     event :sent_notifications do
       transition sending_notifications: :processed
     end
