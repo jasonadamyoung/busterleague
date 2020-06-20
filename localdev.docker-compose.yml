@@ -28,6 +28,8 @@ services:
       - BUSTERLEAGUE__LOCATION=busterleague-dev
       - BUSTERLEAGUE__REDIS_URL=redis://busterleagueredis:6379/0
       - BUSTERLEAGUE__UPLOAD_HASH_KEY=${PRIVATE_HASH_KEY}
+      - SMTP_RELAY_HOST=busterleaguemail
+      - SMTP_PORT=1025
     volumes:
       - ./:/home/app/webapp
       - ./localdev.volumes/dmbweb:/home/app/webapp/public/dmbweb
@@ -74,6 +76,23 @@ services:
       - 6379:6379
     networks:
       - private
+  busterleaguemail:
+    container_name: busterleaguemail
+    image: mailhog/mailhog:latest
+    labels:
+      - traefik.backend=bustermail
+      - traefik.docker.network=traefik_webgateway
+      - traefik.frontend.rule=Host:bustermail.localdev
+      - traefik.port=8025
+    networks:
+      - private
+      - public
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - private
+      - public
 volumes:
   league_data: {}
   league_rvm_gems: {}
