@@ -14,12 +14,14 @@ class UploadGamesWorker
       return false
     end
 
-    raise UploadError unless ( upload.processing_status == Upload::READY_FOR_GAMES )
+    raise UploadError unless upload.ready_for_games?
+    upload.process_games!
 
     SlackIt.post(message: "[UID:#{upload.id}] Starting processing games for season #{upload.season}")
     Game.create_or_update_for_season(upload.season)
     Record.create_or_update_season_records(upload.season)
     SlackIt.post(message: "[UID:#{upload.id}] Finished processing games for season #{upload.season}")
-    upload.set_status(Upload::PROCESSED_GAMES)
+    upload.processed_games!
+
   end
 end

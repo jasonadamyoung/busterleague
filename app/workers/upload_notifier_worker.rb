@@ -14,10 +14,11 @@ class UploadNotifierWorker
       return false
     end
 
-    raise UploadError unless ( upload.processing_status == Upload::PROCESSED )
+    raise UploadError unless upload.finished_processing?
 
     SlackIt.post(message: "[UID:#{upload.id}] Sending owner emails for season #{upload.season}")
     Team.send_owner_emails_for_season(upload.season)
     SlackIt.post(message: "[UID:#{upload.id}] Finished sending owner emails for season #{upload.season}")
+    upload.sent_notifications!
   end
 end

@@ -16,7 +16,7 @@
           <td><%= humanize_bytes(upload.archive_size) %></td>
           <td><%= upload.created_at %></td>
           <td><%= upload.owner.nickname -%></td>
-          <td><%= upload.processing_status_to_s -%></td>
+          <td><%= upload.state -%></td>
         </tr>
     <%- end -%>
   </tbody>
