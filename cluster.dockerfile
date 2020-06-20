@@ -31,7 +31,6 @@ ADD build/run_sidekiq.sh /etc/service/sidekiq/run
 # workdir env
 ENV APP_HOME /home/app/webapp
 RUN mkdir $APP_HOME
-ENV HOME /home/app/webapp
 
 # -=-=-=- BEGIN APP SPECIFIC CONFIG -=-=-=-
 ENV RAILS_ENV production
