@@ -27,7 +27,7 @@ RUN rm -f /etc/service/nginx/down
 
 # sidekiq runit
 RUN mkdir /etc/service/sidekiq
-ADD build/run_sidekiq.sh /etc/service/sidekiq/run
+ADD build/run_sidekiq_localdev.sh /etc/service/sidekiq/run
 
 # workdir env
 ENV APP_HOME /home/app/webapp
