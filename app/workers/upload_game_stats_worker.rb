@@ -14,11 +14,12 @@ class UploadGameStatsWorker
       return false
     end
 
-    raise UploadError unless ( upload.processing_status == Upload::READY_FOR_GAME_STATS )
+    raise UploadError unless upload.ready_for_game_stats?
+    upload.process_game_stats!
 
     SlackIt.post(message: "Starting processing game stats for season #{upload.season} (Upload ID: #{upload.id})...")
     Boxscore.create_data_records_for_season(upload.season)
     SlackIt.post(message: ".... finished processing game stats for season #{upload.season} (Upload ID: #{upload.id})")
-    upload.set_status(Upload::PROCESSED_GAME_STATS)
+    upload.processed_game_stats!
   end
 end

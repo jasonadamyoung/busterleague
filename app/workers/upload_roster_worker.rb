@@ -14,11 +14,12 @@ class UploadRosterWorker
       return false
     end
 
-    raise UploadError unless ( upload.processing_status == Upload::READY_FOR_ROSTERS )
+    raise UploadError unless upload.ready_for_rosters?
+    upload.process_rosters!
 
     SlackIt.post(message: "[UID:#{upload.id}] Starting processing rosters for season #{upload.season}")
     Roster.create_or_update_for_season(upload.season)
     SlackIt.post(message: "[UID:#{upload.id}] Finished processing rosters for season #{upload.season}")
-    upload.set_status(Upload::PROCESSED_ROSTERS)
+    upload.processed_rosters!
   end
 end

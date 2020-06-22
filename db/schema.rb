@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_28_184925) do
+ActiveRecord::Schema.define(version: 2020_05_26_013905) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -882,6 +882,7 @@ ActiveRecord::Schema.define(version: 2020_03_28_184925) do
     t.integer "archive_size"
     t.string "archive_signature"
     t.datetime "archive_updated_at"
+    t.string "state"
     t.index ["archive_signature"], name: "archve_signature_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end

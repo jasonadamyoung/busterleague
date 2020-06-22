@@ -53,3 +53,5 @@ RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
 # pv symlinks
 RUN rm -rfv $APP_HOME/public/dmbweb && ln -s /data/dmbweb $APP_HOME/public/dmbweb
 RUN rm -rfv $APP_HOME/public/uploads && ln -s /data/uploads $APP_HOME/public/uploads
+# init scripts
+ADD build/run_migrations.sh /etc/my_init.d/run_migrations.sh
