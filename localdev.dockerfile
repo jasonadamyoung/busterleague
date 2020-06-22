@@ -5,7 +5,7 @@ LABEL maintainer="jay@outfielding.net"
 COPY build/localdev.aptproxy /etc/apt/apt.conf.d/00proxy
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 # make sure there's tz data
-RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick
+RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick dnsutils iputils-ping
 # apt cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -27,7 +27,7 @@ RUN rm -f /etc/service/nginx/down
 
 # sidekiq runit
 RUN mkdir /etc/service/sidekiq
-ADD build/run_sidekiq.sh /etc/service/sidekiq/run
+ADD build/run_sidekiq_localdev.sh /etc/service/sidekiq/run
 
 # workdir env
 ENV APP_HOME /home/app/webapp

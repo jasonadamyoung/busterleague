@@ -7,46 +7,100 @@ require 'zip'
 class Upload < ApplicationRecord
   include ArchiveUploader::Attachment(:archive)
 
-  # status values
-  NOT_YET_EXTRACTED    = 0
-  EXTRACTION_QUEUED    = 1
-  EXTRACTION_FAILED    = 2
-  PROCESSING_FAILED    = 3
-  READY_FOR_ROSTERS    = 11
-  PROCESSED_ROSTERS    = 12
-  READY_FOR_GAMES      = 16
-  PROCESSED_GAMES      = 17
-  READY_FOR_STATS      = 21
-  PROCESSED_STATS      = 22
-  READY_FOR_GAME_STATS = 26
-  PROCESSED_GAME_STATS = 27
-  PROCESSED            = 42
+  state_machine :initial => :not_extracted do
 
-  PROCESSING_STATUS_STRINGS = {
-    NOT_YET_EXTRACTED    => "Not yet extracted",
-    EXTRACTION_QUEUED    => "Extraction queued",
-    EXTRACTION_FAILED    => "Extraction failed",
-    PROCESSING_FAILED    => "Processing failed",
-    READY_FOR_ROSTERS    => "Ready to process rosters",
-    PROCESSED_ROSTERS    => "Processed rosters",
-    READY_FOR_GAMES      => "Ready to process games",
-    PROCESSED_GAMES      => "Processed games",
-    READY_FOR_STATS      => "Ready to process stats",
-    PROCESSED_STATS      => "Processed stats",
-    READY_FOR_GAME_STATS => "Ready to process game stats",
-    PROCESSED_GAME_STATS => "Processed game stats",
-    PROCESSED            => "Processed"
-  }
+    after_transition any => :ready_for_rosters do |upload, transition|
+      UploadRosterWorker.perform_async(upload.id) if upload.season == Game.current_season
+    end
+
+    after_transition any => :ready_for_games do |upload, transition|
+      UploadGamesWorker.perform_async(upload.id)
+    end
+
+    after_transition any => :ready_for_stats do |upload, transition|
+      UploadStatsWorker.perform_async(upload.id)
+    end
+
+    after_transition any => :ready_for_game_stats do |upload, transition|
+      UploadGameStatsWorker.perform_async(upload.id)
+    end
+
+    after_transition any => :finished_processing do |upload, transition|
+      if upload.season == Game.current_season
+        UploadNotifierWorker.perform_async(upload.id)
+      else
+        upload.processed!
+      end
+    end
+
+    event :ready_to_extract do
+      transition all => :ready_to_extract
+    end
+
+
+
+    event :extracting do
+      transition ready_to_extract: :extracting
+    end
+
+    event :extracted do
+      transition extracting: :ready_for_rosters
+    end
+
+    event :ready_for_rosters do
+      transition all => :ready_for_rosters
+    end
+
+    event :process_rosters do
+      transition ready_for_rosters: :processing_rosters
+    end
+
+    event :processed_rosters do
+      transition processing_rosters: :ready_for_games
+    end
+
+    event :process_games do
+      transition ready_for_games: :processing_games
+    end
+
+    event :processed_games do
+      transition processing_games: :ready_for_stats
+    end
+
+
+    event :process_stats do
+      transition ready_for_stats: :processing_stats
+    end
+
+    event :processed_stats do
+      transition processing_stats: :ready_for_game_stats
+    end
+
+    event :process_game_stats do
+      transition ready_for_game_stats: :processing_game_stats
+    end
+
+    event :processed_game_stats do
+      transition processing_game_stats: :finished_processing
+    end
+
+    event :send_notifications do
+      transition finished_processing: :sending_notifications
+    end
+
+    event :sent_notifications do
+      transition sending_notifications: :processed
+    end
+
+    event :processed do
+      transition finished_processing: :processed
+    end
+
+  end
 
   belongs_to :owner
 
   after_create :queue_extraction
-  after_update :schedule_processing_check
-
-  def schedule_processing_check
-    self.class.delay_for(5.seconds).delayed_processing_check(self.id)
-    true
-  end
 
   scope :not_processed, -> {where("processing_status <> #{Upload::PROCESSED}")}
 
@@ -62,69 +116,20 @@ class Upload < ApplicationRecord
     end
     # once they are all processed, update status
     self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
-      upload.set_status(Upload::PROCESSED_ROSTERS)
+      upload.processed_rosters
     end
   end
 
-  def reset_status(status = NOT_YET_EXTRACTED)
-    self.update_attribute(:processing_status, status)
-  end
-
-  def set_status(status)
-    self.update_attribute(:processing_status, status)
-  end
-
-
-  def processing_status_to_s
-    PROCESSING_STATUS_STRINGS[self.processing_status]
-  end
-
-  def self.delayed_processing_check(record_id)
-    if(record = find_by_id(record_id))
-      record.check_for_processing
-    end
-  end
-
-  def check_for_processing
-    case self.processing_status
-    when READY_FOR_ROSTERS
-      UploadRosterWorker.perform_async(self.id) if self.season == Game.current_season
-      return true
-    when PROCESSED_ROSTERS
-      return self.set_status(READY_FOR_GAMES)
-    when READY_FOR_GAMES
-      UploadGamesWorker.perform_async(self.id)
-      return true
-    when PROCESSED_GAMES
-      return self.set_status(READY_FOR_STATS)
-    when READY_FOR_STATS
-      UploadStatsWorker.perform_async(self.id)
-      return true
-    when PROCESSED_STATS
-      return self.set_status(READY_FOR_GAME_STATS)
-    when READY_FOR_GAME_STATS
-      UploadGameStatsWorker.perform_async(self.id)
-      return true
-    when PROCESSED_GAME_STATS
-      return self.set_status(PROCESSED)
-    when PROCESSED
-      UploadNotifierWorker.perform_async(self.id) if self.season == Game.current_season
-      UploadOverallStatsWorker.perform_async unless self.class.not_processed.count > 0
-      return true
-    else
-      # do nothing
-      return true
-    end
-  end
 
   def queue_extraction
-    self.update_attribute(:processing_status, EXTRACTION_QUEUED)
+    self.ready_to_extract!
     self.class.delay_for(5.seconds).delayed_extraction(self.id)
     true
   end
 
   def self.delayed_extraction(record_id)
     if(record = find_by_id(record_id))
+      record.extracting!
       record.extract_zip
     end
   end
@@ -155,6 +160,7 @@ class Upload < ApplicationRecord
     else
       index_file = File.join(unzip_to, "index.htm")
     end
+
     if(File.exist?(index_file))
       index_data = File.read(index_file)
       doc = Nokogiri::HTML(index_data)
@@ -175,11 +181,10 @@ class Upload < ApplicationRecord
         FileUtils.mv(unzip_to, move_to, :force => true)
         # fix perms
         FileUtils.chmod_R(0755,move_to)
-        self.update_attribute(:processing_status, READY_FOR_ROSTERS)
+        self.extracted!
         return true
       end
     end
-    self.update_attribute(:processing_status, EXTRACTION_FAILED)
     return false
   end
 

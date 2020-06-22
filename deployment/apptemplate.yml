@@ -90,6 +90,12 @@ spec:
           httpGet:
             path: /healthcheck/all
             port: http
+        startupProbe:
+          httpGet:
+            path: /healthcheck/all
+            port: http
+          failureThreshold: 30
+          periodSeconds: 10
         envFrom:
           - secretRef:
               name: {{ kube_resource_name }}-secrets
