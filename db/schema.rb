@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_26_013905) do
+ActiveRecord::Schema.define(version: 2020_06_22_163428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -170,6 +170,65 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.text "definition"
     t.string "display_label"
     t.index ["name", "player_type"], name: "defined_stat_ndx", unique: true
+  end
+
+  create_table "draft_picks", id: :serial, force: :cascade do |t|
+    t.integer "season", limit: 2, null: false
+    t.integer "team_id", default: 0, null: false
+    t.integer "player_id", default: 0
+    t.boolean "traded", default: false
+    t.integer "original_team_id", default: 0
+    t.integer "round", default: 0
+    t.integer "roundpick", default: 0
+    t.integer "overallpick", default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "draft_positions", id: :serial, force: :cascade do |t|
+    t.integer "season", limit: 2, null: false
+    t.integer "position"
+    t.integer "team_id"
+    t.index ["team_id", "season"], name: "draft_pos_season_team_ndx"
+  end
+
+  create_table "draft_ranking_values", id: :serial, force: :cascade do |t|
+    t.string "label"
+    t.integer "owner_id", default: 1
+    t.integer "playertype", default: 1
+    t.text "formula"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "draft_rankings", id: :serial, force: :cascade do |t|
+    t.integer "ranking_value_id", default: 0
+    t.integer "player_id", default: 0
+    t.float "value", default: 0.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["ranking_value_id", "player_id"], name: "rv_player", unique: true
+    t.index ["value"], name: "by_value"
+  end
+
+  create_table "draft_stat_preferences", id: :serial, force: :cascade do |t|
+    t.string "label"
+    t.integer "owner_id", default: 1
+    t.integer "playertype", default: 1
+    t.text "column_list"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["owner_id", "playertype"], name: "draft_sp_ndx"
+  end
+
+  create_table "draft_wanteds", id: :serial, force: :cascade do |t|
+    t.integer "owner_id", default: 1
+    t.integer "player_id", default: 0
+    t.text "notes"
+    t.string "highlight", default: "ffff00"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["owner_id", "player_id"], name: "draft_wanted_ndx", unique: true
   end
 
   create_table "game_batting_stats", force: :cascade do |t|
