@@ -14,7 +14,6 @@
 # push strategy comes from: https://blog.callr.tech/building-docker-images-with-gitlab-ci-best-practices/
 stages:
   - build
-  - push_previous
   - push_current
   - deploy
 
@@ -55,24 +54,6 @@ Lab Build:
       .
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
-
-Push previous:
-  <<: *docker_stages
-  variables:
-    GIT_STRATEGY: none
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-  stage: push_previous
-  only:
-    - production
-    - development
-    - labdev
-  script:
-    - docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-    - docker tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-previous
-  allow_failure: true
-
 Push current:
   <<: *docker_stages
   variables:
@@ -84,20 +65,6 @@ Push current:
     - production
     - development
     - labdev
-  script:
-    - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
-    - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-
-Push tag:
-  <<: *docker_stages
-  variables:
-    GIT_STRATEGY: none
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-  stage: push_current
-  only:
-    - tags
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
