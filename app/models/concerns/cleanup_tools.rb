@@ -7,7 +7,7 @@ module CleanupTools
   extend ActiveSupport::Concern
 
   def dump_data
-    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY;")
+    self.connection.execute("TRUNCATE table #{table_name} RESTART IDENTITY CASCADE;")
   end
 
 end
