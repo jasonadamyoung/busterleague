@@ -322,7 +322,7 @@ class Roster < ApplicationRecord
   end
 
   def self.create_ninety_nine_rosters
-    batting_data = BattingStat.get_batting_data(1999)
+    batting_data = BattingStat.get_batting_data_for_season(1999)
     batting_data.each do |key,batting_details|
       team = Team.abbreviation_finder(batting_details['team'])
       player_details = {}
@@ -350,7 +350,7 @@ class Roster < ApplicationRecord
     self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
 
 
-    pitching_data = PitchingStat.get_pitching_data(1999)
+    pitching_data = PitchingStat.get_pitching_data_for_season(1999)
     pitching_data.each do |key,pitching_details|
       team = Team.abbreviation_finder(pitching_details['team'])
       player_details = {}

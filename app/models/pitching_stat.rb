@@ -52,7 +52,7 @@ class PitchingStat < ApplicationRecord
     PitchingRegisterParser.new(self.get_html(self.register_url(season)),"core_tables")
   end
 
-  def self.get_pitching_data(season)
+  def self.get_pitching_data_for_season(season)
     prp = self.pitching_register_parser(season)
     prp.pitching_data
   end
@@ -96,7 +96,7 @@ class PitchingStat < ApplicationRecord
   def self.update_total_pitching_stats_for_season(season)
     eligible_games = TeamGame.for_season(season).group('team_id').count.values.max || 162
     allowed_attributes = PitchingStat.column_names
-    all_pitching_data = self.get_pitching_data(season)
+    all_pitching_data = self.get_pitching_data_for_season(season)
     total_pitching_data = all_pitching_data.select{|hashkey,data| data['team'].empty?}
     total_pitching_data.each do |hashkey,stats|
       player_id = self.find_player_id(stats)
