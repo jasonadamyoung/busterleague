@@ -329,17 +329,6 @@ class Team < ApplicationRecord
     team_pitching_stat
   end
 
-  def create_or_update_rosters_for_season(season)
-    if(season == 1999)
-      return 0
-    end
-    rp = self.roster_parser(season)
-    rp.roster.each do |hashkey,player_details|
-      Roster.create_or_update_roster_player_for_season_by_team(season,self,player_details)
-    end
-    self.rosters.for_season(season).count
-  end
-
   def create_or_update_traded_rosters_for_season(season)
     # go through the trades for this team, match to current roster, create for other team
     self.traded_for_season(season).each do |tl|

@@ -21,7 +21,7 @@ class RosterParser
   def initialize(htmlcontent)
     self.htmldoc = Nokogiri::HTML(htmlcontent)
     self.tables = self.htmldoc.search('table')
-    self.process_tables 
+    self.process_tables
   end
 
   def process_tables
