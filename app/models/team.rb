@@ -168,7 +168,7 @@ class Team < ApplicationRecord
     BattingRegisterParser.new(self.get_html(self.batting_url(season)))
   end
 
-  def get_batting_data(season)
+  def get_batting_data_for_season(season)
     brp = self.batting_register_parser(season)
     brp.batting_data
   end
@@ -183,7 +183,7 @@ class Team < ApplicationRecord
     PitchingRegisterParser.new(self.get_html(self.pitching_url(season,table_type)),table_type)
   end
 
-  def get_pitching_data(season)
+  def get_pitching_data_for_season(season)
     batting_pitching_data = self.pitching_register_parser(season,"batting_tables").pitching_data
     core_pitching_data = self.pitching_register_parser(season,"core_tables").pitching_data
     pitching_data = batting_pitching_data.deep_merge(core_pitching_data)
@@ -214,7 +214,7 @@ class Team < ApplicationRecord
   def update_batting_stats_for_season(season)
     eligible_games = self.team_games.for_season(season).count || 162
     allowed_attributes = BattingStat.column_names
-    batting_data = self.get_batting_data(season)
+    batting_data = self.get_batting_data_for_season(season)
     name_matcher = position_data_roster_matcher(batting_data,season)
     batting_data.each do |hashkey,stats|
       name = stats['name']
@@ -257,7 +257,7 @@ class Team < ApplicationRecord
   def update_pitching_stats_for_season(season)
     eligible_games = self.team_games.for_season(season).count
     allowed_attributes = PitchingStat.column_names
-    pitching_data = self.get_pitching_data(season)
+    pitching_data = self.get_pitching_data_for_season(season)
     name_matcher = position_data_roster_matcher(pitching_data,season)
     pitching_data.each do |hashkey,stats|
       name = stats['name']
@@ -327,17 +327,6 @@ class Team < ApplicationRecord
     end
     team_pitching_stat.save!
     team_pitching_stat
-  end
-
-  def create_or_update_rosters_for_season(season)
-    if(season == 1999)
-      return 0
-    end
-    rp = self.roster_parser(season)
-    rp.roster.each do |hashkey,player_details|
-      Roster.create_or_update_roster_player_for_season_by_team(season,self,player_details)
-    end
-    self.rosters.for_season(season).count
   end
 
   def create_or_update_traded_rosters_for_season(season)

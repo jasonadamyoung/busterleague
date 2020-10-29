@@ -9,8 +9,12 @@ class Upload < ApplicationRecord
 
   state_machine :initial => :not_extracted do
 
+    after_transition any => :ready_for_players do |upload, transition|
+      UploadPlayerWorker.perform_async(upload.id)
+    end
+
     after_transition any => :ready_for_rosters do |upload, transition|
-      UploadRosterWorker.perform_async(upload.id) if upload.season == Game.current_season
+      UploadRosterWorker.perform_async(upload.id)
     end
 
     after_transition any => :ready_for_games do |upload, transition|
@@ -37,18 +41,24 @@ class Upload < ApplicationRecord
       transition all => :ready_to_extract
     end
 
-
-
     event :extracting do
       transition ready_to_extract: :extracting
     end
 
     event :extracted do
-      transition extracting: :ready_for_rosters
+      transition [:not_extracted, :extracting] => :ready_for_players
     end
 
-    event :ready_for_rosters do
-      transition all => :ready_for_rosters
+    event :ready_for_players do
+      transition all => :ready_for_players
+    end
+
+    event :process_players do
+      transition ready_for_players: :processing_players
+    end
+
+    event :processed_players do
+      transition processing_players: :ready_for_rosters
     end
 
     event :process_rosters do
@@ -102,10 +112,20 @@ class Upload < ApplicationRecord
 
   after_create :queue_extraction
 
-  scope :not_processed, -> {where("processing_status <> #{Upload::PROCESSED}")}
-
   def self.available_seasons
     self.distinct.pluck(:season).sort
+  end
+
+  def self.process_players
+    self.where("season <> #{Game.current_season}").order(:season,:created_at).all.each do |upload|
+      SlackIt.post(message: "[UID:#{upload.id}] Starting processing players for season #{upload.season}")
+      Player.create_or_update_for_season_from_dmbdata(upload.season)
+      SlackIt.post(message: "[UID:#{upload.id}] Finished processing players for season #{upload.season}")
+    end
+    # once they are all processed, update status
+    self.where("season <> #{Game.current_season}").order(:season).all.each do |upload|
+      upload.processed_players
+    end
   end
 
   def self.process_rosters

@@ -53,7 +53,7 @@ class BattingStat < ApplicationRecord
     BattingRegisterParser.new(self.get_html(self.register_url(season)))
   end
 
-  def self.get_batting_data(season)
+  def self.get_batting_data_for_season(season)
     brp = self.batting_register_parser(season)
     brp.batting_data
   end
@@ -112,7 +112,7 @@ class BattingStat < ApplicationRecord
   def self.update_total_batting_stats_for_season(season)
     eligible_games = TeamGame.for_season(season).group('team_id').count.values.max || 162
     allowed_attributes = BattingStat.column_names
-    all_batting_data = self.get_batting_data(season)
+    all_batting_data = self.get_batting_data_for_season(season)
     total_batting_data = all_batting_data.select{|hashkey,data| data['team'].empty?}
     total_batting_data.each do |hashkey,stats|
       player_id = self.find_player_id(stats)

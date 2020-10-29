@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_26_013905) do
+ActiveRecord::Schema.define(version: 2020_10_22_195640) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,8 +101,6 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "h1b", default: 0, null: false
-    t.string "first_name"
-    t.string "last_name"
     t.integer "g"
     t.integer "age"
     t.integer "player_id"
@@ -202,8 +200,6 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.integer "tb", default: 0, null: false
     t.integer "h1b", default: 0, null: false
     t.integer "lineup", default: 0, null: false
-    t.string "first_name"
-    t.string "last_name"
     t.date "date"
     t.index ["boxscore_id", "name", "team_id"], name: "gbs_ndx", unique: true
   end
@@ -232,8 +228,6 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.integer "hb"
     t.integer "balk"
     t.integer "wp"
-    t.string "first_name"
-    t.string "last_name"
     t.date "date"
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
   end
@@ -412,13 +406,21 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.integer "r_sh"
     t.integer "r_sf"
     t.integer "r_gdp"
-    t.string "first_name"
-    t.string "last_name"
     t.integer "age"
     t.integer "player_id"
     t.integer "eligible_games", default: 0, null: false
     t.boolean "is_total", default: true, null: false
     t.index ["roster_id", "name", "season", "team_id"], name: "pitchstat_ndx", unique: true
+  end
+
+  create_table "player_seasons", force: :cascade do |t|
+    t.integer "season"
+    t.bigint "player_id"
+    t.bigint "team_id"
+    t.bigint "roster_id"
+    t.index ["player_id"], name: "index_player_seasons_on_player_id"
+    t.index ["roster_id"], name: "index_player_seasons_on_roster_id"
+    t.index ["team_id"], name: "index_player_seasons_on_team_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -435,6 +437,7 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.datetime "updated_at", null: false
     t.boolean "check_names", default: false, null: false
     t.boolean "names_fixed", default: false, null: false
+    t.string "end_name"
     t.index ["buster_id"], name: "player_ndx", unique: true
   end
 
@@ -602,8 +605,6 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.integer "trade_team_id"
     t.integer "original_roster_id"
     t.boolean "is_pitcher", default: false, null: false
-    t.string "first_name"
-    t.string "last_name"
     t.index ["name", "position", "age", "season", "team_id"], name: "roster_ndx", unique: true
   end
 
@@ -865,26 +866,25 @@ ActiveRecord::Schema.define(version: 2020_05_26_013905) do
     t.string "other_team_string", limit: 4
     t.date "effective_date"
     t.string "when_string", limit: 255
-    t.string "first_name"
-    t.string "last_name"
     t.index ["name", "team_id"], name: "name_team_ndx"
   end
 
   create_table "uploads", force: :cascade do |t|
     t.bigint "owner_id"
-    t.integer "processing_status", default: 0
-    t.integer "rebuild_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "season", default: 0, null: false
-    t.datetime "latest_game_date"
     t.jsonb "archive_data"
     t.integer "archive_size"
     t.string "archive_signature"
-    t.datetime "archive_updated_at"
     t.string "state"
     t.index ["archive_signature"], name: "archve_signature_ndx", unique: true
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end
 
+  add_foreign_key "player_seasons", "players"
+  add_foreign_key "player_seasons", "rosters"
+  add_foreign_key "player_seasons", "teams"
+  add_foreign_key "rosters", "players"
+  add_foreign_key "rosters", "teams"
 end

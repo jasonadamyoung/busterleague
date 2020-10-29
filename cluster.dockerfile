@@ -6,7 +6,11 @@ RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN apt-get install -y nodejs
+RUN apt-get update && apt-get install -y nodejs
+
+# db-to-sqlite setup
+RUN apt-get update && apt-get install python3-pip -y
+RUN pip3 install db-to-sqlite[postgresql]
 
 # apt cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -58,5 +62,6 @@ RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
 # pv symlinks
 RUN rm -rfv $APP_HOME/public/dmbweb && ln -s /data/dmbweb $APP_HOME/public/dmbweb
 RUN rm -rfv $APP_HOME/public/uploads && ln -s /data/uploads $APP_HOME/public/uploads
+RUN rm -rfv $APP_HOME/public/explore && ln -s /data/explore $APP_HOME/public/explore
 # init scripts
 ADD build/run_migrations.sh /etc/my_init.d/run_migrations.sh

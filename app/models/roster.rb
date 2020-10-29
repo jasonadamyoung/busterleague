@@ -7,7 +7,7 @@ class Roster < ApplicationRecord
   extend CleanupTools
 
   belongs_to :team
-  belongs_to :player, optional: true
+  belongs_to :player
   has_one :batting_stat
   has_one :pitching_stat
   has_many :game_batting_stats
@@ -19,7 +19,6 @@ class Roster < ApplicationRecord
   has_one :pitcher_playing_time
 
   before_save  :set_status_code, :set_is_pitcher
-  after_create :create_or_update_player
 
   scope :pitchers, -> { where(is_pitcher: true) }
   scope :batters, -> { where(is_pitcher: false) }
@@ -69,20 +68,6 @@ class Roster < ApplicationRecord
 
   def self.position_list
     self.group(:position).count
-  end
-
-
-  def buster_id
-    "#{self.name.downcase.gsub(%r{[^a-z]},'')}_#{Player.position_type(self.position)}_#{self.adjusted_age}"
-  end
-
-  def adjusted_age
-    self.age - (self.season - Roster::ADJUSTMENT_SEASON) + 43
-  end
-
-  def create_or_update_player
-    player = Player.create_or_update_from_roster(self)
-    self.update_attribute(:player_id, player.id)
   end
 
   def get_real_batting_stat
@@ -294,35 +279,46 @@ class Roster < ApplicationRecord
     if(season == 1999)
       self.create_ninety_nine_rosters
     else
-      Team.all.each do |t|
-        t.create_or_update_rosters_for_season(season)
+      Team.all.each do |team|
+        rp = team.roster_parser(season)
+        rp.roster.each do |hashkey,player_details|
+          create_or_update_roster_player_for_season_by_team(season,team,player_details)
+        end
       end
 
       # get the transaction logs
       TransactionLog.create_or_update_logs_for_season(season)
 
       # adjust for traded players
-      Team.all.each do |t|
-        t.create_or_update_traded_rosters_for_season(season)
+      Team.all.each do |team|
+        team.create_or_update_traded_rosters_for_season(season)
       end
     end
   end
 
 
   def self.create_or_update_roster_player_for_season_by_team(season,team,player_details)
-    rp = self.for_season(season).by_team(team).where(name: player_details['name']).first
+    player = Player.find_by_player_details(season,player_details)
+    roster_attributes = player.attributes.merge(player_details)
+
+    allowed_attributes = self.column_names
+    allowed_attributes.delete_if {|name| name == 'id'}
+    roster_attributes.select!{|name,value| allowed_attributes.include?(name)}
+
+    rp = self.for_season(season).by_team(team).where(player_id: player.id).first
+
     if(!rp)
-      rp = self.new(season: season, team_id: team.id)
-      rp.assign_attributes(player_details)
+      rp = self.new(season: season, team_id: team.id, player_id: player.id)
+      rp.assign_attributes(roster_attributes)
       rp.save!
     else
-      rp.update_attributes(player_details)
+      rp.update_attributes(roster_attributes)
     end
     rp
   end
 
   def self.create_ninety_nine_rosters
-    batting_data = BattingStat.get_batting_data(1999)
+    batting_data = BattingStat.get_batting_data_for_season(1999)
     batting_data.each do |key,batting_details|
       team = Team.abbreviation_finder(batting_details['team'])
       player_details = {}
@@ -333,7 +329,6 @@ class Roster < ApplicationRecord
       else
         player_details['name'] = batting_details['name']
       end
-      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = batting_details['p']
       player_details['age'] = batting_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
@@ -344,19 +339,17 @@ class Roster < ApplicationRecord
     player_details = {}
     player_details['status'] = 'present'
     player_details['name'] = 'Jerry Hairston'
-    player_details['end_name'] = player_details['name'].split(' ').last
     player_details['position'] = '2b'
     player_details['age'] = 23
     self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
 
 
-    pitching_data = PitchingStat.get_pitching_data(1999)
+    pitching_data = PitchingStat.get_pitching_data_for_season(1999)
     pitching_data.each do |key,pitching_details|
       team = Team.abbreviation_finder(pitching_details['team'])
       player_details = {}
       player_details['status'] = 'present'
       player_details['name'] = pitching_details['name']
-      player_details['end_name'] = player_details['name'].split(' ').last
       player_details['position'] = pitching_details['p']
       player_details['age'] = pitching_details['age']
       self.create_or_update_roster_player_for_season_by_team(1999,team,player_details)
