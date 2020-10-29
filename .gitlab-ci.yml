@@ -20,6 +20,8 @@ stages:
 Production Build:
   <<: *docker_stages
   stage: build
+  tags:
+    - busterleague
   only:
     - production
     - development
@@ -40,7 +42,7 @@ Lab Build:
   <<: *docker_stages
   stage: build
   tags:
-    - busterk8s
+    - busterleague
   only:
     - labdev
   script:
@@ -67,6 +69,8 @@ Push current:
     - production
     - development
     - labdev
+  tags:
+    - busterleague
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
@@ -78,6 +82,8 @@ Deployment:
     - development
     - production
     - labdev
+  tags:
+    - busterleague
   image: registry.gitlab.com/outfielding/ansible-deployer:latest
   before_script:
     - ansible --version
