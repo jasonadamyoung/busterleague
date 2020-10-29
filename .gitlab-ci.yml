@@ -39,6 +39,8 @@ Production Build:
 Lab Build:
   <<: *docker_stages
   stage: build
+  tags:
+    - busterk8s
   only:
     - labdev
   script:
