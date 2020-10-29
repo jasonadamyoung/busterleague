@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagi
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 RUN apt-get install -y nodejs
 
+# db-to-sqlite setup
+RUN apt-get install python3-pip -y
+RUN pip3 install db-to-sqlite[postgresql]
+
 # apt cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
