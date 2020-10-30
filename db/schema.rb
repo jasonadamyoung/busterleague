@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_22_195640) do
+ActiveRecord::Schema.define(version: 2020_10_30_193941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -201,6 +201,8 @@ ActiveRecord::Schema.define(version: 2020_10_22_195640) do
     t.integer "h1b", default: 0, null: false
     t.integer "lineup", default: 0, null: false
     t.date "date"
+    t.integer "game_id"
+    t.integer "player_id"
     t.index ["boxscore_id", "name", "team_id"], name: "gbs_ndx", unique: true
   end
 
@@ -229,6 +231,8 @@ ActiveRecord::Schema.define(version: 2020_10_22_195640) do
     t.integer "balk"
     t.integer "wp"
     t.date "date"
+    t.integer "game_id"
+    t.integer "player_id"
     t.index ["boxscore_id", "name", "team_id"], name: "gps_ndx", unique: true
   end
 
@@ -265,6 +269,7 @@ ActiveRecord::Schema.define(version: 2020_10_22_195640) do
     t.integer "inning"
     t.integer "runs"
     t.integer "opponent_runs"
+    t.integer "game_id"
     t.index ["boxscore_id", "team_id", "inning"], name: "innings_ndx", unique: true
   end
 
@@ -882,9 +887,32 @@ ActiveRecord::Schema.define(version: 2020_10_22_195640) do
     t.index ["owner_id"], name: "index_uploads_on_owner_id"
   end
 
+  add_foreign_key "batting_stats", "players"
+  add_foreign_key "batting_stats", "rosters"
+  add_foreign_key "boxscores", "games"
+  add_foreign_key "game_batting_stats", "boxscores"
+  add_foreign_key "game_batting_stats", "games"
+  add_foreign_key "game_batting_stats", "players"
+  add_foreign_key "game_batting_stats", "rosters"
+  add_foreign_key "game_pitching_stats", "boxscores"
+  add_foreign_key "game_pitching_stats", "games"
+  add_foreign_key "game_pitching_stats", "players"
+  add_foreign_key "game_pitching_stats", "rosters"
+  add_foreign_key "games", "teams", column: "away_team_id"
+  add_foreign_key "games", "teams", column: "home_team_id"
+  add_foreign_key "innings", "boxscores"
+  add_foreign_key "innings", "games"
+  add_foreign_key "pitching_stats", "players"
+  add_foreign_key "pitching_stats", "rosters"
   add_foreign_key "player_seasons", "players"
   add_foreign_key "player_seasons", "rosters"
   add_foreign_key "player_seasons", "teams"
   add_foreign_key "rosters", "players"
   add_foreign_key "rosters", "teams"
+  add_foreign_key "team_batting_stats", "teams"
+  add_foreign_key "team_games", "teams"
+  add_foreign_key "team_games", "teams", column: "opponent_id"
+  add_foreign_key "team_pitching_stats", "teams"
+  add_foreign_key "team_seasons", "teams"
+  add_foreign_key "transaction_logs", "teams"
 end

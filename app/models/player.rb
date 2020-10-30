@@ -130,12 +130,12 @@ class Player < ApplicationRecord
       player[:buster_id] = buster_id
       player[:name] = player_details['name']
       player[:end_name] = player_details['name'].split(' ').last
-      player.set_names
       player[:player_type] = position_type(player_details['position'])
       player[:earliest_season] = season
       player[:earliest_season_age] = player_details['age']
       player[:bats] = player_details['bats'] || ''
       player[:throws] = player_details['throws'] || ''
+      player.set_names
       player.save!
     end
   end
@@ -186,7 +186,5 @@ class Player < ApplicationRecord
       self.create_or_update_from_player_details(1999,player_details)
     end
   end
-
-
 
 end
