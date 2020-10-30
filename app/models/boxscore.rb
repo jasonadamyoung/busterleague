@@ -206,7 +206,7 @@ class Boxscore < ApplicationRecord
     for i in (1..self.total_innings)
       innings_offset = i-1
       if(home_innings[innings_offset])
-        create_data = {:team_id => self.home_team_id, :inning => i, :runs => home_innings[innings_offset], :season => self.season}
+        create_data = {:game_id => self.game_id, :team_id => self.home_team_id, :inning => i, :runs => home_innings[innings_offset], :season => self.season}
         if(away_innings[innings_offset])
           create_data[:opponent_runs] = away_innings[innings_offset]
         end
@@ -214,7 +214,7 @@ class Boxscore < ApplicationRecord
       end
 
       if(away_innings[innings_offset])
-        create_data = {:team_id => self.away_team_id, :inning => i, :runs => away_innings[innings_offset], :season => self.season}
+        create_data = {:game_id => self.game_id, :team_id => self.away_team_id, :inning => i, :runs => away_innings[innings_offset], :season => self.season}
         if(home_innings[innings_offset])
           create_data[:opponent_runs] = home_innings[innings_offset]
         end
@@ -238,6 +238,7 @@ class Boxscore < ApplicationRecord
       gbs[:team_id] = self.home_team_id
       gbs[:opposing_team_id] = self.away_team_id
       gbs[:location] = GameBattingStat::LOCATION_HOME
+      gbs[:game_id] = self.game_id
       gbs.assign_attributes(stats)
       gbs.save!
     end
@@ -251,6 +252,7 @@ class Boxscore < ApplicationRecord
       gbs[:team_id] = self.away_team_id
       gbs[:opposing_team_id] = self.home_team_id
       gbs[:location] = GameBattingStat::LOCATION_AWAY
+      gbs[:game_id] = self.game_id
       gbs.assign_attributes(stats)
       gbs.save!
     end
@@ -270,6 +272,7 @@ class Boxscore < ApplicationRecord
       gps[:team_id] = self.home_team_id
       gps[:opposing_team_id] = self.away_team_id
       gps[:location] = GamePitchingStat::LOCATION_HOME
+      gps[:game_id] = self.game_id
       gps.assign_attributes(stats)
       gps.save!
     end
@@ -283,6 +286,7 @@ class Boxscore < ApplicationRecord
       gps[:team_id] = self.away_team_id
       gps[:opposing_team_id] = self.home_team_id
       gps[:location] = GamePitchingStat::LOCATION_AWAY
+      gps[:game_id] = self.game_id
       gps.assign_attributes(stats)
       gps.save!
     end
