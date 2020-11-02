@@ -357,9 +357,9 @@ class Team < ApplicationRecord
   def rosters_for_season_with_playing_time(season,player_type)
     case player_type
     when Player::PITCHER
-      self.rosters.for_season(season).current.pitchers.includes(:player,:pitcher_playing_time).order(:status,:last_name)
+      self.rosters.for_season(season).current.pitchers.includes(:player,:pitcher_playing_time).order(:status,"players.last_name")
     when Player::BATTER
-      self.rosters.for_season(season).current.batters.includes(:player,:batter_playing_time).order(:status,:last_name)
+      self.rosters.for_season(season).current.batters.includes(:player,:batter_playing_time).order(:status,"players.last_name")
     else
       nil
     end

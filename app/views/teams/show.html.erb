@@ -88,7 +88,7 @@
         </tr>
       </thead>
       <tbody>
-          <%- @team.rosters.for_season(@season).includes(:player,:batting_stat).order("is_pitcher ASC",:status,:last_name).each do |rp| %>
+          <%- @team.rosters.for_season(@season).includes(:player,:batting_stat).order("is_pitcher ASC",:status,"players.last_name").each do |rp| %>
           <%- bs = rp.batting_stat -%>
           <tr>
             <td><%= player_season_link(rp.player,@season) -%></td>
@@ -126,7 +126,7 @@
         </tr>
       </thead>
       <tbody>
-          <%- @team.rosters.pitchers.for_season(@season).includes(:player,:pitching_stat).order(:status,:last_name).each do |rp| %>
+          <%- @team.rosters.pitchers.for_season(@season).includes(:player,:pitching_stat).order(:status,"players.last_name").each do |rp| %>
           <%- ps = rp.pitching_stat -%>
           <tr>
             <td><%= player_season_link(rp.player,@season) -%></td>
