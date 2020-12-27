@@ -64,4 +64,5 @@ RUN rm -rfv $APP_HOME/public/dmbweb && ln -s /data/dmbweb $APP_HOME/public/dmbwe
 RUN rm -rfv $APP_HOME/public/uploads && ln -s /data/uploads $APP_HOME/public/uploads
 RUN rm -rfv $APP_HOME/public/explore && ln -s /data/explore $APP_HOME/public/explore
 # init scripts
+ADD build/run_mkdirs.sh /etc/my_init.d/run_mkdirs.sh
 ADD build/run_migrations.sh /etc/my_init.d/run_migrations.sh
