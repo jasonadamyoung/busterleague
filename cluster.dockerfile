@@ -1,9 +1,13 @@
 FROM phusion/passenger-ruby26
 LABEL maintainer="jay@outfielding.net"
+
 # update OS
+# Proxy Placeholder
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
+
 # make sure there's tz data
 RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick
+
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 RUN apt-get update && apt-get install -y nodejs
@@ -15,7 +19,6 @@ RUN pip3 install db-to-sqlite[postgresql]
 # apt cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
 # rvm configuration
 COPY build/rvmrc /etc/rvmrc
 
@@ -23,7 +26,6 @@ COPY build/rvmrc /etc/rvmrc
 RUN mkdir /build
 COPY build/gemset_setup.sh /build
 RUN /build/gemset_setup.sh
-
 
 # nginx configuration
 RUN rm /etc/nginx/sites-enabled/default
