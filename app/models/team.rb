@@ -21,11 +21,18 @@ class Team < ApplicationRecord
   has_many :team_batting_stats
   has_many :team_pitching_stats
   has_one  :svg_image, :as => :logoable
+  # draft
+  has_many :draft_positions
+  has_many :draft_picks
+
 
   scope :american, lambda { where(:league => 'American')}
   scope :national, lambda { where(:league => 'National')}
   scope :east, lambda { where(:division => 'East')}
   scope :west, lambda { where(:division => 'West')}
+
+  scope :draft_picks_for_season, lambda {|season| draft_picks.where(season: season)}
+
 
   def logo
     StringIO.new(self.svg_image.svgdata)
@@ -388,6 +395,45 @@ class Team < ApplicationRecord
       end
     end
     true
+  end
+
+
+  #
+  #  draft methods
+  #
+
+  def self.draft_position(season)
+    self.draft_positions.where(season: season).first
+  end
+
+
+  def pick_in_draft(season,round=nil,pickinround=false)
+    if(round.nil?)
+      returnarray = self.draft_picks_for_season(season).order('overallpick asc').map(&:overallpick)
+      return returnarray
+    else
+      roundpicks = self.draft_picks_for_season(season).where(round: round).order('overallpick asc')
+      if(roundpicks.empty?)
+        return nil
+      elsif(roundpicks.size == 1)
+        return (pickinround ? roundpicks[0].roundpick : roundpicks[0].overallpick)
+      else
+        if(pickinround)
+          returnarray = roundpicks.map(&:roundpick)
+        else
+          returnarray = roundpicks.map(&:overallpick)
+        end
+        return returnarray
+      end
+    end
+  end
+
+  def self.find_by_draftpick(draftpick)
+    if(pick = DraftPick.where(overallpick: draftpick).first)
+      return pick.team
+    else
+      return nil
+    end
   end
 
 end

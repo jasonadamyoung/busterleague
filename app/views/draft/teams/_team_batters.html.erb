@@ -1,0 +1,45 @@
+<h2>Batters (<%= Batter.byteam(@team).count %>)</h2>
+
+<table class="table table-bordered ">
+
+  <thead>
+  <tr>
+      <th>POS</th>
+      <th>NAME</th>
+      <th>RANKVALUE</th>
+      <th>AGE</th>
+      <%- Stat.core(Stat::BATTER).each do |stat| %>
+        <th><%= stat.upcase %></th>
+      <%- end -%>
+      <%- DraftBattingStatline::RATINGFIELDS.keys.each do |pos| -%>
+        <th><%= pos %></th>
+      <%- end -%>
+  </tr>
+  </thead>
+  <tbody>
+    <% @batters.each do |fielder| %>
+      <tr>
+  	    <td><%= fielder.position %></td>
+        <td><%= link_to("#{fielder.fullname}", player_url(fielder)) %></td>
+        <td><%= display_rankvalue(fielder.rankvalue) %></td>
+        <td><%= fielder.statline.age %></td>
+        <%- Stat.core(Stat::BATTER).each do |stat| %>
+          <%- if(fielder.statline.send(stat).blank?) -%>
+            <td>n/a</td>
+          <%- else -%>
+            <%- if stat == 'lops' %>
+              <td><%= ops_display(fielder,'left')%></td>
+            <%- elsif stat == 'rops' -%>
+              <td><%= ops_display(fielder,'right')%></td>
+            <%- else -%>
+              <td><%= fielder.statline.send(stat) %></td>
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+        <%- DraftBattingStatline::RATINGFIELDS.each do |pos,field| -%>
+          <td><%= position_check(fielder,field) %></td>
+        <%- end -%>
+      </tr>
+    <% end %>
+    </tbody>
+</table>

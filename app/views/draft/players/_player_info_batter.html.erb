@@ -1,0 +1,49 @@
+    <table class="table">
+      <tbody>
+        <tr>
+          <td><strong>Age</strong></td>
+          <td><%= @player.statline.age %></td>
+        </tr>
+        <tr>
+          <td><strong>Owner Rank</strong></td>
+          <td>
+            <a href="#" class="owner_rank"
+                        data-type="text"
+                        data-resource="put"
+                        data-name="owner_rank"
+                        data-url="/players/<%= @player.id -%>/set_owner_rank"
+                        data-original-title="Enter owner rank">
+              <%= display_owner_rankvalue(@player.owner_rank(@currentowner)) -%>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Injury Rating</strong></td>
+          <td><%= @player.statline.injury %></td>
+        </tr>
+
+        <%- if (@player.positions & ['rf','lf','cf']).size >= 1 -%>
+        <tr>
+          <td><strong>Outfielder Throwing Rating</strong></td>
+          <td><%= @player.statline.othr %></td>
+        </tr>
+        <%- end -%>
+
+        <%- if (@player.positions.include?('c')) -%>
+        <tr>
+          <td><strong>Catcher Throwing Rating</strong></td>
+          <td><%= @player.statline.cthr %></td>
+        </tr>
+        <%- end -%>
+
+        <tr>
+          <td><strong>Run Rating</strong></td>
+          <td><%= @player.statline.run %></td>
+        </tr>
+
+        <tr>
+          <td><strong>Steal Rating</strong></td>
+          <td><%= @player.statline.stl %></td>
+        </tr>
+      </tbody>
+    </table>

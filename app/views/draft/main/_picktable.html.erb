@@ -1,0 +1,47 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+        <th>Pick</th>
+        <th>Team</th>
+        <th>Player</th>
+        <th>Position</th>
+        <%- if @currentowner.is_admin? and !Settings.draftcomplete -%>
+          <th>&nbsp;</th>
+        <%- end -%>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% pickslist.each do |draftpick| %>
+      <%- if(draftpick.team.owner.nil? or draftpick.team.owner != Owner.computer) -%>
+        <tr class='shaded'>
+      <%- else -%>
+        <tr>
+      <%- end -%>
+      <td><%= draftpick.overallpick %></td>
+      <td>
+        <%= link_to(draftpick.team.name, team_path(draftpick.team)) %>
+        <%- if draftpick.traded -%>
+          <a name="traded" title="Traded from <%= draftpick.original_team.name %>">#</a>
+        <%- end -%>
+      </td>
+      <%- if !draftpick.player.nil? -%>
+        <td><%= link_to("#{draftpick.player.fullname}", player_url(draftpick.player)) %></td>
+        <td><%= draftpick.player.position.downcase %></td>
+      <%- else -%>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      <%- end -%>
+      <%- if @currentowner.is_admin? and !Settings.draftcomplete -%>
+      <td>
+        <%- if !draftpick.player.nil? %>
+          <%= link_to("Release", draft_player_path(:id => draftpick.player.id, :draftaction => 'release'), {:method => :post, :class => 'btn btn-warning'}) %>
+        <%- else -%>
+          &nbsp;
+        <%- end -%>
+      </td>
+      <%- end -%>
+      </tr>
+    <%- end -%>
+    </tbody>
+</table>

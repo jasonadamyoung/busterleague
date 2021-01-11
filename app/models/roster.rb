@@ -6,7 +6,7 @@
 class Roster < ApplicationRecord
   extend CleanupTools
 
-  belongs_to :team
+  belongs_to :team, optional: true
   belongs_to :player
   has_one :batting_stat
   has_one :pitching_stat
@@ -31,7 +31,7 @@ class Roster < ApplicationRecord
   scope :current, -> {where.not(status_code: STATUS_TRADED)}
 
 
-  PITCHING_POSITIONS = ['sp','cl','mr']
+  PITCHING_POSITIONS = ['sp','cl','mr','rp']
   ADJUSTMENT_SEASON = 1999
 
   # status_codes

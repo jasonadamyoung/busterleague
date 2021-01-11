@@ -1,0 +1,19 @@
+<%= form_tag('#', :class => 'form-search') do -%>
+  <div class="control-group">
+ 	  <div class="controls">
+			<%= text_field_tag(:q, '', id: 'query', placeholder: 'Player Name...', class: 'input-medium search-query') %>
+		</div>
+	</div>
+<%- end -%>
+
+<div id="search-results"></div>
+
+<script class="code" type="text/javascript">
+$('#query').searchbox({
+  url: '<%= main_search_path %>',
+  param: 'q',
+  dom_id: '#search-results',
+  delay: 250,
+  loading_css: '#spinner'
+})
+</script>

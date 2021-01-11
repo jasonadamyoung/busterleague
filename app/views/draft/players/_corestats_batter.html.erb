@@ -1,0 +1,28 @@
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <%- Stat.core(Stat::BATTER).each do |stat| %>
+      <th><%= stat.upcase %></th>
+    <%- end -%>
+    <%- DraftBattingStatline::RATINGFIELDS.keys.each do |pos| -%>
+      <th><%= pos %></th>
+    <%- end -%>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <%- Stat.core(Stat::BATTER).each do |stat| %>
+      <%- if stat == 'lops' %>
+        <td><%= ops_display(@player,'left')%></td>
+      <%- elsif stat == 'rops' -%>
+        <td><%= ops_display(@player,'right')%></td>  
+      <%- else -%>
+        <td><%= @player.statline.send(stat) %></td>
+      <%- end -%>
+    <%- end -%>
+    <%- DraftBattingStatline::RATINGFIELDS.each do |pos,field| -%>
+      <td><%= position_check(@player,field) %></td>
+    <%- end -%>
+  </tr>
+  </tbody>
+</table>

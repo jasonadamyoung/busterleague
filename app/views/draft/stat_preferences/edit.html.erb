@@ -1,0 +1,61 @@
+<%- @page_title = "Edit  #{StatPreference.playertype_to_s(@playertype)} Display Preference" -%>
+
+
+  <div class="row">
+    <div class="col-md-7">
+      <%= form_for(@stat_preference, :html => {:class => 'form'}) do |form| -%>
+        <%= form.hidden_field(:playertype, {:value => @playertype}) %>
+
+        <fieldset id="display_attributes">
+          <legend>Display Preference</legend>
+          <div class="control-group">
+            <%= form.label :column_list, "Display Attributes", class: 'control-label' %>
+            <div class="controls">
+              <%= form.text_field :column_list, "data-pre" => @stat_preference.column_list_tokeninput.to_json  %>
+              <p class="help-block">Type or choose the attribute you want to include in this display set</p>
+            </div>
+
+            <%= form.label :label, "Label", class: 'control-label' %>
+            <div class="controls">
+              <%= form.text_field(:label) %>
+              <p class="help-block">Label for this Stat Display (required!)</p>
+            </div>
+          </div>
+         </fieldset>
+
+
+        <div class="control-group">
+          <%= submit_tag('Create',:class=>'btn btn-primary') %>
+          <%= link_to('cancel', stat_preferences_path, :class=> 'btn') %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-md-5">
+      <div>
+      <h4>Available attributes</h4>
+      <div class="rankingvaluecloud">
+      <ul class="list-unstyled inline"> 
+          <%- @stat_attributes.each do |attributename| -%>
+            <li><%= add_statdisplay_attribute_link(attributename) %></li>
+          <%- end -%>
+      </ul>
+    </div>
+    </div>
+    </div>
+
+  </div>
+
+
+
+
+ <script class="code" type="text/javascript">
+   $(function () {
+     $('#stat_preference_column_list').tokenInput('<%= search_stat_preferences_path(playertype: @playertype) %>', {
+       crossDomain: false,
+       prePopulate: $('#stat_preference_column_list').data('pre'),
+       theme: 'facebook',
+       preventDuplicates: true
+     });
+   });
+ </script>

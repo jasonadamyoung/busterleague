@@ -1,0 +1,42 @@
+<%- @page_title = 'Your Stat Display Preferences' -%>
+<p style="font-size:large;"><%= link_to("Create a Pitcher Stat Display Preference",new_stat_preference_path(:playertype => StatPreference::PITCHER))%> | <%= link_to("Create a Batter Stat Display Preference",new_stat_preference_path(:playertype => StatPreference::BATTER))%></p>
+
+<%- if @stat_preferences.blank? -%>
+  You haven't created any stat display preferences yet.
+<%- else -%>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Label</th>
+      <th>Player Type</th>
+      <th>Attributes</th>
+      <th>&nbsp;</th>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for sp in @stat_preferences %>
+      <%- if [@psp,@bsp].include?(sp) -%>
+      <tr class='shaded'>
+      <%- else -%>
+      <tr>
+      <%- end -%>
+        <%- useparams = {:action => :index} 
+        (sp.playertype == StatPreference::BATTER ? useparams[:bsp] = sp.id : useparams[:psp] = sp.id )
+        -%>
+        <td><%= link_to 'use', useparams %></td>  
+        <td><%= sp.label %></td>
+        <td><%= sp.playertype_to_s %></td>
+        <td class="stat_preference_index">
+          <%- sp.column_list.each do |column_name| -%>
+            <span><a name="<%= column_name %>"><%= column_name %></a></span>
+          <%- end -%>
+        </td>
+        <td><%= link_to 'edit', edit_stat_preference_path(sp) %></td>
+        <td><%= link_to 'delete', sp, :confirm => 'Are you sure?', :method => :delete %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%- end -%>

@@ -1,0 +1,25 @@
+<% chartname = "distribution_chart_#{stat.id}" %>
+<div id="<%= chartname %>"></div> 
+<script class="code" type="text/javascript">
+$(document).ready(function(){
+    var all = <%= stat.values('distribution').reverse.to_json.html_safe %>;
+
+    var plot_<%= chartname %> = $.jqplot('<%= chartname %>', [all], {
+      title: 'Normal Distribution',
+      axes: {
+          xaxis: {
+              showTicks: false,
+          },
+      },
+      seriesDefaults: {
+        showMarker: false,
+      },
+      series: [
+      {label: 'All Players'},
+      ],
+      legend: {
+        show: false,
+      }
+    });
+});
+</script>

@@ -1,0 +1,16 @@
+<% @page_title = "Wanted" %>
+
+<% if @pitchers %>
+<h2>Pitchers (<%= @pitchers.size %>)</h2>
+<%= render(:partial => 'wantedpitchers', :locals => { :playerlist => @pitchers }) %>
+<% else %>
+<h2>Pitchers</h2>
+<p> No wanted pitchers yet </p>
+<% end %>
+<% if @batters %>
+<h2>Batters (<%= @batters.size %>)</h2>
+  <%= render(:partial => 'wantedbatters', :locals => { :playerlist => @batters }) %>
+<% else %>
+<h2>Batters</h2>
+<p> No wanted batters yet </p>
+<% end %>

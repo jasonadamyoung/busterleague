@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_23_212211) do
+ActiveRecord::Schema.define(version: 2021_01_11_021217) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -168,6 +168,75 @@ ActiveRecord::Schema.define(version: 2020_11_23_212211) do
     t.text "definition"
     t.string "display_label"
     t.index ["name", "player_type"], name: "defined_stat_ndx", unique: true
+  end
+
+  create_table "draft_picks", id: :serial, force: :cascade do |t|
+    t.integer "season", limit: 2, null: false
+    t.integer "team_id", default: 0, null: false
+    t.integer "player_id", default: 0
+    t.boolean "traded", default: false
+    t.integer "original_team_id", default: 0
+    t.integer "round", default: 0
+    t.integer "roundpick", default: 0
+    t.integer "overallpick", default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "draft_positions", id: :serial, force: :cascade do |t|
+    t.integer "season", limit: 2, null: false
+    t.integer "position"
+    t.integer "team_id"
+    t.index ["team_id", "season"], name: "draft_pos_season_team_ndx"
+  end
+
+  create_table "draft_ranking_values", id: :serial, force: :cascade do |t|
+    t.string "label"
+    t.integer "owner_id", default: 1
+    t.integer "playertype", default: 1
+    t.text "formula"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "draft_rankings", id: :serial, force: :cascade do |t|
+    t.integer "ranking_value_id", default: 0
+    t.integer "player_id", default: 0
+    t.float "value", default: 0.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["ranking_value_id", "player_id"], name: "rv_player", unique: true
+    t.index ["value"], name: "by_value"
+  end
+
+  create_table "draft_stat_preferences", id: :serial, force: :cascade do |t|
+    t.string "label"
+    t.integer "owner_id", default: 1
+    t.integer "playertype", default: 1
+    t.text "column_list"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["owner_id", "playertype"], name: "draft_sp_ndx"
+  end
+
+  create_table "draft_statuses", force: :cascade do |t|
+    t.integer "season"
+    t.bigint "player_id"
+    t.integer "draft_status"
+    t.integer "draft_team_id", default: 0, null: false
+    t.integer "roster_id"
+    t.index ["player_id"], name: "index_draft_statuses_on_player_id"
+    t.index ["season", "player_id", "draft_status", "draft_team_id"], name: "draft_player_ndx"
+  end
+
+  create_table "draft_wanteds", id: :serial, force: :cascade do |t|
+    t.integer "owner_id", default: 1
+    t.integer "player_id", default: 0
+    t.text "notes"
+    t.string "highlight", default: "ffff00"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["owner_id", "player_id"], name: "draft_wanted_ndx", unique: true
   end
 
   create_table "game_batting_stats", force: :cascade do |t|
@@ -418,16 +487,6 @@ ActiveRecord::Schema.define(version: 2020_11_23_212211) do
     t.index ["roster_id", "name", "season", "team_id"], name: "pitchstat_ndx", unique: true
   end
 
-  create_table "player_seasons", force: :cascade do |t|
-    t.integer "season"
-    t.bigint "player_id"
-    t.bigint "team_id"
-    t.bigint "roster_id"
-    t.index ["player_id"], name: "index_player_seasons_on_player_id"
-    t.index ["roster_id"], name: "index_player_seasons_on_roster_id"
-    t.index ["team_id"], name: "index_player_seasons_on_team_id"
-  end
-
   create_table "players", force: :cascade do |t|
     t.string "buster_id", limit: 255, default: "", null: false
     t.string "first_name", limit: 255, default: "", null: false
@@ -444,6 +503,7 @@ ActiveRecord::Schema.define(version: 2020_11_23_212211) do
     t.boolean "names_fixed", default: false, null: false
     t.string "end_name"
     t.index ["buster_id"], name: "player_ndx", unique: true
+    t.index ["player_type"], name: "player_type_ndx"
   end
 
   create_table "real_batting_stats", force: :cascade do |t|
@@ -904,9 +964,6 @@ ActiveRecord::Schema.define(version: 2020_11_23_212211) do
   add_foreign_key "innings", "games"
   add_foreign_key "pitching_stats", "players"
   add_foreign_key "pitching_stats", "rosters"
-  add_foreign_key "player_seasons", "players"
-  add_foreign_key "player_seasons", "rosters"
-  add_foreign_key "player_seasons", "teams"
   add_foreign_key "rosters", "players"
   add_foreign_key "rosters", "teams"
   add_foreign_key "team_batting_stats", "teams"

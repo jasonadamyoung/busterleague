@@ -1,0 +1,29 @@
+<% chartname = "scaled_distribution_chart_#{stat.id}" %>
+<div id="<%= chartname %>"></div> 
+<script class="code" type="text/javascript">
+$(document).ready(function(){
+    var all = <%= stat.values('scaled_distribution').reverse.to_json.html_safe %>;
+
+    var plot_<%= chartname %> = $.jqplot('<%= chartname %>', [all], {
+      title: 'Scaled Distribution',
+      axes: {
+          xaxis: {
+              showTicks: false,
+          },
+          yaxis: {
+            max: 1,
+            min: -1,
+          },
+      },
+      seriesDefaults: {
+        showMarker: false,
+      },
+      series: [
+      {label: 'All Players'},
+      ],
+      legend: {
+        show: false,
+      }
+    });
+});
+</script>

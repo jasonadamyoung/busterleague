@@ -1,0 +1,31 @@
+<% @page_title = "Find Results" %>
+<%- if not @playerlist.nil? and not @playerlist.empty? -%>
+  <h1>List of Found Players</h1>
+  Found <%= @playerlist.length %> players:
+  <table class="table table-bordered ">
+    <thead>
+      <tr>
+      <th>name</th>
+      <th>teamname</th>
+      <th>position</th>
+      <th>age</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for showplayer in @playerlist %>
+      <tr <%= 'class="teamed"' if !showplayer.team.nil? %>>
+        <td><%= link_to("#{showplayer.fullname}", player_url(showplayer)) %></td>
+        <% if (showplayer.team.nil?) %>
+        <td>N/A</td>
+        <% else %>
+        <td><%= link_to(showplayer.team.name, showplayer.team) %></td>
+        <% end %>
+        <td><%= showplayer.position %></td>
+        <td><%= showplayer.age %></td>
+      </tr>
+      <% end%>
+    </tbody>
+  </table>
+<%- else -%>
+  <h1>No player was found that matches your search term</h1>  
+<%- end -%>

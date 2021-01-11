@@ -1,0 +1,40 @@
+<%- @page_title = 'Your Rankings' -%>
+<p style="font-size:large;"><%= link_to("Create a Pitcher Ranking",new_ranking_value_url(:playertype => RankingValue::PITCHER))%> | <%= link_to("Create a Batter Ranking",new_ranking_value_url(:playertype => RankingValue::BATTER))%></p>
+
+<%- if @rankingvalues.blank? -%>
+  You haven't created any rankings yet.
+<%- else -%>
+<table class="table table-bordered table-striped">
+<thead>
+  <tr>
+    <th>&nbsp;</th>
+    <th>Label</th>
+    <th>Player Type</th>
+    <th>Attributes</th>
+    <th>&nbsp;</th>
+  </tr>
+</thead>
+<tbody>
+<% for rv in @rankingvalues %>
+  <%- if [@prv,@brv].include?(rv) -%>
+  <tr class='shaded'>
+  <%- else -%>
+  <tr>
+  <%- end -%>
+    <%- useparams = {:action => :index} 
+    (rv.playertype == RankingValue::BATTER ? useparams[:brv] = rv.id : useparams[:prv] = rv.id )
+    -%>
+    <td><%= link_to 'use', useparams %></td>  
+    <td><%= rv.label %></td>
+    <td><%= rv.playertype_to_s %></td>
+    <td class="rankingvalueindex">
+      <%- rv.formula.each do |f| -%>
+        <span><a name="<%= f[:column] %>"><%= f[:column] %><%= directional_arrow(rv.playertype,f[:column]) %><%= importance_label(f[:importance])%></a></span>
+      <%- end -%>
+    </td>
+    <td><%= link_to 'delete', rv, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+<%- end -%>
