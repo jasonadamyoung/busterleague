@@ -3,7 +3,7 @@
 # === LICENSE:
 # see LICENSE file
 
-class RankingValuesController < ApplicationController
+class Draft::RankingValuesController < Draft::BaseController
   before_action :signin_required
   before_action :noidletimeout
 
@@ -115,7 +115,7 @@ class RankingValuesController < ApplicationController
   end
 
   private
-  
+
   def ranking_value_params
     params.permit!
   end

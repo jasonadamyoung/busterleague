@@ -4,7 +4,6 @@ require 'admin_constraint'
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/queues', :constraints => AdminConstraint.new
 
-  root :to => 'home#index'
 
   resources :owners
 
@@ -104,19 +103,17 @@ Rails.application.routes.draw do
 
     resources :uploads, :only => [:new,:create]
 
-    controller :main do
+    controller :home do
       simple_named_route 'index'
       simple_named_route 'rounds'
       simple_named_route 'search', via: [:get, :post]
     end
 
-    controller :monitor do
-      simple_named_route 'index'
-    end
-
+    root :to => 'home#index'
 
   end
 
+  root :to => 'home#index'
 
   get '/logout' => 'sessions#end', :as => 'logout'
   match '/login' => 'sessions#start', via: [:get,:post], :as => 'login'

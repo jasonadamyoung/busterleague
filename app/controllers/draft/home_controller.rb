@@ -3,9 +3,9 @@
 # === LICENSE:
 # see LICENSE file
 
-class MainController < ApplicationController
+class Draft::HomeController < Draft::BaseController
     before_action :signin_required
-  
+
     def index
       @teams = Team.all
     end
@@ -16,7 +16,7 @@ class MainController < ApplicationController
         end
         render(:layout => false)
     end
-    
+
     def rounds
         @draftpicks = DraftPick.order('overallpick ASC').page(params[:page])
     end

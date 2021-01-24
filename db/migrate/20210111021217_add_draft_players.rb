@@ -1,6 +1,6 @@
-class AddDraftStatuses < ActiveRecord::Migration[5.2]
+class AddDraftPlayers < ActiveRecord::Migration[5.2]
   def change
-    create_table "draft_statuses", force: :cascade do |t|
+    create_table "draft_players", force: :cascade do |t|
       t.integer "season"
       t.references :player
       t.integer "draft_status"

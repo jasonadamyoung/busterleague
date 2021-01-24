@@ -3,7 +3,7 @@
 # === LICENSE:
 # see LICENSE file
 
-class PlayersController < ApplicationController
+class Draft::PlayersController < Draft::BaseController
   before_action :signin_required
 
   def draft
@@ -52,7 +52,7 @@ class PlayersController < ApplicationController
     end
   end
 
-  
+
   def sethighlight
     @player = Player.where(id: params[:id]).first
     if(@player)

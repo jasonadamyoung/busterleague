@@ -3,20 +3,26 @@
 # === LICENSE:
 # see LICENSE file
 
-class ApplicationController < ActionController::Base
-  include AuthenticationSystem
-  has_mobile_fu false
+class Draft::BaseController < ApplicationController
 
-  before_action :set_idletimeout
-  before_action :signin_optional, :check_for_ranking, :check_for_draftstatus, :check_for_stat_preference
+  before_action :check_for_draft_season
 
-  TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE', 'yes','YES','y','Y']
-  FALSE_VALUES = [false, 0, '0', 'f', 'F', 'false', 'FALSE','no','NO','n','N']
+  def check_for_draft_season
+    @allowed_draft_seasons = [2020] unless @allowed_draft_seasons
+    @latest_draft_season = [2020] unless @latest_draft_season
 
-  def append_info_to_payload(payload)
-    super
-    payload[:ip] = request.remote_ip
-    payload[:owner_id] = @currentowner if @currentowner
+    if(!params[:draft_season].nil?)
+      if(params[:draft_season] == 'all')
+        @draft_season = 'all'
+      elsif(@allowed_draft_seasons.include?(params[:draft_season].to_i))
+        @draft_season = params[:draft_season].to_i
+      else
+        @draft_season = @latest_draft_season
+      end
+    else
+      @draft_season = @latest_draft_season
+    end
+    return true
   end
 
   def check_for_ranking

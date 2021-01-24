@@ -3,7 +3,7 @@
 # === LICENSE:
 # see LICENSE file
 
-class StatPreferencesController < ApplicationController
+class Draft::StatPreferencesController < Draft::BaseController
   before_action :noidletimeout
 
 

@@ -183,6 +183,16 @@ ActiveRecord::Schema.define(version: 2021_01_11_021217) do
     t.datetime "updated_at"
   end
 
+  create_table "draft_players", force: :cascade do |t|
+    t.integer "season"
+    t.bigint "player_id"
+    t.integer "draft_status"
+    t.integer "draft_team_id", default: 0, null: false
+    t.integer "roster_id"
+    t.index ["player_id"], name: "index_draft_players_on_player_id"
+    t.index ["season", "player_id", "draft_status", "draft_team_id"], name: "draft_player_ndx"
+  end
+
   create_table "draft_positions", id: :serial, force: :cascade do |t|
     t.integer "season", limit: 2, null: false
     t.integer "position"
@@ -217,16 +227,6 @@ ActiveRecord::Schema.define(version: 2021_01_11_021217) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["owner_id", "playertype"], name: "draft_sp_ndx"
-  end
-
-  create_table "draft_statuses", force: :cascade do |t|
-    t.integer "season"
-    t.bigint "player_id"
-    t.integer "draft_status"
-    t.integer "draft_team_id", default: 0, null: false
-    t.integer "roster_id"
-    t.index ["player_id"], name: "index_draft_statuses_on_player_id"
-    t.index ["season", "player_id", "draft_status", "draft_team_id"], name: "draft_player_ndx"
   end
 
   create_table "draft_wanteds", id: :serial, force: :cascade do |t|

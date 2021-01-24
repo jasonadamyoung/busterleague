@@ -14,18 +14,18 @@
 <div class="row">
   <div class="col-md-12">
     <h2>Recent Draft Picks</h2>
-    <%- if DraftPick.recent.count >= 1 -%>
-    <%= render(:partial => 'picktable', :locals => {:pickslist => DraftPick.recent })%>
+    <%- if DraftPick.recent_for_season(@draft_season).count >= 1 -%>
+    <%= render(:partial => 'picktable', :locals => {:pickslist => DraftPick.recent_for_season(@draft_season) })%>
     <%- else -%>
     <p>No draft picks yet.</p>
     <%- end -%>
   </div>
 </div>
-<%- if DraftPick.upcoming.count >= 1 -%>
+<%- if DraftPick.upcoming_for_season(@draft_season).count >= 1 -%>
 <div class="row">
   <div class="col-md-12">
     <h2>Upcoming Draft Picks</h2>
-    <%= render(:partial => 'unpicktable', :locals => {:pickslist => DraftPick.upcoming })%>
+    <%= render(:partial => 'unpicktable', :locals => {:pickslist => DraftPick.upcoming_for_season(@draft_season) })%>
   </div>
 </div>
 <%- end -%>
