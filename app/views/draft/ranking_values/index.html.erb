@@ -1,5 +1,5 @@
 <%- @page_title = 'Your Rankings' -%>
-<p style="font-size:large;"><%= link_to("Create a Pitcher Ranking",new_ranking_value_url(:playertype => RankingValue::PITCHER))%> | <%= link_to("Create a Batter Ranking",new_ranking_value_url(:playertype => RankingValue::BATTER))%></p>
+<p style="font-size:large;"><%= link_to("Create a Pitcher Ranking",new_ranking_value_url(:playertype => DraftRankingValue::PITCHER))%> | <%= link_to("Create a Batter Ranking",new_ranking_value_url(:playertype => DraftRankingValue::BATTER))%></p>
 
 <%- if @rankingvalues.blank? -%>
   You haven't created any rankings yet.
@@ -21,10 +21,10 @@
   <%- else -%>
   <tr>
   <%- end -%>
-    <%- useparams = {:action => :index} 
-    (rv.playertype == RankingValue::BATTER ? useparams[:brv] = rv.id : useparams[:prv] = rv.id )
+    <%- useparams = {:action => :index}
+    (rv.playertype == DraftRankingValue::BATTER ? useparams[:brv] = rv.id : useparams[:prv] = rv.id )
     -%>
-    <td><%= link_to 'use', useparams %></td>  
+    <td><%= link_to 'use', useparams %></td>
     <td><%= rv.label %></td>
     <td><%= rv.playertype_to_s %></td>
     <td class="rankingvalueindex">

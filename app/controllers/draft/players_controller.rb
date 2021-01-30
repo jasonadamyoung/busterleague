@@ -8,7 +8,7 @@ class Draft::PlayersController < Draft::BaseController
 
   def draft
     begin
-      @player = Player.find(params[:id])
+      @player = DraftPlayer.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       flash[:error] = 'Unable to find player.'
       return redirect_to(root_url)
@@ -54,7 +54,7 @@ class Draft::PlayersController < Draft::BaseController
 
 
   def sethighlight
-    @player = Player.where(id: params[:id]).first
+    @player = DraftPlayer.where(id: params[:id]).first
     if(@player)
       @wanted = @currentowner.wanteds.where(player_id: @player.id).first
       if(@wanted)
@@ -70,7 +70,7 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def setnotes
-    @player = Player.where(id: params[:id]).first
+    @player = DraftPlayer.where(id: params[:id]).first
     if(@player)
       @wanted = @currentowner.wanteds.where(player_id: @player.id).first
       if(@wanted)
@@ -95,7 +95,7 @@ class Draft::PlayersController < Draft::BaseController
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
-      @playerlist = Player.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@brv,@prv).page(params[:page])
+      @playerlist = DraftPlayer.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@brv,@prv).page(params[:page])
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
@@ -118,7 +118,7 @@ class Draft::PlayersController < Draft::BaseController
 
   def show
     if not params[:id].nil?
-      @player = Player.where(id: params[:id]).first
+      @player = DraftPlayer.where(id: params[:id]).first
       if (@player.nil?)
         flash[:warning] = 'Player not found.'
         return redirect_to(players_url)
@@ -158,7 +158,7 @@ class Draft::PlayersController < Draft::BaseController
 
   def findplayer
     if (!params[:q].nil? and !params[:q].empty? and params[:q].size >= 2)
-      @playerlist = Player.searchplayers(params[:q]).order(:lastname)
+      @playerlist = DraftPlayer.searchplayers(params[:q]).order(:lastname)
     end
     respond_to do |wants|
       wants.html { render :action => 'findplayer'}
@@ -167,7 +167,7 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def wantplayer
-    @player = Player.find(params[:id])
+    @player = DraftPlayer.find(params[:id])
     if (@player.nil?)
       flash[:warning] = 'Player not found.'
     else
@@ -180,7 +180,7 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def set_owner_rank
-    @player = Player.find(params[:id])
+    @player = DraftPlayer.find(params[:id])
     if(owner_rank = @player.owner_ranks.where(owner_id: @currentowner.id).first and !params[:value].blank?)
       owner_rank.update_attribute(:overall, params[:value])
       returninformation = {'msg' => 'OK!'}
@@ -194,7 +194,7 @@ class Draft::PlayersController < Draft::BaseController
 
   def removewant
     begin
-      @player = Player.find(params[:id])
+      @player = DraftPlayer.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       flash[:error] = 'Unable to find player.'
       return redirect_to(root_url)

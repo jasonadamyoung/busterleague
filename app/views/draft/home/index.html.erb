@@ -14,18 +14,18 @@
 <div class="row">
   <div class="col-md-12">
     <h2>Recent Draft Picks</h2>
-    <%- if DraftPick.recent_for_season(@draft_season).count >= 1 -%>
-    <%= render(:partial => 'picktable', :locals => {:pickslist => DraftPick.recent_for_season(@draft_season) })%>
+    <%- if DraftPick.recent.count >= 1 -%>
+    <%= render(:partial => 'picktable', :locals => {:pickslist => DraftPick.recent })%>
     <%- else -%>
     <p>No draft picks yet.</p>
     <%- end -%>
   </div>
 </div>
-<%- if DraftPick.upcoming_for_season(@draft_season).count >= 1 -%>
+<%- if DraftPick.upcoming.count >= 1 -%>
 <div class="row">
   <div class="col-md-12">
     <h2>Upcoming Draft Picks</h2>
-    <%= render(:partial => 'unpicktable', :locals => {:pickslist => DraftPick.upcoming_for_season(@draft_season) })%>
+    <%= render(:partial => 'unpicktable', :locals => {:pickslist => DraftPick.upcoming })%>
   </div>
 </div>
 <%- end -%>
@@ -35,21 +35,21 @@
       <div class="col-md-4">
         <div class="well">
           <h3>Currently Rostered</h3>
-          <%= display_position_counts(Player.rostered.group('position').count)%>
+          <%= display_position_counts(DraftPlayer.rostered.group('position').count)%>
           </div>
       </div>
 
       <div class="col-md-4">
         <div class="well">
           <h3>Left in Draft</h3>
-          <%= display_position_counts(Player.notdrafted.group('position').count)%>
+          <%= display_position_counts(DraftPlayer.notdrafted.group('position').count)%>
           </div>
       </div>
 
       <div class="col-md-4">
         <div class="well">
           <h3>Drafted</h3>
-          <%= display_position_counts(Player.drafted.group('position').count)%>
+          <%= display_position_counts(DraftPlayer.drafted.group('position').count)%>
           </div>
       </div>
 </div>

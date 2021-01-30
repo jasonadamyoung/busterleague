@@ -28,8 +28,8 @@ class Draft::BaseController < ApplicationController
   def check_for_ranking
     # bail if no currentowner
     if(!@currentowner)
-      @prv = RankingValue.pitching.default
-      @brv = RankingValue.batting.default
+      @prv = DraftRankingValue.pitching.default
+      @brv = DraftRankingValue.batting.default
       @owner_rank = false
       return
     end
@@ -52,44 +52,44 @@ class Draft::BaseController < ApplicationController
     # end
 
     # pitching
-    if(params[:prv] and (rv = RankingValue.where(id: params[:prv].to_i).first))
+    if(params[:prv] and (rv = DraftRankingValue.where(id: params[:prv].to_i).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @prv = rv
         cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
       else
-        @prv = RankingValue.pitching.default
+        @prv = DraftRankingValue.pitching.default
       end
-    elsif(cookies[:prv] and (rv = RankingValue.where(id: cookies[:prv]).first))
+    elsif(cookies[:prv] and (rv = DraftRankingValue.where(id: cookies[:prv]).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @prv = rv
         cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
       else
-        @prv = RankingValue.pitching.default
+        @prv = DraftRankingValue.pitching.default
         cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
       end
     else
-      @prv = RankingValue.pitching.default
+      @prv = DraftRankingValue.pitching.default
       cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
     end
 
     # batting
-    if(params[:brv] and (rv = RankingValue.where(id: params[:brv].to_i).first))
+    if(params[:brv] and (rv = DraftRankingValue.where(id: params[:brv].to_i).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @brv = rv
         cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
       else
-        @brv = RankingValue.batting.default
+        @brv = DraftRankingValue.batting.default
       end
-    elsif(cookies[:brv] and (rv = RankingValue.where(id: cookies[:brv]).first))
+    elsif(cookies[:brv] and (rv = DraftRankingValue.where(id: cookies[:brv]).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @brv = rv
         cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
       else
-        @brv = RankingValue.batting.default
+        @brv = DraftRankingValue.batting.default
         cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
       end
     else
-      @brv = RankingValue.batting.default
+      @brv = DraftRankingValue.batting.default
       cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
     end
     return true

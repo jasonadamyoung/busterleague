@@ -13,9 +13,9 @@ class Draft::RankingValuesController < Draft::BaseController
     # redirect here - or ship ourselves over to new...
     # if that was requested
     if(!params[:prv].nil? and params[:prv] == 'new')
-      return redirect_to(new_ranking_value_url(:playertype => RankingValue::PITCHER))
+      return redirect_to(new_ranking_value_url(:playertype => DraftRankingValue::PITCHER))
     elsif(!params[:brv].nil? and params[:brv] == 'new')
-      return redirect_to(new_ranking_value_url(:playertype => RankingValue::BATTER))
+      return redirect_to(new_ranking_value_url(:playertype => DraftRankingValue::BATTER))
     elsif(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else
@@ -47,26 +47,26 @@ class Draft::RankingValuesController < Draft::BaseController
   end
 
   def new
-    if(!params[:playertype].blank? and params[:playertype].to_i == RankingValue::BATTER)
-      @playertype = RankingValue::BATTER
+    if(!params[:playertype].blank? and params[:playertype].to_i == DraftRankingValue::BATTER)
+      @playertype = DraftRankingValue::BATTER
       @rankingattributes = Stat::BATTING_DIRECTIONS.keys.sort
     else
-      @playertype = RankingValue::PITCHER
+      @playertype = DraftRankingValue::PITCHER
       @rankingattributes = Stat::PITCHING_DIRECTIONS.keys.sort
     end
-    @new_rankingvalue = RankingValue.new
+    @new_rankingvalue = DraftRankingValue.new
     respond_to do |format|
       format.html # new.html.erb
     end
   end
 
   def create
-    @new_rankingvalue = RankingValue.new(:owner => @currentowner, :playertype => params[:ranking_value][:playertype] )
-    if(params[:ranking_value][:playertype] == RankingValue::BATTER)
-      @playertype = RankingValue::BATTER
+    @new_rankingvalue = DraftRankingValue.new(:owner => @currentowner, :playertype => params[:ranking_value][:playertype] )
+    if(params[:ranking_value][:playertype] == DraftRankingValue::BATTER)
+      @playertype = DraftRankingValue::BATTER
       @rankingattributes = Stat::BATTING_DIRECTIONS.keys.sort
     else
-      @playertype = RankingValue::PITCHER
+      @playertype = DraftRankingValue::PITCHER
       @rankingattributes = Stat::PITCHING_DIRECTIONS.keys.sort
     end
 
@@ -90,7 +90,7 @@ class Draft::RankingValuesController < Draft::BaseController
       formula << {:column => attribute, :importance => importance}
     end
 
-    if(rv = RankingValue.where(:playertype => params[:ranking_value][:playertype]).where(:label => params[:ranking_value][:label]).where(:owner_id => @currentowner.id).first)
+    if(rv = DraftRankingValue.where(:playertype => params[:ranking_value][:playertype]).where(:label => params[:ranking_value][:label]).where(:owner_id => @currentowner.id).first)
       # already have one - let's overwrite
       rv.update_attribute(:formula, formula)
       rv.create_or_update_rankings
@@ -106,7 +106,7 @@ class Draft::RankingValuesController < Draft::BaseController
   end
 
   def destroy
-    @rv = RankingValue.find(params[:id])
+    @rv = DraftRankingValue.find(params[:id])
     if(@rv.owner == @currentowner)
       @rv.destroy
       SlackIt.post(message: "#{@currentowner.nickname} deleted a ranking value")

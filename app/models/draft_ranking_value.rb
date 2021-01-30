@@ -74,7 +74,7 @@ class DraftRankingValue < ApplicationRecord
         rankings_distribution_hash[player] = ((stat - median)/range)
       end
     elsif(normalization == NORMALIZED_AVERAGE)
-      total_importance = self.formula.map{|factor| RankingValue.importance_factor(factor[:importance],options[:importance_factors])}.sum
+      total_importance = self.formula.map{|factor| DraftRankingValue.importance_factor(factor[:importance],options[:importance_factors])}.sum
 
       rankings_distribution_hash.each do |player,stat|
         rankings_distribution_hash[player] = (stat / total_importance)
@@ -108,7 +108,7 @@ class DraftRankingValue < ApplicationRecord
 
   def self.rebuild
     Stat.rebuild(all)
-    RankingValue.all.each do |rv|
+    DraftRankingValue.all.each do |rv|
       rv.create_or_update_rankings
     end
   end
@@ -117,7 +117,7 @@ class DraftRankingValue < ApplicationRecord
     pitching_columns = DraftPitchingStatline.columns.map(&:name)
     batting_columns  = DraftBattingStatline.columns.map(&:name)
 
-    RankingValue.all.each do |rv|
+    DraftRankingValue.all.each do |rv|
       column_names = rv.formula.map{|hash| hash[:column]}
       if(rv.playertype == PITCHER)
         dump_values = column_names - pitching_columns
