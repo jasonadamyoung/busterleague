@@ -62,7 +62,7 @@ module AuthenticationSystem
 
 
   def access_denied
-    redirect_to(:controller=>:sessions, :action => :start)
+    redirect_to login_url
   end
 
 

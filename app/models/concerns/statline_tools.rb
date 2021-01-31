@@ -3,7 +3,7 @@
 # === LICENSE:
 # see LICENSE file
 
-module StatTools
+module StatlineTools
   extend ActiveSupport::Concern
 
   def create_or_update_stat(statdata)
@@ -18,6 +18,8 @@ module StatTools
       end
     end
     name = "#{save_stats['first_name']} #{save_stats['last_name']}"
+
+
     if(roster = Roster.find_roster_for_name_position_team_season(name,
                                                                  save_stats['position'],
                                                                  save_stats['team_id'],

@@ -4,7 +4,9 @@
 # see LICENSE file
 
 class DraftBattingStatline < ApplicationRecord
-  has_one :batter, :foreign_key => 'statline_id'
+  extend CleanupTools
+
+  has_one :draft_batter, :foreign_key => 'statline_id'
 
   RATINGFIELDS = {
     'c' => 'c',
@@ -26,11 +28,5 @@ class DraftBattingStatline < ApplicationRecord
     end
     {:conditions => conditionstring}
   }
-
-
-  def custom
-    
-
-  end
 
 end

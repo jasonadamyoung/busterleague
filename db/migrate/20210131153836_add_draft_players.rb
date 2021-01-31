@@ -3,7 +3,7 @@ class AddDraftPlayers < ActiveRecord::Migration[5.2]
     create_table "draft_players", id: :integer, force: :cascade do |t|
       t.integer "season"
       t.references :player
-      t.integer "roster_id"
+      t.references :roster
       t.string "firstname", default: "", null: false
       t.string "lastname", default: "", null: false
       t.string "position", limit: 3, default: "", null: false
@@ -16,11 +16,11 @@ class AddDraftPlayers < ActiveRecord::Migration[5.2]
       t.datetime "updated_at"
     end
 
-    add_index "draft_players", ["draftstatus"], name: "players_draftstatus_ndx"
-    add_index "draft_players", ["lastname", "firstname"], name: "players_name_ndx"
-    add_index "draft_players", ["position"], name: "players_position_ndx"
-    add_index "draft_players", ["statline_id"], name: "players_statline_ndx"
-    add_index "draft_players", ["type"], name: "players_type_ndx"
+    add_index "draft_players", ["draftstatus"], name: "draftplayers_draftstatus_ndx"
+    add_index "draft_players", ["lastname", "firstname"], name: "draftplayers_name_ndx"
+    add_index "draft_players", ["position"], name: "draftplayers_position_ndx"
+    add_index "draft_players", ["statline_id"], name: "draftplayers_statline_ndx"
+    add_index "draft_players", ["type"], name: "draftplayers_type_ndx"
 
   end
 end

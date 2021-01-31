@@ -4,5 +4,7 @@
 # see LICENSE file
 
 class DraftPitchingStatline < ApplicationRecord
-  has_one :pitcher, :foreign_key => 'statline_id'
+  extend CleanupTools
+
+  has_one :draft_pitcher, :foreign_key => 'statline_id'
 end
