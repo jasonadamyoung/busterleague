@@ -57,7 +57,7 @@ class DraftStatPreference < ApplicationRecord
   end
 
   def self.available_display_stats(playertype)
-    reject_columns =  ['id','firstname','lastname','dmbteam']
+    reject_columns =  ['id','first_name','last_name','dmbteam']
     case playertype
     when PITCHER
       DraftPitchingStatline.column_names.reject{|column| reject_columns.include?(column)}

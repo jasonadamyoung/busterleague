@@ -158,7 +158,7 @@ class Draft::PlayersController < Draft::BaseController
 
   def findplayer
     if (!params[:q].nil? and !params[:q].empty? and params[:q].size >= 2)
-      @playerlist = DraftPlayer.searchplayers(params[:q]).order(:lastname)
+      @playerlist = DraftPlayer.searchplayers(params[:q]).order(:last_name)
     end
     respond_to do |wants|
       wants.html { render :action => 'findplayer'}

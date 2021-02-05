@@ -180,16 +180,16 @@ class Roster < ApplicationRecord
       startswith = name.first
     else
       namefinder = self.idiotic_shorthand_name_translations(name.dup)
-      (lastname,startswith) = namefinder.split(',')
-      if(lastname.last =~ %r{[A-Z]})
-        startswith = lastname.last
-        lastname.chop!
+      (last_name,startswith) = namefinder.split(',')
+      if(last_name.last =~ %r{[A-Z]})
+        startswith = last_name.last
+        last_name.chop!
       else
         if !startswith.nil?
           startswith = self.idiotic_shorthand_startswith_translations(startswith)
         end
       end
-      nameparts = lastname.split("'")
+      nameparts = last_name.split("'")
       finder = nameparts.max_by(&:length)
       end_name = finder.downcase.split(' ').last
       player_finder = player_finder.where("end_name ILIKE ?","%#{end_name}%")

@@ -17,8 +17,8 @@ class Owner < ApplicationRecord
 
 
   def fullname
-    if(!self.firstname.blank? and !self.lastname.blank?)
-      "#{self.firstname} #{self.lastname}"
+    if(!self.first_name.blank? and !self.last_name.blank?)
+      "#{self.first_name} #{self.last_name}"
     elsif(!self.nickname.blank?)
       self.nickname
     else

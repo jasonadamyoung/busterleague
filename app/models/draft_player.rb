@@ -4,6 +4,8 @@
 # see LICENSE file
 
 class DraftPlayer < ApplicationRecord
+  include CleanupTools
+
   belongs_to :team, optional: true
   belongs_to :original_team, :class_name => 'Team',  optional: true
   has_many :rosters
@@ -66,27 +68,27 @@ class DraftPlayer < ApplicationRecord
     self.dump_data
 
     # Pitchers
-    DraftPitchingStatline.order('lastname,firstname asc').each do |pitcherstat|
+    DraftPitchingStatline.order('last_name,first_name asc').each do |pitcherstat|
 
-      pitcher = Pitcher.create(:firstname => pitcherstat.firstname,
-                    :lastname => pitcherstat.lastname,
+      pitcher = DraftPitcher.create(:first_name => pitcherstat.first_name,
+                    :last_name => pitcherstat.last_name,
                     :position => pitcherstat.position,
                     :age => pitcherstat.age,
                     :statline_id => pitcherstat.id,
                     :team_id => pitcherstat.team_id,
-                    :draftstatus => (team_id == Team::NO_TEAM) ? DraftPlayer::DRAFT_STATUS_NOTDRAFTED : DraftPlayer::DRAFT_STATUS_TEAMED)
+                    :draftstatus => (pitcherstat.team_id == Team::NO_TEAM) ? DraftPlayer::DRAFT_STATUS_NOTDRAFTED : DraftPlayer::DRAFT_STATUS_TEAMED)
     end
 
     # Batters
-    DraftBattingStatline.order('lastname,firstname asc').each do |batterstat|
+    DraftBattingStatline.order('last_name,first_name asc').each do |batterstat|
 
-      batter = Batter.create(:firstname => batterstat.firstname,
-                    :lastname => batterstat.lastname,
+      batter = DraftBatter.create(:first_name => batterstat.first_name,
+                    :last_name => batterstat.last_name,
                     :position => batterstat.position,
                     :age => batterstat.age,
                     :statline_id => batterstat.id,
-                    :team_id => team_id,
-                    :draftstatus => (team_id == Team::NO_TEAM) ? DraftPlayer::DRAFT_STATUS_NOTDRAFTED : DraftPlayer::DRAFT_STATUS_TEAMED)
+                    :team_id => batterstat.team_id,
+                    :draftstatus => (batterstat.team_id == Team::NO_TEAM) ? DraftPlayer::DRAFT_STATUS_NOTDRAFTED : DraftPlayer::DRAFT_STATUS_TEAMED)
     end
 
     # rebuild rankings
@@ -95,7 +97,7 @@ class DraftPlayer < ApplicationRecord
 
   def self.sorting(*ranking_values)
     if(ranking_values.length == 0)
-      order("lastname ASC")
+      order("last_name ASC")
     else
       select("#{self.table_name}.*, draft_rankings.value as rankvalue")
       .joins(:draft_rankings)
@@ -125,11 +127,11 @@ class DraftPlayer < ApplicationRecord
   end
 
   def fullname
-    "#{self.firstname} #{self.lastname}"
+    "#{self.first_name} #{self.last_name}"
   end
 
   def initials
-    "#{self.firstname.first}#{self.lastname.first}"
+    "#{self.first_name.first}#{self.last_name.first}"
   end
 
   def teamed?
@@ -148,8 +150,8 @@ class DraftPlayer < ApplicationRecord
   def returntodraft
     return if(self.draftstatus != DRAFT_STATUS_DRAFTED)
     if(!self.draft_pick.nil?)
-      dp = DraftPick.where(player_id: self.id).first
-      dp.update_attributes({:player_id =>  DraftPick::NOPICK})
+      dp = DraftPick.where(draft_player_id: self.id).first
+      dp.update_attributes({:draft_player_id =>  DraftPick::NOPICK})
     end
     current_team = self.team
     self.update_attributes({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED})
@@ -171,7 +173,7 @@ class DraftPlayer < ApplicationRecord
 
     if(team)
       self.update_attributes({:team_id => team.id, :draftstatus => DRAFT_STATUS_DRAFTED})
-      pick.update_attributes({:player_id => self.id, :team_id => team.id})
+      pick.update_attributes({:draft_player_id => self.id, :team_id => team.id})
     end
   end
 
@@ -205,13 +207,13 @@ class DraftPlayer < ApplicationRecord
         :firstword => words[0],
         :secondword => words[1]
       }
-      conditions = ["((firstname rlike :firstword AND lastname rlike :secondword) OR (firstname rlike :secondword AND lastname rlike :firstword))",findvalues]
+      conditions = ["((first_name rlike :firstword AND last_name rlike :secondword) OR (first_name rlike :secondword AND last_name rlike :firstword))",findvalues]
     else
       findvalues = {
         :findfirst => searchterm,
         :findlast => searchterm
       }
-      conditions = ["(firstname rlike :findfirst OR lastname rlike :findlast)",findvalues]
+      conditions = ["(first_name rlike :findfirst OR last_name rlike :findlast)",findvalues]
     end
 
     where(conditions)

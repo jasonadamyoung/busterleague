@@ -6,7 +6,7 @@
 class DraftPick < ApplicationRecord
   belongs_to :team
   belongs_to :original_team, :class_name => 'Team', optional: true
-  belongs_to :player, optional: true
+  belongs_to :draft_player, optional: true
   has_one :owner, :through => :team
   paginates_per Team.count
 

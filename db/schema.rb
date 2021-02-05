@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_31_161057) do
+ActiveRecord::Schema.define(version: 2021_02_05_184131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -233,7 +233,7 @@ ActiveRecord::Schema.define(version: 2021_01_31_161057) do
   create_table "draft_picks", id: :serial, force: :cascade do |t|
     t.integer "season", limit: 2, null: false
     t.integer "team_id", default: 0, null: false
-    t.integer "player_id", default: 0
+    t.integer "draft_player_id", default: 0
     t.boolean "traded", default: false
     t.integer "original_team_id", default: 0
     t.integer "round", default: 0
@@ -301,8 +301,8 @@ ActiveRecord::Schema.define(version: 2021_01_31_161057) do
     t.integer "season"
     t.bigint "player_id"
     t.bigint "roster_id"
-    t.string "firstname", default: "", null: false
-    t.string "lastname", default: "", null: false
+    t.string "first_name", default: "", null: false
+    t.string "last_name", default: "", null: false
     t.string "position", limit: 3, default: "", null: false
     t.integer "age", default: 0, null: false
     t.string "type", default: "0"
@@ -312,7 +312,7 @@ ActiveRecord::Schema.define(version: 2021_01_31_161057) do
     t.integer "draftstatus", default: 2, null: false
     t.datetime "updated_at"
     t.index ["draftstatus"], name: "draftplayers_draftstatus_ndx"
-    t.index ["lastname", "firstname"], name: "draftplayers_name_ndx"
+    t.index ["last_name", "first_name"], name: "draftplayers_name_ndx"
     t.index ["player_id"], name: "index_draft_players_on_player_id"
     t.index ["position"], name: "draftplayers_position_ndx"
     t.index ["roster_id"], name: "index_draft_players_on_roster_id"
@@ -337,13 +337,30 @@ ActiveRecord::Schema.define(version: 2021_01_31_161057) do
   end
 
   create_table "draft_rankings", id: :serial, force: :cascade do |t|
-    t.integer "ranking_value_id", default: 0
-    t.integer "player_id", default: 0
+    t.integer "draft_ranking_value_id", default: 0
+    t.integer "draft_player_id", default: 0
     t.float "value", default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["ranking_value_id", "player_id"], name: "rv_player", unique: true
+    t.index ["draft_ranking_value_id", "draft_player_id"], name: "rv_player", unique: true
     t.index ["value"], name: "by_value"
+  end
+
+  create_table "draft_stat_distributions", id: :serial, force: :cascade do |t|
+    t.bigint "defined_stat_id"
+    t.integer "player_type", default: 1
+    t.string "label"
+    t.string "name"
+    t.float "mean"
+    t.float "max"
+    t.float "min"
+    t.float "median"
+    t.float "range"
+    t.text "distribution"
+    t.text "scaled_distribution"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["defined_stat_id"], name: "index_draft_stat_distributions_on_defined_stat_id"
   end
 
   create_table "draft_stat_preferences", id: :serial, force: :cascade do |t|
@@ -358,12 +375,12 @@ ActiveRecord::Schema.define(version: 2021_01_31_161057) do
 
   create_table "draft_wanteds", id: :serial, force: :cascade do |t|
     t.integer "owner_id", default: 1
-    t.integer "player_id", default: 0
+    t.integer "draft_player_id", default: 0
     t.text "notes"
     t.string "highlight", default: "ffff00"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["owner_id", "player_id"], name: "draft_wanted_ndx", unique: true
+    t.index ["owner_id", "draft_player_id"], name: "draft_wanted_ndx", unique: true
   end
 
   create_table "game_batting_stats", force: :cascade do |t|
@@ -471,8 +488,8 @@ ActiveRecord::Schema.define(version: 2021_01_31_161057) do
 
   create_table "owners", force: :cascade do |t|
     t.string "uid", limit: 255, default: "", null: false
-    t.string "firstname", limit: 255, default: "", null: false
-    t.string "lastname", limit: 255, default: "", null: false
+    t.string "first_name", limit: 255, default: "", null: false
+    t.string "last_name", limit: 255, default: "", null: false
     t.string "nickname", limit: 255, default: "", null: false
     t.string "email", limit: 255, default: "", null: false
     t.string "token", limit: 40

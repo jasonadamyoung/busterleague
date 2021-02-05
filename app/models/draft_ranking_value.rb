@@ -48,7 +48,7 @@ class DraftRankingValue < ApplicationRecord
   def rankings_distribution(options = {})
     rankings_distribution_hash = {}
     normalization = options[:normalization] || NORMALIZED_SCALE
-    player_list = options[:player_list] || ((self.playertype == PITCHER) ? Pitcher.all : Batter.all )
+    player_list = options[:player_list] || ((self.playertype == PITCHER) ? DraftPitcher.all : DraftBatter.all )
 
     self.formula.each do |factor|
       column = factor[:column]

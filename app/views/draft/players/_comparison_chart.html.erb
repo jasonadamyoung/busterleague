@@ -1,10 +1,10 @@
-<div id="chart1"></div> 
+<div id="chart1"></div>
 <script class="code" type="text/javascript">
 $(document).ready(function(){
     var rankvalues = <%= @playerlist.map(&:rankvalue).map{|rv|rv*100}.to_json.html_safe %>;
     // Can specify a custom tick Array.
     // Ticks should match up one for each y value (category) in the series.
-    var ticks = <%= @playerlist.map(&:lastname).to_json.html_safe %>;
+    var ticks = <%= @playerlist.map(&:last_name).to_json.html_safe %>;
 
     var plot1 = $.jqplot('chart1', [rankvalues], {
         // The "seriesDefaults" option is an options object that will

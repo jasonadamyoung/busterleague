@@ -12,17 +12,15 @@ class Draft::StatsController < Draft::BaseController
 
   def pitching
     @pitching_stats = []
-    Stat::PITCHING_DIRECTIONS.keys.sort.each do |statname|
-     @pitching_stats << Stat.find_or_create(DraftStatDistribution::PITCHER,statname)
+    DefinedStat.pitching_statlines.each do |pitching_stat|
+     @pitching_stats << DraftStatDistribution.create_or_update_from_defined_stat(pitching_stat)
     end
   end
 
   def batting
     @batting_stats = []
-    Stat::BATTING_DIRECTIONS.keys.sort.each do |statname|
-     @batting_stats << Stat.find_or_create(DraftStatDistribution::BATTER,statname)
+    DefinedStat.batting_statlines.each do |batting_stat|
+      @batting_stats << DraftStatDistribution.create_or_update_from_defined_stat(batting_stat)
     end
   end
-
-
 end

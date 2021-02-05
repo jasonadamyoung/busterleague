@@ -28,13 +28,13 @@ class DraftStatDistribution < ApplicationRecord
 
   def self.create_or_update_from_defined_stat(defined_stat)
     if(!(dsd = self.where(defined_stat_id: defined_stat.id).first))
-      dsd = self.new(defined_stat_id: defined_stat_id, :player_type => defined_stat.player_type, :label => defined_stat.name)
+      dsd = self.new(defined_stat_id: defined_stat.id, :player_type => defined_stat.player_type, :label => defined_stat.name)
     end
 
     direction = defined_stat.sort_direction
 
     # get the list of players
-    player_list = (dsd.player_type == PITCHER) ? Pitcher.includes(:statline).not_injured : Batter.includes(:statline).not_injured
+    player_list = (dsd.player_type == PITCHER) ? DraftPitcher.includes(:statline).not_injured : DraftBatter.includes(:statline).not_injured
     player_distribution = {}
     player_list.each do |player|
       if(player.statline.age != 0)
@@ -63,8 +63,9 @@ class DraftStatDistribution < ApplicationRecord
   end
 
   def self.find_or_create(player_type,label)
-    if(!(stat = self.where(player_type: player_type).where(label: label).first))
-      stat = self.create_or_update(player_type,label)
+    defined_stat = DefinedStat.where(player_type: player_type).where(name: label).first
+    if(defined_stat)
+      stat = self.create_or_update_from_defined_stat(defined_stat)
     end
     stat
   end
@@ -74,7 +75,7 @@ class DraftStatDistribution < ApplicationRecord
     DefinedStat.pitching_statlines.each do |pitching_stat|
       self.create_or_update_from_defined_stat(pitching_stat)
     end
-    DefinedStat.pitching_statlines.each do |batting_stat|
+    DefinedStat.batting_statlines.each do |batting_stat|
       self.create_or_update_from_defined_stat(batting_stat)
     end
   end
