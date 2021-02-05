@@ -28,7 +28,7 @@
         C: <%= player_count_display(draftpick.team.draft_players.byposition('C').count,3).html_safe %>
       </td>
       <td>
-        <strong><%= draftpick.team.draft_picks.where(player_id: 0).count %></strong>
+        <strong><%= draftpick.team.draft_picks.not_picked.count %></strong>
       </td>
       </tr>
     <%- end -%>

@@ -56,7 +56,7 @@ class Draft::PlayersController < Draft::BaseController
   def sethighlight
     @player = DraftPlayer.where(id: params[:id]).first
     if(@player)
-      @wanted = @currentowner.wanteds.where(player_id: @player.id).first
+      @wanted = @currentowner.wanteds.where(draft_player_id: @player.id).first
       if(@wanted)
         @wanted.update_attribute(:highlight,params[:highlight])
       end
@@ -72,7 +72,7 @@ class Draft::PlayersController < Draft::BaseController
   def setnotes
     @player = DraftPlayer.where(id: params[:id]).first
     if(@player)
-      @wanted = @currentowner.wanteds.where(player_id: @player.id).first
+      @wanted = @currentowner.wanteds.where(draft_player_id: @player.id).first
       if(@wanted)
         notes = (@player.class == Pitcher) ? params[:pitcher][:notes] : params[:batter][:notes]
         @wanted.update_attribute(:notes,notes)
