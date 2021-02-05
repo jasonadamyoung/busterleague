@@ -2,7 +2,7 @@
   <thead>
 <tr>
   <th>POS</th>
-  <%- Stat.core(Stat::PITCHER).each do |stat| %>
+  <%- DraftStatDistribution.core(DraftStatDistribution::PITCHER).each do |stat| %>
     <th><%= stat.upcase %></th>
   <%- end -%>
 
@@ -11,11 +11,11 @@
 <tbody>
 <tr>
   <td><%= @player.position %></td>
-  <%- Stat.core(Stat::PITCHER).each do |stat| %>
+  <%- DraftStatDistribution.core(DraftStatDistribution::PITCHER).each do |stat| %>
     <%- if stat == 'lops' %>
       <td><%= ops_display(@player,'left')%></td>
     <%- elsif stat == 'rops' -%>
-      <td><%= ops_display(@player,'right')%></td>  
+      <td><%= ops_display(@player,'right')%></td>
     <%- else -%>
       <td><%= @player.statline.send(stat) %></td>
     <%- end -%>

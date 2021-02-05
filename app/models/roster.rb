@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Roster < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :team, optional: true
   belongs_to :player

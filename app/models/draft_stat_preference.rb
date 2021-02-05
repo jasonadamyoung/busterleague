@@ -69,9 +69,9 @@ class DraftStatPreference < ApplicationRecord
   def self.core_display_stats(playertype)
     case playertype
     when PITCHER
-      ['position','age','throws'] + Stat.core(playertype)
+      ['position','age','throws'] + DraftStatDistribution.core(playertype)
     when BATTER
-      ['age','bats'] + Stat.core(playertype) + DraftBattingStatline::RATINGFIELDS.values
+      ['age','bats'] + DraftStatDistribution.core(playertype) + DraftBattingStatline::RATINGFIELDS.values
     end
   end
 

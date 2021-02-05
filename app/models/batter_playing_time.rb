@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class BatterPlayingTime < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :roster
 

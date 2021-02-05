@@ -6,6 +6,8 @@ require 'stringio'
 
 class Team < ApplicationRecord
 
+  NO_TEAM = 0
+
   belongs_to :owner
   has_many :records
   has_many :team_games

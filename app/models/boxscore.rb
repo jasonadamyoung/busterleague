@@ -5,7 +5,7 @@
 
 class Boxscore < ApplicationRecord
   include ActiveModel::AttributeAssignment
-  extend CleanupTools
+  include CleanupTools
   serialize :content
 
   belongs_to :game

@@ -7,12 +7,10 @@ class DraftPlayer < ApplicationRecord
   belongs_to :team, optional: true
   belongs_to :original_team, :class_name => 'Team',  optional: true
   has_many :rosters
-  has_many :rankings
+  has_many :draft_rankings
   has_one :draft_pick
   has_many :wanteds
   has_many :wantedowners, :through => :wanteds, :source => :owner
-  has_many :owner_ranks
-  has_many :rankingowners, :through => :owner_ranks, :source => :owner
 
   # list filters
   ALL_PLAYERS = 'all'
@@ -29,9 +27,9 @@ class DraftPlayer < ApplicationRecord
   paginates_per 50
 
   scope :byrankingvalues, lambda {|rv1,rv2|
-    select("#{self.table_name}.*, rankings.value as rankvalue")
-    .joins(:rankings)
-    .where("rankings.ranking_value_id IN (#{rv1.id},#{rv2.id})")
+    select("#{self.table_name}.*, draft_rankings.value as rankvalue")
+    .joins(:draft_rankings)
+    .where("draft_rankings.ranking_value_id IN (#{rv1.id},#{rv2.id})")
     .order("rankvalue DESC")
   }
 
@@ -63,20 +61,46 @@ class DraftPlayer < ApplicationRecord
 
   scope :byposition, lambda {|position| where(position: position.upcase)}
 
-  def self.sorting(owner_rank = {},*ranking_values)
+
+  def self.rebuild_from_statlines
+    self.dump_data
+
+    # Pitchers
+    DraftPitchingStatline.order('lastname,firstname asc').each do |pitcherstat|
+
+      pitcher = Pitcher.create(:firstname => pitcherstat.firstname,
+                    :lastname => pitcherstat.lastname,
+                    :position => pitcherstat.position,
+                    :age => pitcherstat.age,
+                    :statline_id => pitcherstat.id,
+                    :team_id => pitcherstat.team_id,
+                    :draftstatus => (team_id == Team::NO_TEAM) ? DraftPlayer::DRAFT_STATUS_NOTDRAFTED : DraftPlayer::DRAFT_STATUS_TEAMED)
+    end
+
+    # Batters
+    DraftBattingStatline.order('lastname,firstname asc').each do |batterstat|
+
+      batter = Batter.create(:firstname => batterstat.firstname,
+                    :lastname => batterstat.lastname,
+                    :position => batterstat.position,
+                    :age => batterstat.age,
+                    :statline_id => batterstat.id,
+                    :team_id => team_id,
+                    :draftstatus => (team_id == Team::NO_TEAM) ? DraftPlayer::DRAFT_STATUS_NOTDRAFTED : DraftPlayer::DRAFT_STATUS_TEAMED)
+    end
+
+    # rebuild rankings
+    DraftRankingValue.rebuild
+  end
+
+  def self.sorting(*ranking_values)
     if(ranking_values.length == 0)
       order("lastname ASC")
-    elsif(owner_rank[:owner_rank].nil? or owner_rank[:owner].nil? or !owner_rank[:owner_rank])
-      select("#{self.table_name}.*, rankings.value as rankvalue")
-      .joins(:rankings)
-      .where("rankings.ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
-      .order("rankvalue DESC")
     else
-      select("#{self.table_name}.*, rankings.value as rankvalue, owner_ranks.overall as owner_rankvalue")
-      .joins(:rankings, :owner_ranks)
-      .where("owner_ranks.owner_id = ?",owner_rank[:owner].id)
-      .where("rankings.ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
-      .order("owner_rankvalue ASC,rankvalue DESC")
+      select("#{self.table_name}.*, draft_rankings.value as rankvalue")
+      .joins(:draft_rankings)
+      .where("draft_rankings.ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
+      .order("rankvalue DESC")
     end
   end
 
@@ -109,7 +133,7 @@ class DraftPlayer < ApplicationRecord
   end
 
   def teamed?
-    return (self.team_id != Team::DRAFT)
+    return (self.team_id != Team::NO_TEAM)
   end
 
   def drafted?
@@ -118,7 +142,7 @@ class DraftPlayer < ApplicationRecord
 
   def releaseplayer
     current_team_id = self.team_id
-    self.update_attributes({:team_id => Team::DRAFT, :draftstatus => DRAFT_STATUS_NOTDRAFTED, :original_team_id => current_team_id})
+    self.update_attributes({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED, :original_team_id => current_team_id})
   end
 
   def returntodraft
@@ -128,7 +152,7 @@ class DraftPlayer < ApplicationRecord
       dp.update_attributes({:player_id =>  DraftPick::NOPICK})
     end
     current_team = self.team
-    self.update_attributes({:team_id => Team::DRAFT, :draftstatus => DRAFT_STATUS_NOTDRAFTED})
+    self.update_attributes({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED})
   end
 
   def draftplayer(options = {})
@@ -193,15 +217,6 @@ class DraftPlayer < ApplicationRecord
     where(conditions)
   end
 
-  def owner_rank(owner)
-    if(owner_rank = self.owner_ranks.where(owner: owner).first)
-      owner_rank.overall
-    else
-      'n/a'
-    end
-  end
-
-
   def self.rankingvalues(ranking_value)
     self.byrankingvalue(ranking_value).map(&:rankvalue).map{|rv|rv*100}
   end
@@ -211,7 +226,7 @@ class DraftPlayer < ApplicationRecord
     playertype = (self.class == Pitcher) ? Stat::PITCHER : Stat::BATTER
     ranking_value.formula.each do |factor|
       column = factor[:column]
-      stat = Stat.find_or_create(playertype,column)
+      stat = DraftStatDistribution.find_or_create(playertype,column)
       stats[column] = {}
       stats[column][:mine] = stat.scaled_distribution[:players][self.id] ? stat.scaled_distribution[:players][self.id] : 0
       stats[column][:max] = stat.scaled_distribution[:values].max

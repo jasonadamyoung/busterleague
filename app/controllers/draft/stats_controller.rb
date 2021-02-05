@@ -13,14 +13,14 @@ class Draft::StatsController < Draft::BaseController
   def pitching
     @pitching_stats = []
     Stat::PITCHING_DIRECTIONS.keys.sort.each do |statname|
-     @pitching_stats << Stat.find_or_create(Stat::PITCHER,statname)
+     @pitching_stats << Stat.find_or_create(DraftStatDistribution::PITCHER,statname)
     end
   end
 
   def batting
     @batting_stats = []
     Stat::BATTING_DIRECTIONS.keys.sort.each do |statname|
-     @batting_stats << Stat.find_or_create(Stat::BATTER,statname)
+     @batting_stats << Stat.find_or_create(DraftStatDistribution::BATTER,statname)
     end
   end
 

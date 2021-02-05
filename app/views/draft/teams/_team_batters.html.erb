@@ -8,7 +8,7 @@
       <th>NAME</th>
       <th>RANKVALUE</th>
       <th>AGE</th>
-      <%- Stat.core(Stat::BATTER).each do |stat| %>
+      <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
         <th><%= stat.upcase %></th>
       <%- end -%>
       <%- DraftBattingStatline::RATINGFIELDS.keys.each do |pos| -%>
@@ -23,7 +23,7 @@
         <td><%= link_to("#{fielder.fullname}", player_url(fielder)) %></td>
         <td><%= display_rankvalue(fielder.rankvalue) %></td>
         <td><%= fielder.statline.age %></td>
-        <%- Stat.core(Stat::BATTER).each do |stat| %>
+        <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
           <%- if(fielder.statline.send(stat).blank?) -%>
             <td>n/a</td>
           <%- else -%>

@@ -5,7 +5,7 @@
 
 class DailyRecord < ApplicationRecord
   include ActiveModel::AttributeAssignment
-  extend CleanupTools
+  include CleanupTools
 
 
 	belongs_to :team

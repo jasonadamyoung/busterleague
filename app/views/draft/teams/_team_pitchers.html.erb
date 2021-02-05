@@ -8,7 +8,7 @@
         <th>RANKVALUE</th>
         <th>AGE</th>
         <th>T</th>
-        <%- Stat.core(Stat::PITCHER).each do |stat| %>
+        <%- DraftStatDistribution.core(DraftStatDistribution::PITCHER).each do |stat| %>
           <th><%= stat.upcase %></th>
         <%- end -%>
     </tr>
@@ -21,7 +21,7 @@
           <td><%= display_rankvalue(pitcher.rankvalue) %></td>
           <td><%= pitcher.statline.age %></td>
           <td><%= pitcher.statline.throws %></td>
-          <%- Stat.core(Stat::PITCHER).each do |stat| %>
+          <%- DraftStatDistribution.core(DraftStatDistribution::PITCHER).each do |stat| %>
             <%- if stat == 'lops' %>
               <td><%= ops_display(pitcher,'left')%></td>
             <%- elsif stat == 'rops' -%>

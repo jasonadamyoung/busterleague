@@ -1,9 +1,9 @@
 <table class="table table-bordered ">
 	 <tbody>
-    <%- (Stat::BATTING_DIRECTIONS.keys - Stat.core(Stat::BATTER) - ['age']).sort.each do |stat| -%>
+    <%- (DraftStatDistribution::BATTING_DIRECTIONS.keys - DraftStatDistribution.core(DraftStatDistribution::BATTER) - ['age']).sort.each do |stat| -%>
 	    <tr>
 		    <td><%= stat %></td>
-		    <td><%= @player.statline.send(stat) %></td>		
+		    <td><%= @player.statline.send(stat) %></td>
 	    </tr>
 	  <%- end -%>
  </tbody>

@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class GamePitchingStat < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :roster, optional: true
   has_one :player, through: :roster

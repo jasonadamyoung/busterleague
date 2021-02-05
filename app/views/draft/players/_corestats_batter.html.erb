@@ -1,7 +1,7 @@
 <table class="table table-bordered">
   <thead>
   <tr>
-    <%- Stat.core(Stat::BATTER).each do |stat| %>
+    <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
       <th><%= stat.upcase %></th>
     <%- end -%>
     <%- DraftBattingStatline::RATINGFIELDS.keys.each do |pos| -%>
@@ -11,11 +11,11 @@
   </thead>
   <tbody>
   <tr>
-    <%- Stat.core(Stat::BATTER).each do |stat| %>
+    <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
       <%- if stat == 'lops' %>
         <td><%= ops_display(@player,'left')%></td>
       <%- elsif stat == 'rops' -%>
-        <td><%= ops_display(@player,'right')%></td>  
+        <td><%= ops_display(@player,'right')%></td>
       <%- else -%>
         <td><%= @player.statline.send(stat) %></td>
       <%- end -%>

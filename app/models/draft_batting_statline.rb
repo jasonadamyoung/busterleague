@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class DraftBattingStatline < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   has_one :draft_batter, :foreign_key => 'statline_id'
 
@@ -28,5 +28,12 @@ class DraftBattingStatline < ApplicationRecord
     end
     {:conditions => conditionstring}
   }
+
+  def self.rebuild_from_real_stats_for_season(season)
+    self.dump_data
+    RealBattingStat.for_season(season).each do |rbs|
+      self.create(rbs.attributes.reject{|key,value| ["id"].include?(key) })
+    end
+  end
 
 end

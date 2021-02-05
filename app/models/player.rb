@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Player < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   has_many :rosters
   has_many :teams, through: :rosters
@@ -142,6 +142,7 @@ class Player < ApplicationRecord
       player.set_names
       player.save!
     end
+    player
   end
 
   def self.create_or_update_for_season_from_dmbdata(season)

@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Inning < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :team
   belongs_to :boxscore
