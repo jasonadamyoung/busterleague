@@ -89,7 +89,7 @@ class AddDefinedStats < ActiveRecord::Migration[5.2]
       'rcera',
       'cera'
     ]
-    
+
   # directions
   pitching_descending_columns = [
     "age",
@@ -120,7 +120,7 @@ class AddDefinedStats < ActiveRecord::Migration[5.2]
     "r_ops",
     "r_pa"
   ]
-  
+
     batting_descending_columns = [
       "age",
       "k"
@@ -130,8 +130,8 @@ class AddDefinedStats < ActiveRecord::Migration[5.2]
     batting_names = (BattingStat.column_names + RealBattingStat.column_names + GameBattingStat.column_names).uniq
     batting_names.reject!{|column| ignore_columns.include?(column)}
     batting_names.each do |name|
-      DefinedStat.create(name: name, 
-                         player_type: DefinedStat::BATTING,
+      DefinedStat.create(name: name,
+                         player_type: DefinedStat::BATTER,
                          category_code: ((core_batting_columns.include?(name)) ? DefinedStat::CORE : DefinedStat::SECONDARY),
                          sort_direction: ((batting_descending_columns.include?(name)) ? DefinedStat::DESCENDING : DefinedStat::ASCENDING),
                          default_display_order: (core_batting_columns.index(name) || 999))
@@ -142,8 +142,8 @@ class AddDefinedStats < ActiveRecord::Migration[5.2]
     pitching_names = (PitchingStat.column_names + RealPitchingStat.column_names + GamePitchingStat.column_names).uniq
     pitching_names.reject!{|column| ignore_columns.include?(column)}
     pitching_names.each do |name|
-      DefinedStat.create(name: name, 
-                         player_type: DefinedStat::PITCHING,
+      DefinedStat.create(name: name,
+                         player_type: DefinedStat::PITCHER,
                          category_code: ((core_pitching_columns.include?(name)) ? DefinedStat::CORE : DefinedStat::SECONDARY),
                          sort_direction: ((pitching_descending_columns.include?(name)) ? DefinedStat::DESCENDING : DefinedStat::ASCENDING),
                          default_display_order: (core_pitching_columns.index(name) || 999))
