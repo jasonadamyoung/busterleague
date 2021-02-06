@@ -193,7 +193,6 @@ class DraftPlayer < ApplicationRecord
   end
 
   def self.searchplayers(searchterm)
-    # use of "rlike" also allows for regexp matching - cool eh?
     if searchterm.nil?
       return nil
     end
@@ -207,13 +206,13 @@ class DraftPlayer < ApplicationRecord
         :firstword => words[0],
         :secondword => words[1]
       }
-      conditions = ["((first_name rlike :firstword AND last_name rlike :secondword) OR (first_name rlike :secondword AND last_name rlike :firstword))",findvalues]
+      conditions = ["((first_name ~* :firstword AND last_name ~* :secondword) OR (first_name ~* :secondword AND last_name ~* :firstword))",findvalues]
     else
       findvalues = {
         :findfirst => searchterm,
         :findlast => searchterm
       }
-      conditions = ["(first_name rlike :findfirst OR last_name rlike :findlast)",findvalues]
+      conditions = ["(first_name ~* :findfirst OR last_name ~* :findlast)",findvalues]
     end
 
     where(conditions)
