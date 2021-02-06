@@ -1,5 +1,5 @@
 <%- @page_title = 'Your Rankings' -%>
-<p style="font-size:large;"><%= link_to("Create a Pitcher Ranking",new_ranking_value_url(:playertype => DraftRankingValue::PITCHER))%> | <%= link_to("Create a Batter Ranking",new_ranking_value_url(:playertype => DraftRankingValue::BATTER))%></p>
+<p style="font-size:large;"><%= link_to("Create a Pitcher Ranking", new_draft_ranking_value_url(:playertype => DraftRankingValue::PITCHER))%> | <%= link_to("Create a Batter Ranking", new_draft_ranking_value_url(:playertype => DraftRankingValue::BATTER))%></p>
 
 <%- if @rankingvalues.blank? -%>
   You haven't created any rankings yet.

@@ -24,9 +24,9 @@ class Draft::StatPreferencesController < Draft::BaseController
     # redirect here - or ship ourselves over to new...
     # if that was requested
     if(!params[:psp].nil? and params[:psp] == 'new')
-      return redirect_to(new_stat_preference_url(:playertype => DraftStatPreference::PITCHER))
+      return redirect_to(new_draft_stat_preference_url(:playertype => DraftStatPreference::PITCHER))
     elsif(!params[:bsp].nil? and params[:bsp] == 'new')
-      return redirect_to(new_stat_preference_url(:playertype => DraftStatPreference::BATTER))
+      return redirect_to(new_draft_stat_preference_url(:playertype => DraftStatPreference::BATTER))
     elsif(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else

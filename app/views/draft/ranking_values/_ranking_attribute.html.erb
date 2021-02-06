@@ -3,7 +3,7 @@
    <%= hidden_field_tag("attributes[]",attributename) %>
    <label class="col-md-3 control-label" for='importances[]'><span class="label label-info"><%= attributename %> <%= directional_arrow(@playertype,attributename)%></span></label>
    <div class = "col-md-6">
-   <%= select_tag('importances[]',options_for_select(RankingValue::IMPORTANCES, DraftRankingValue::DEFAULT_IMPORTANCE),{:id => "rankingvalue_attribute_#{attributename}_importance", :class => 'form-control'}) %>
+   <%= select_tag('importances[]',options_for_select(DraftRankingValue::IMPORTANCES, DraftRankingValue::DEFAULT_IMPORTANCE),{:id => "rankingvalue_attribute_#{attributename}_importance", :class => 'form-control'}) %>
    <span>(importance)</span>
    </div>
  </div>

@@ -13,9 +13,9 @@ class Draft::RankingValuesController < Draft::BaseController
     # redirect here - or ship ourselves over to new...
     # if that was requested
     if(!params[:prv].nil? and params[:prv] == 'new')
-      return redirect_to(new_ranking_value_url(:playertype => DraftRankingValue::PITCHER))
+      return redirect_to(new_draft_ranking_value_url(:playertype => DraftRankingValue::PITCHER))
     elsif(!params[:brv].nil? and params[:brv] == 'new')
-      return redirect_to(new_ranking_value_url(:playertype => DraftRankingValue::BATTER))
+      return redirect_to(new_draft_ranking_value_url(:playertype => DraftRankingValue::BATTER))
     elsif(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else
