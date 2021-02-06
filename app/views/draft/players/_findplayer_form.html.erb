@@ -1,0 +1,5 @@
+<%= form_tag({:controller => "players", :action=> "findplayer"}, { :id => 'search' }) do -%>
+  <label for="search_field">Search</label>
+  <%= text_field_tag :q, params[:q], {:id => 'search_field', :autocomplete => 'off', :size => 25} -%>
+  <div id="search_results"></div>
+<%- end -%>

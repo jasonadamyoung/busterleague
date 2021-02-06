@@ -6,9 +6,13 @@
 class DraftPick < ApplicationRecord
   belongs_to :team
   belongs_to :original_team, :class_name => 'Team', optional: true
-  belongs_to :player, optional: true
+  belongs_to :draft_player, optional: true
   has_one :owner, :through => :team
   paginates_per Team.count
+
+  # pick codes
+  CURRENTPICK = -1
+  NOPICK = 0
 
   scope :upcoming, lambda {|limit=5|
     if(DraftPick.current_pick)
@@ -16,7 +20,7 @@ class DraftPick < ApplicationRecord
     else
       currentpick = DraftPick.last.overallpick+1
     end
-    where(["overallpick BETWEEN #{currentpick} AND #{currentpick + limit - 1}"])
+    where(["overallpick BETWEEN #{currentpick} AND #{currentpick + limit - 1}"]).order(:overallpick)
   }
 
   scope :recent, lambda {|limit=5|
@@ -25,13 +29,11 @@ class DraftPick < ApplicationRecord
     else
       currentpick = DraftPick.last.overallpick+1
     end
-    where(["overallpick BETWEEN #{currentpick - limit} AND #{currentpick - 1}"])
+    where(["overallpick BETWEEN #{currentpick - limit} AND #{currentpick - 1}"]).order("overallpick DESC")
   }
 
-
-  # pick codes
-  CURRENTPICK = -1
-  NOPICK = 0
+  scope :picked, ->{where('draft_player_id <> ?',NOPICK)}
+  scope :not_picked, ->{where('draft_player_id = ?',NOPICK)}
 
   def self.next_human_pick
     currentpick = DraftPick.current_pick.overallpick
@@ -39,7 +41,7 @@ class DraftPick < ApplicationRecord
   end
 
   def self.current_pick
-    maxpick = DraftPick.where('player_id != 0').maximum(:overallpick)
+    maxpick = DraftPick.picked.maximum(:overallpick)
     maxpick = maxpick.nil? ? 1 : maxpick+1
     DraftPick.where('overallpick = ?',maxpick).first
   end
@@ -61,6 +63,4 @@ class DraftPick < ApplicationRecord
       dp.save
     end
   end
-
-
 end

@@ -57,7 +57,7 @@ class DraftStatPreference < ApplicationRecord
   end
 
   def self.available_display_stats(playertype)
-    reject_columns =  ['id','firstname','lastname','dmbteam']
+    reject_columns =  ['id','first_name','last_name','dmbteam']
     case playertype
     when PITCHER
       DraftPitchingStatline.column_names.reject{|column| reject_columns.include?(column)}
@@ -69,9 +69,9 @@ class DraftStatPreference < ApplicationRecord
   def self.core_display_stats(playertype)
     case playertype
     when PITCHER
-      ['position','age','throws'] + Stat.core(playertype)
+      ['position','age','throws'] + DraftStatDistribution.core(playertype)
     when BATTER
-      ['age','bats'] + Stat.core(playertype) + DraftBattingStatline::RATINGFIELDS.values
+      ['age','bats'] + DraftStatDistribution.core(playertype) + DraftBattingStatline::RATINGFIELDS.values
     end
   end
 
@@ -83,7 +83,7 @@ class DraftStatPreference < ApplicationRecord
     pitching_columns = DraftPitchingStatline.columns.map(&:name)
     batting_columns  = DraftBattingStatline.columns.map(&:name)
 
-    StatPreference.all.each do |sp|
+    DraftStatPreference.all.each do |sp|
       if(sp.playertype == PITCHER)
         dump_values = sp.column_list - pitching_columns
       else

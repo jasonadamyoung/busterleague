@@ -1,0 +1,24 @@
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+        <th>Pick</th>
+        <th>Player</th>
+        <th>Position</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% pickslist.each do |draftpick| %>
+        <tr>
+      <td><%= draftpick.overallpick %></td>
+      <%- if !draftpick.draft_player.nil? -%>
+        <td><%= link_to("#{draftpick.draft_player.fullname}", draft_player_url(draftpick.draft_player)) %></td>
+        <td><%= draftpick.draft_player.position.downcase %></td>
+      <%- else -%>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      <%- end -%>
+      </tr>
+    <%- end -%>
+    </tbody>
+</table>

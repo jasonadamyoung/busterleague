@@ -1,0 +1,66 @@
+<table class="table table-bordered table-condensed">
+<thead>
+  <tr>
+      <th>NAME</th>
+      <th>TEAM</th>
+      <th>RANKVALUE</th>
+      <th>AGE</th>
+      <th>PA</th>
+      <th>c</th>
+      <th>1b</th>
+      <th>2b</th>
+      <th>3b</th>
+      <th>ss</th>
+      <th>cf</th>
+      <th>rf</th>
+      <th>lf</th>
+      <th>Notes</th>
+      <th>Highlight</th>
+  </tr>
+</thead>
+<tbody>
+  <% playerlist.each do |fielder| %>
+  <%- if !fielder.team.blank?
+        style = "class = 'teamed'"
+      elsif @currentowner.wanted_draft_players.include?(fielder)
+        if(index =  @currentowner.wanted_draft_players.index(fielder))
+          wanted = @currentowner.wanted_draft_players[index]
+          style = ""
+        else
+          style = "class = 'available'"
+        end
+      else
+        style = "class = 'available'"
+      end
+  -%>
+  <tr <%= style %> id='player_<%= fielder.id %>'>
+      <td><%= link_to("#{fielder.fullname}", draft_player_url(fielder)) %></td>
+      <td><%= fielder.team.nil? ? '' : fielder.team.abbrev  %></td>
+      <td><%= display_rankvalue(fielder.rankvalue) %></td>
+      <td><%= fielder.statline.age %></td>
+      <td><%= fielder.statline.pa %></td>
+      <td><%= position_check(fielder,'pos_c') %></td>
+      <td><%= position_check(fielder,'pos_1b') %></td>
+      <td><%= position_check(fielder,'pos_2b') %></td>
+      <td><%= position_check(fielder,'pos_3b') %></td>
+      <td><%= position_check(fielder,'pos_ss') %></td>
+      <td><%= position_check(fielder,'pos_cf') %></td>
+      <td><%= position_check(fielder,'pos_rf') %></td>
+      <td><%= position_check(fielder,'pos_lf') %></td>
+	  <td><%= best_in_place(fielder, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => fielder.id)})%></td>
+      <%- if !wanted.nil? -%>
+      <td>
+        <%= form_tag({:controller => "players", :action=> "sethighlight", :id => fielder.id}) do -%>
+          <%= hidden_field_tag(:id,fielder.id) %>
+          <%= hidden_field_tag('currenturi',Base64.encode64(request.fullpath)) -%>
+          <%= text_field_tag(:highlight, wanted.highlight, {:id => "highlight_#{fielder.id}",:size => 7, class: 'jscolor input-small'}) %><%= submit_tag('change')%>
+        <%- end -%>
+      </td>
+      <%- else -%>
+      <td>&nbsp;</td>
+      <%- end -%>
+
+  </tr>
+  <% end %>
+</tbody>
+</table>

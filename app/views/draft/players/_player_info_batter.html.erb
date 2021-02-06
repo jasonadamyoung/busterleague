@@ -1,0 +1,36 @@
+    <table class="table">
+      <tbody>
+        <tr>
+          <td><strong>Age</strong></td>
+          <td><%= @player.statline.age %></td>
+        </tr>
+        <tr>
+          <td><strong>Injury Rating</strong></td>
+          <td><%= @player.statline.injury %></td>
+        </tr>
+
+        <%- if (@player.positions & ['rf','lf','cf']).size >= 1 -%>
+        <tr>
+          <td><strong>Outfielder Throwing Rating</strong></td>
+          <td><%= @player.statline.othr %></td>
+        </tr>
+        <%- end -%>
+
+        <%- if (@player.positions.include?('c')) -%>
+        <tr>
+          <td><strong>Catcher Throwing Rating</strong></td>
+          <td><%= @player.statline.cthr %></td>
+        </tr>
+        <%- end -%>
+
+        <tr>
+          <td><strong>Run Rating</strong></td>
+          <td><%= @player.statline.run %></td>
+        </tr>
+
+        <tr>
+          <td><strong>Steal Rating</strong></td>
+          <td><%= @player.statline.stl %></td>
+        </tr>
+      </tbody>
+    </table>

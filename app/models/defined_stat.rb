@@ -5,14 +5,17 @@
 
 class DefinedStat < ApplicationRecord
 
-  scope :batting, ->{where(player_type: DefinedStat::BATTING)}
-  scope :pitching, ->{where(player_type: DefinedStat::PITCHING)}
+  scope :batting, ->{where(player_type: DefinedStat::BATTER)}
+  scope :pitching, ->{where(player_type: DefinedStat::PITCHER)}
 
   scope :core, ->{where(category_code: DefinedStat::CORE)}
 
+  scope :batting_statlines, ->{batting.where(name: (RealBattingStat.column_names - ["id"]))}
+  scope :pitching_statlines, ->{pitching.where(name: (RealPitchingStat.column_names - ["id"]))}
+
   # player type
-  PITCHING= 1
-  BATTING = 2
+  PITCHER= 1
+  BATTER = 2
 
   # sorts
   ASCENDING = 1
@@ -34,7 +37,7 @@ class DefinedStat < ApplicationRecord
     "ops" => 3,
     'iso' => 3,
     'tavg' => 3,
-    'sec' => 3,   
+    'sec' => 3,
     "era" => 2,
     "whip" => 2,
     "rcera" => 2,
@@ -64,10 +67,9 @@ class DefinedStat < ApplicationRecord
       else
         PitchingStat.players.for_season(season).totals.order(leader_order).limit(limit)
       end
-    else 
+    else
       nil
     end
   end
 
 end
-

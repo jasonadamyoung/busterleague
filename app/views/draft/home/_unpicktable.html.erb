@@ -1,0 +1,37 @@
+<table class="table table-bordered">
+  <thead>
+    <tr>
+        <th>Pick</th>
+        <th>Team</th>
+        <th>Needed Positions</th>
+        <th>Picks Left</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% pickslist.each do |draftpick| %>
+      <%- if (draftpick.team.owner.nil? or draftpick.team.owner != Owner.computer) -%>
+        <tr class='shaded'>
+      <%- else -%>
+        <tr>
+      <%- end -%>
+      <td><%= draftpick.overallpick %></td>
+      <td>
+        <%= inline_svg_tag(draftpick.team.logo, size: "25px*25px") -%>
+        <%= link_to(draftpick.team.name, draft_team_path(draftpick.team)) %>
+        <%- if draftpick.traded -%>
+          <a name="traded" title="Traded from <%= draftpick.original_team.name %>">#</a>
+        <%- end -%>
+      </td>
+      <td>
+        SP: <%= player_count_display(draftpick.team.draft_players.byposition('SP').count,8).html_safe %>
+        RP: <%= player_count_display(draftpick.team.draft_players.byposition('RP').count,8).html_safe %>
+        C: <%= player_count_display(draftpick.team.draft_players.byposition('C').count,3).html_safe %>
+      </td>
+      <td>
+        <strong><%= draftpick.team.draft_picks.not_picked.count %></strong>
+      </td>
+      </tr>
+    <%- end -%>
+    </tbody>
+</table>

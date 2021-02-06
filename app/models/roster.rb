@@ -4,9 +4,9 @@
 # see LICENSE file
 
 class Roster < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
-  belongs_to :team
+  belongs_to :team, optional: true
   belongs_to :player
   has_one :batting_stat
   has_one :pitching_stat
@@ -31,7 +31,7 @@ class Roster < ApplicationRecord
   scope :current, -> {where.not(status_code: STATUS_TRADED)}
 
 
-  PITCHING_POSITIONS = ['sp','cl','mr']
+  PITCHING_POSITIONS = ['sp','cl','mr','rp']
   ADJUSTMENT_SEASON = 1999
 
   # status_codes
@@ -180,16 +180,16 @@ class Roster < ApplicationRecord
       startswith = name.first
     else
       namefinder = self.idiotic_shorthand_name_translations(name.dup)
-      (lastname,startswith) = namefinder.split(',')
-      if(lastname.last =~ %r{[A-Z]})
-        startswith = lastname.last
-        lastname.chop!
+      (last_name,startswith) = namefinder.split(',')
+      if(last_name.last =~ %r{[A-Z]})
+        startswith = last_name.last
+        last_name.chop!
       else
         if !startswith.nil?
           startswith = self.idiotic_shorthand_startswith_translations(startswith)
         end
       end
-      nameparts = lastname.split("'")
+      nameparts = last_name.split("'")
       finder = nameparts.max_by(&:length)
       end_name = finder.downcase.split(' ').last
       player_finder = player_finder.where("end_name ILIKE ?","%#{end_name}%")

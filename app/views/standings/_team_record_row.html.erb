@@ -4,14 +4,14 @@
     <%= owner_icon(team_season) -%>
   </td>
   <td>
-  <%= inline_svg(team.logo, size: "25px*25px") -%>
+  <%= inline_svg_tag(team.logo, size: "25px*25px") -%>
   <%= link_to(team.name, team_path(team,season: record.season)) %>
       <%- if team_season.lcs_win? -%>
     <%= lcs_win_icon -%>
     <%- end -%>
     <%- if team_season.ws_win? -%>
     <%= ws_win_icon -%>
-    <%- end -%> 
+    <%- end -%>
   </td>
   <%- if record.nil? -%>
   <td colspan="17"><em>no records available</em></td>

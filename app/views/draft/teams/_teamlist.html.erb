@@ -1,0 +1,19 @@
+<table class="table table-bordered">
+  <tbody>
+    <%- teamlist.each do |team| -%>
+        <%- if(team.owner.nil? or team.owner != Owner.computer) -%>
+          <tr class='shaded'>
+        <%- else -%>
+          <tr>
+        <%- end -%>
+            <td><%= inline_svg_tag(team.logo, size: "25px*25px") -%><%= link_to(team.name, draft_team_path(team)) %></td>
+            <td><%= team.draft_players.count %> (<%= team.draft_batters.count %>/<%= team.draft_pitchers.count %>)</td>
+            <td>
+              <%- if !team.owner.nil? and team.owner != Owner.computer -%>
+                <%= team.owner.fullname %>
+              <%- end -%>
+            </td>
+        </tr>
+    <%- end -%>
+    </tbody>
+</table>

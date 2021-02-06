@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class TransactionLog < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :roster, optional: true
   belongs_to :team, optional: true

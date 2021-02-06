@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class TeamPitchingStat < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :team
 

@@ -1,0 +1,40 @@
+<table class="table table-bordered table-condensed">
+  <thead>
+    <tr>
+        <th>name</th>
+        <th>team</th>
+        <th>position</th>
+        <th>age</th>
+        <th>rankvalue</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <% for showplayer in playerlist %>
+      <%- if !showplayer.team.blank?
+          style = "class = 'teamed'"
+        elsif @currentowner.wanted_draft_players.include?(showplayer)
+          if(index =  @currentowner.wanted_draft_players.index(showplayer))
+            wanted = @currentowner.wanted_draft_players[index]
+            style = "style = 'background-color: ##{wanted.highlight}'"
+          else
+            style = "class = 'available'"
+          end
+        else
+          style = "class = 'available'"
+        end
+      -%>
+    	<tr <%= style.html_safe %>>
+		    <td><%= link_to("#{showplayer.fullname}", draft_player_url(showplayer)) %></td>
+			<% if (showplayer.team.nil?) %>
+				<td>N/A</td>
+			<% else %>
+      	<td><%= draft_team_link(showplayer.team) %></td>
+			<%- end -%>
+        <td><%= link_to(showplayer.position, :controller => 'players', :action => 'index', :position => showplayer.position.downcase) %></td>
+        <td><%= showplayer.age %></td>
+        <td><%= display_rankvalue(showplayer.rankvalue) %></td>
+      </tr>
+    <% end%>
+    </tbody>
+</table>

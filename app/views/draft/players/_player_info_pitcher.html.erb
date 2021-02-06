@@ -1,0 +1,32 @@
+    <table class="table">
+      <tbody>
+        <tr>
+          <td><strong>Age</strong></td>
+          <td><%= @player.statline.age %></td>
+        </tr>
+        <tr>
+          <td><strong>Throws</strong></td>
+          <td><%= @player.statline.throws %></td>
+        </tr>
+
+        <tr>
+          <td><strong>Injury Rating</strong></td>
+          <td><%= @player.statline.injury %></td>
+        </tr>
+
+        <%- if !@player.statline.sdur.blank? -%>
+          <tr>
+            <td><strong>Starter Durability</strong></td>
+            <td><%= @player.statline.sdur %></td>
+          </tr>
+        <%- end -%>
+
+        <%- if !@player.statline.rdur.blank? -%>
+          <tr>
+            <td><strong>Reliever Durability</strong></td>
+            <td><%= @player.statline.rdur %></td>
+          </tr>
+        <%- end -%>
+
+      </tbody>
+    </table>

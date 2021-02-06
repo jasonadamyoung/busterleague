@@ -5,7 +5,7 @@
 
 class Record < ApplicationRecord
   include ActiveModel::AttributeAssignment
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :team
   before_save :set_win_minus_losses

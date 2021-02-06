@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class TeamGame < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   belongs_to :game
   has_one :boxscore, :through => :game

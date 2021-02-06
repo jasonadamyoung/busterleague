@@ -17,6 +17,8 @@ class StatSheet < ApplicationRecord
     case returnfield
     when 'team'
       'team_string'
+    when 'p'
+      'position'
     when 'pos'
       'position'
     when 'b'

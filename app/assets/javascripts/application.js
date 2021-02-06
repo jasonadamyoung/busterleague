@@ -6,8 +6,10 @@
 //
 //= require jquery3
 //= require jquery_ujs
+//= require best_in_place
 //= require popper
 //= require bootstrap-sprockets
+//= require bootstrap-editable
 //= require jquery.jqplot
 //= require jqplot-plugins/jqplot.dateAxisRenderer
 //= require jqplot-plugins/jqplot.highlighter
@@ -16,4 +18,11 @@
 //= require jqplot-plugins/jqplot.categoryAxisRenderer
 //= require jqplot-plugins/jqplot.pointLabels
 //= require alerts
-//= require datatables
+//= require jquery-tablesorter
+//= require jquery.tokeninput
+//= require alerts
+//= require tables
+//= require jscolor
+//= require players
+//= require activate_editable
+//= require searchbox

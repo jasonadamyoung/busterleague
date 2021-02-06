@@ -1,0 +1,28 @@
+<%- if @position -%>
+  <% @page_title = DraftPlayer.positionlabel(@position) %>
+<%- else -%>
+ <% @page_title = "Players" %>
+<%- end -%>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <%= render(:partial => 'filter_bar') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div id="paginator_wrapper">
+    <%= paginate @playerlist %>
+    </div>
+
+    <% if @showtype == 'all' %>
+    	<%= render(:partial => 'showall', :locals => { :playerlist => @playerlist }) %>
+    <% elsif @showtype == 'pitchers' %>
+    	<%= render(:partial => 'showpitchers', :locals => { :playerlist => @playerlist }) %>
+    <% else %>
+    	<%= render(:partial => 'showbatters', :locals => { :playerlist => @playerlist }) %>
+    <% end %>
+  </div>
+</div>

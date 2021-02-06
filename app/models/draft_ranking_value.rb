@@ -41,19 +41,19 @@ class DraftRankingValue < ApplicationRecord
   end
 
   def create_or_update_rankings
-    Ranking.create_or_update_from_ranking_value(self)
+    DraftRanking.create_or_update_from_ranking_value(self)
     return true
   end
 
   def rankings_distribution(options = {})
     rankings_distribution_hash = {}
     normalization = options[:normalization] || NORMALIZED_SCALE
-    player_list = options[:player_list] || ((self.playertype == PITCHER) ? Pitcher.all : Batter.all )
+    player_list = options[:player_list] || ((self.playertype == PITCHER) ? DraftPitcher.all : DraftBatter.all )
 
     self.formula.each do |factor|
       column = factor[:column]
       importance = self.class.importance_factor(factor[:importance],options[:importance_factors])
-      stat = Stat.find_or_create(self.playertype,column)
+      stat = DraftStatDistribution.find_or_create(self.playertype,column)
 
       # go through and build up the rankings by player totaled for all the factors
       player_list.each do |player|
@@ -74,7 +74,7 @@ class DraftRankingValue < ApplicationRecord
         rankings_distribution_hash[player] = ((stat - median)/range)
       end
     elsif(normalization == NORMALIZED_AVERAGE)
-      total_importance = self.formula.map{|factor| RankingValue.importance_factor(factor[:importance],options[:importance_factors])}.sum
+      total_importance = self.formula.map{|factor| DraftRankingValue.importance_factor(factor[:importance],options[:importance_factors])}.sum
 
       rankings_distribution_hash.each do |player,stat|
         rankings_distribution_hash[player] = (stat / total_importance)
@@ -91,9 +91,6 @@ class DraftRankingValue < ApplicationRecord
     rankings_distribution_hash
   end
 
-
-
-
   def self.default
     where(:owner_id => Owner.computer.id).first
   end
@@ -107,8 +104,24 @@ class DraftRankingValue < ApplicationRecord
   end
 
   def self.rebuild
-    Stat.rebuild(all)
-    RankingValue.all.each do |rv|
+    DraftStatDistribution.rebuild
+
+    # defaults
+    if(!batting_default = self.batting.default)
+      self.create(label: 'avgwar(default)',
+                  playertype: BATTER,
+                  owner_id: Owner.computer_id,
+                  formula: [{column: 'war_br', importance: 1}, {column: 'war_fg', importance: 1}])
+    end
+
+    if(!pitching_default = self.pitching.default)
+      self.create(label: 'avgwar(default)',
+                  playertype: PITCHER,
+                  owner_id: Owner.computer_id,
+                  formula: [{column: 'war_br', importance: 1}, {column: 'war_fg', importance: 1}])
+    end
+
+    DraftRankingValue.all.each do |rv|
       rv.create_or_update_rankings
     end
   end
@@ -117,7 +130,7 @@ class DraftRankingValue < ApplicationRecord
     pitching_columns = DraftPitchingStatline.columns.map(&:name)
     batting_columns  = DraftBattingStatline.columns.map(&:name)
 
-    RankingValue.all.each do |rv|
+    DraftRankingValue.all.each do |rv|
       column_names = rv.formula.map{|hash| hash[:column]}
       if(rv.playertype == PITCHER)
         dump_values = column_names - pitching_columns

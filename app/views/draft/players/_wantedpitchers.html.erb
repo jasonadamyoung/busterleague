@@ -1,0 +1,56 @@
+<table class="table table-bordered table-condensed">
+<thead>
+    <tr>
+        <th>POS</th>
+        <th>NAME</th>
+        <th>TEAM</th>
+        <th>RANKVALUE</th>
+        <th>AGE</th>
+        <th>T</th>
+        <th>GS</th>
+        <th>Notes</th>
+        <th>Highlight</th>
+    </tr>
+</thead>
+<tbody>
+    <% playerlist.each do |pitcher| %>
+    <%- if !pitcher.team.blank?
+          style = "class = 'teamed'"
+        elsif @currentowner.wanted_draft_players.include?(pitcher)
+          if(index =  @currentowner.wanted_draft_players.index(pitcher))
+            wanted = @currentowner.wanted_draft_players[index]
+            style = ""
+          else
+            style = "class = 'available'"
+          end
+        else
+          style = "class = 'available'"
+        end
+    -%>
+  	<tr <%= style %> id='player_<%= pitcher.id %>'>
+            <td><%= pitcher.position %></td>
+            <td><%= link_to("#{pitcher.fullname}", draft_player_url(pitcher)) %></td>
+            <td><%= pitcher.team.nil? ? '' : pitcher.team.abbrev  %></td>
+            <td><%= display_rankvalue(pitcher.rankvalue) %></td>
+            <td><%= pitcher.statline.age %></td>
+            <td><%= pitcher.statline.throws %></td>
+            <td><%= pitcher.statline.gs %></td>
+			<td><%= best_in_place(pitcher, :notes, { :type => :textarea, :url => setnotes_player_path(:id => pitcher.id)})%></td>
+            <%- if !wanted.nil? -%>
+            <td>
+              <%= form_tag({:controller => "players", :action=> "sethighlight", :id => pitcher.id}) do -%>
+                <%= hidden_field_tag(:id,pitcher.id) %>
+                <%= hidden_field_tag('currenturi',Base64.encode64(request.fullpath)) -%>
+                <%= text_field_tag(:highlight, wanted.highlight, {:id => "highlight_#{pitcher.id}",:size => 7, class: 'jscolor input-small'}) %><%= submit_tag('change')%>
+              <%- end -%>
+              <script type="text/javascript">
+                new Control.ColorPicker('<%= "highlight_#{pitcher.id}" %>');
+              </script>
+            </td>
+            <%- else -%>
+            <td>&nbsp;</td>
+            <%- end -%>
+        </tr>
+    <% end %>
+  </tbody>
+</table>

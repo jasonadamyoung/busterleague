@@ -1,0 +1,70 @@
+
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<!-- Core Navigation -->
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Draft
+				</a>
+
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<%= nav_dropdown_item(draft_root_path,'Dashboard') %>
+					<%= nav_dropdown_item(draft_home_rounds_path,'Rounds') %>
+					<%= nav_dropdown_item(draft_teams_path,'Teams') %>
+				</div>
+			</li>
+
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Players
+				</a>
+
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<%= nav_dropdown_item(draft_position_players_path(position: 'all'),'All Players') %>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'allbatters'),'All Batters') %>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'allpitchers'),'All Pitchers') %>
+					<div class="dropdown-divider"></div>
+					<h6 class="dropdown-header">By position</h6>
+					<%- DraftPitcher::POSITIONS.each do |pos,label| -%>
+						<%= nav_dropdown_item(draft_position_players_path(position: pos),label) %>
+					<%- end -%>
+					<%- DraftBatter::POSITIONS.each do |pos,label| -%>
+						<%= nav_dropdown_item(draft_position_players_path(position: pos),label) %>
+					<%- end -%>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'of'),'All Outfielders') %>
+				</div>
+			</li>
+
+			<!-- Search Form -->
+			<%= form_tag(findplayer_draft_players_path, { :class => 'form-inline mly-2 mly-lg-0' }) do -%>
+				<%= text_field_tag(:q, params[:q], {:class => 'search-query form-control mr-2', placeholder: 'Find Player', autocomplete: 'off', 'aria-label': 'Find Player' }) -%>
+			<%- end -%>
+			</ul>
+
+		<ul class="navbar-nav navbar-right">
+			<%- if @currentowner -%>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<%= @currentowner.nickname -%>
+					</a>
+
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+						<%= team_nav_dropdown_item(@currentowner.teams.first) -%>
+						<div class="dropdown-divider"></div>
+						<%= nav_dropdown_item(draft_ranking_values_path,'Your Rankings') %>
+						<%= nav_dropdown_item(draft_stat_preferences_path,'Your Display Preferences') %>
+						<%= nav_dropdown_item(wanted_draft_players_path,'Wanted Players') %>
+						<div class="dropdown-divider"></div>
+						<%= nav_dropdown_item(logout_path,'Log Out') %>
+					</div>
+				</li>
+			<%- else -%>
+				<%= nav_item(login_path,'Log In') %>
+			<%- end -%>
+		</ul>
+
+	</div>

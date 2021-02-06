@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Player < ApplicationRecord
-  extend CleanupTools
+  include CleanupTools
 
   has_many :rosters
   has_many :teams, through: :rosters
@@ -13,15 +13,19 @@ class Player < ApplicationRecord
   has_many :game_batting_stats, through: :rosters
   has_many :game_pitching_stats, through: :rosters
   has_many :transaction_logs, through: :rosters
+  has_many :draft_statuses
 
   scope :check_names, ->{where(check_names: true)}
   scope :names_to_fix, ->{where(check_names: true).where(names_fixed: false)}
+
+  scope :pitchers, ->{where(player_type: PITCHER)}
+  scope :batters, ->{where(player_type: BATTER)}
 
   # types
   PITCHER = 1
   BATTER = 2
 
-  PITCHING_POSITIONS = ['sp','cl','mr']
+  PITCHING_POSITIONS = ['sp','cl','mr','rp']
   ADJUSTMENT_SEASON = 1999
   ADJUSTMENT_OFFSET = 43
 
@@ -138,6 +142,7 @@ class Player < ApplicationRecord
       player.set_names
       player.save!
     end
+    player
   end
 
   def self.create_or_update_for_season_from_dmbdata(season)

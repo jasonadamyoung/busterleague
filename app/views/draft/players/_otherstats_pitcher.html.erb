@@ -1,0 +1,10 @@
+<table class="table table-bordered ">
+	 <tbody>
+    <%- (DefinedStat.pitching_statlines.pluck(:name) - DraftStatDistribution.core(DraftStatDistribution::PITCHER) - ['age']).sort.each do |stat| -%>
+	    <tr>
+		    <td><%= stat %></td>
+		    <td><%= @player.statline.send(stat) %></td>
+	    </tr>
+	  <%- end -%>
+ </tbody>
+</table>

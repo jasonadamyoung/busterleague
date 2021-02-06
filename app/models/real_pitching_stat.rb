@@ -4,8 +4,8 @@
 # see LICENSE file
 
 class RealPitchingStat < ApplicationRecord
-  extend StatTools
-  extend CleanupTools
+  include RealStatTools
+  include CleanupTools
 
   belongs_to :roster, optional: true
   belongs_to :player, optional: true

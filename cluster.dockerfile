@@ -6,11 +6,14 @@ LABEL maintainer="jay@outfielding.net"
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 
 # make sure there's tz data
-RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick
+RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick dnsutils iputils-ping postgresql-client
 
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 RUN apt-get update && apt-get install -y nodejs
+
+# yarn setup
+RUN npm install -g yarn
 
 # db-to-sqlite setup
 RUN apt-get update && apt-get install python3-pip -y
