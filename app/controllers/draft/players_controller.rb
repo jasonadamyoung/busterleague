@@ -99,19 +99,19 @@ class Draft::PlayersController < Draft::BaseController
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
-      @playerlist = Pitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).includes(:statline).page(params[:page])
+      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).includes(:statline).page(params[:page])
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
-      @playerlist = Pitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("players.position = '#{@position}'").includes(:statline).page(params[:page])
+      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("players.position = '#{@position}'").includes(:statline).page(params[:page])
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
-      @playerlist = Batter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).includes(:statline).page(params[:page])
+      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).includes(:statline).page(params[:page])
     else
       @showtype = 'batters'
       @position = params[:position].downcase
-      @playerlist = Batter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).fieldergroup(@position).page(params[:page])
+      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).fieldergroup(@position).page(params[:page])
     end
 
   end
@@ -150,8 +150,8 @@ class Draft::PlayersController < Draft::BaseController
 
   def wanted
     if(@currentowner.wanteds.count > 0)
-      @batters = Batter.byrankingvalue_and_wantedowner(@brv,@currentowner)
-      @pitchers = Pitcher.byrankingvalue_and_wantedowner(@prv,@currentowner)
+      @batters = DraftBatter.byrankingvalue_and_wantedowner(@brv,@currentowner)
+      @pitchers = DraftPitcher.byrankingvalue_and_wantedowner(@prv,@currentowner)
 
     end
   end
@@ -176,7 +176,7 @@ class Draft::PlayersController < Draft::BaseController
       flash[:success] = 'Added to wanted players'
       SlackIt.post(message: "#{@currentowner.nickname} added a player to their wanted players list")
     end
-    return redirect_to(player_url(@player))
+    return redirect_to(draft_player_url(@player))
   end
 
   def removewant
@@ -196,7 +196,7 @@ class Draft::PlayersController < Draft::BaseController
     else
       # do nothing
     end
-    return redirect_to(player_url(@player))
+    return redirect_to(draft_player_url(@player))
   end
 
 end

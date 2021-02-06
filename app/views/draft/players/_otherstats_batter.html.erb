@@ -1,6 +1,6 @@
 <table class="table table-bordered ">
 	 <tbody>
-    <%- (DraftStatDistribution::BATTING_DIRECTIONS.keys - DraftStatDistribution.core(DraftStatDistribution::BATTER) - ['age']).sort.each do |stat| -%>
+    <%- (DefinedStat.batting_statlines.pluck(:name) - DraftStatDistribution.core(DraftStatDistribution::BATTER) - ['age']).sort.each do |stat| -%>
 	    <tr>
 		    <td><%= stat %></td>
 		    <td><%= @player.statline.send(stat) %></td>

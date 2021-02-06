@@ -20,8 +20,8 @@
         <td><%= @player.statline.send(stat) %></td>
       <%- end -%>
     <%- end -%>
-    <%- DraftBattingStatline::RATINGFIELDS.each do |pos,field| -%>
-      <td><%= position_check(@player,field) %></td>
+    <%- DraftBattingStatline::RATINGFIELDS.each do |pos,rating_field| -%>
+      <td><%= position_check(@player,rating_field) %></td>
     <%- end -%>
   </tr>
   </tbody>

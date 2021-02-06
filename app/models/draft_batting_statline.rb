@@ -9,14 +9,14 @@ class DraftBattingStatline < ApplicationRecord
   has_one :draft_batter, :foreign_key => 'statline_id'
 
   RATINGFIELDS = {
-    'c' => 'c',
-    '1b' => 'first',
-    '2b' => 'second',
-    '3b' => 'third',
-    'ss' => 'ss',
-    'cf' => 'cf',
-    'lf' => 'lf',
-    'rf' => 'rf'
+    'c' => 'pos_c',
+    '1b' => 'pos_1b',
+    '2b' => 'pos_2b',
+    '3b' => 'pos_3b',
+    'ss' => 'pos_ss',
+    'cf' => 'pos_cf',
+    'lf' => 'pos_lf',
+    'rf' => 'pos_rf'
   }
 
   scope :fieldergroup, lambda {|position|
@@ -34,6 +34,11 @@ class DraftBattingStatline < ApplicationRecord
     RealBattingStat.for_season(season).each do |rbs|
       self.create(rbs.attributes.reject{|key,value| ["id"].include?(key) })
     end
+  end
+
+
+  def throws
+    bats
   end
 
 end

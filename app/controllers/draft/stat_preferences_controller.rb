@@ -9,9 +9,9 @@ class Draft::StatPreferencesController < Draft::BaseController
 
   def search
     if(!params[:playertype].blank? and params[:playertype].to_i == DraftStatPreference::PITCHER)
-      @statattributes = Stat::PITCHING_DIRECTIONS.keys.select{|attribute| attribute =~ %r{#{Regexp.escape(params[:q])}}}
+      @statattributes = DefinedStat.pitching_statlines.pluck(:name).select{|attribute| attribute =~ %r{#{Regexp.escape(params[:q])}}}
     else
-      @statattributes = Stat::BATTING_DIRECTIONS.keys.select{|attribute| attribute =~ %r{#{Regexp.escape(params[:q])}}}
+      @statattributes = DefinedStat.batting_statlines.pluck(:name).select{|attribute| attribute =~ %r{#{Regexp.escape(params[:q])}}}
     end
 
     token_hash = @statattributes.collect{|attribute| {id: attribute, name: attribute}}

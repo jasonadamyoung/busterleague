@@ -77,21 +77,12 @@ module DraftHelper
      time.strftime("%B %e, %Y, %l:%M %p")
   end
 
-  def position_check(fielder,position)
-    case position
-    when 'first'
-      checkpos = '1b'
-    when 'second'
-      checkpos = '2b'
-    when 'third'
-      checkpos = '3b'
+  def position_check(fielder,rating_field)
+
+    if(DraftBattingStatline::RATINGFIELDS[fielder.position] == rating_field)
+      raw("<strong>#{fielder.statline.send(rating_field)}</strong>")
     else
-      checkpos = position
-    end
-    if(fielder.position == checkpos)
-      raw("<strong>#{fielder.statline.send(position)}</strong>")
-    else
-      fielder.statline.send(position)
+      fielder.statline.send(rating_field)
     end
   end
 
@@ -201,7 +192,7 @@ module DraftHelper
   def player_id_link(player_id)
     player = DraftPlayer.where(id: player_id).first
     if(player)
-      link_to("#{player.fullname}", player_url(player), :class => 'label label-info').html_safe
+      link_to("#{player.fullname}", draft_player_url(player), :class => 'label label-info').html_safe
     end
   end
 

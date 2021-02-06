@@ -11,9 +11,9 @@
     <% pickslist.each do |draftpick| %>
         <tr>
       <td><%= draftpick.overallpick %></td>
-      <%- if !draftpick.player.nil? -%>
-        <td><%= link_to("#{draftpick.player.fullname}", player_url(draftpick.player)) %></td>
-        <td><%= draftpick.player.position.downcase %></td>
+      <%- if !draftpick.draft_player.nil? -%>
+        <td><%= link_to("#{draftpick.draft_player.fullname}", draft_player_url(draftpick.draft_player)) %></td>
+        <td><%= draftpick.draft_player.position.downcase %></td>
       <%- else -%>
         <td>&nbsp;</td>
         <td>&nbsp;</td>

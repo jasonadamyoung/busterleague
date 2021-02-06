@@ -7,7 +7,7 @@
         <%- @teams.each do |team| -%>
           <li class="nav-item">
             <a class="nav-link active" href="#<%= team.abbrev -%>">
-            <span><%= inline_svg(team.logo, size: "25px*25px") -%></span>
+            <span><%= inline_svg_tag(team.logo, size: "25px*25px") -%></span>
             <%= team.name -%>
             </a>
           </li>
@@ -22,14 +22,14 @@
     <div id="<%= team.abbrev -%>"></div>
     <div class="page-header" id="overview">
       <h2>
-        <%=  link_to(inline_svg(team.logo, size: "200px*200px"),team_path(team, season: @season))  -%>
+        <%=  link_to(inline_svg_tag(team.logo, size: "200px*200px"),team_path(team, season: @season))  -%>
         <%= "#{team.name} - #{@season} Playing Time Report" %>
         <%- gamescount = team.records.for_season(@season).first.gamescount -%>
         <small class="text-muted">Total Games: <%= gamescount -%> | Remaining Games: <%= 162 - gamescount -%></small>
       </h2>
     </div>
 
-      
+
     <div class="page-header">
       <h2>Batters</h2>
     </div>

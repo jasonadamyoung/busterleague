@@ -34,19 +34,19 @@
       end
   -%>
   <tr <%= style %> id='player_<%= fielder.id %>'>
-      <td><%= link_to("#{fielder.fullname}", player_url(fielder)) %></td>
+      <td><%= link_to("#{fielder.fullname}", draft_player_url(fielder)) %></td>
       <td><%= fielder.team.nil? ? '' : fielder.team.abbrev  %></td>
       <td><%= display_rankvalue(fielder.rankvalue) %></td>
       <td><%= fielder.statline.age %></td>
       <td><%= fielder.statline.pa %></td>
-      <td><%= position_check(fielder,'c') %></td>
-      <td><%= position_check(fielder,'first') %></td>
-      <td><%= position_check(fielder,'second') %></td>
-      <td><%= position_check(fielder,'third') %></td>
-      <td><%= position_check(fielder,'ss') %></td>
-      <td><%= position_check(fielder,'cf') %></td>
-      <td><%= position_check(fielder,'rf') %></td>
-      <td><%= position_check(fielder,'lf') %></td>
+      <td><%= position_check(fielder,'pos_c') %></td>
+      <td><%= position_check(fielder,'pos_1b') %></td>
+      <td><%= position_check(fielder,'pos_2b') %></td>
+      <td><%= position_check(fielder,'pos_3b') %></td>
+      <td><%= position_check(fielder,'pos_ss') %></td>
+      <td><%= position_check(fielder,'pos_cf') %></td>
+      <td><%= position_check(fielder,'pos_rf') %></td>
+      <td><%= position_check(fielder,'pos_lf') %></td>
 	  <td><%= best_in_place(fielder, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => fielder.id)})%></td>
       <%- if !wanted.nil? -%>
       <td>

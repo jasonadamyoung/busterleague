@@ -14,7 +14,7 @@
     <tbody>
       <% for showplayer in @playerlist %>
       <tr <%= 'class="teamed"' if !showplayer.team.nil? %>>
-        <td><%= link_to("#{showplayer.fullname}", player_url(showplayer)) %></td>
+        <td><%= link_to("#{showplayer.fullname}", draft_player_url(showplayer)) %></td>
         <% if (showplayer.team.nil?) %>
         <td>N/A</td>
         <% else %>
@@ -27,5 +27,5 @@
     </tbody>
   </table>
 <%- else -%>
-  <h1>No player was found that matches your search term</h1>  
+  <h1>No player was found that matches your search term</h1>
 <%- end -%>

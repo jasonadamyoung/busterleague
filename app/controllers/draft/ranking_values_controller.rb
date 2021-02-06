@@ -47,10 +47,10 @@ class Draft::RankingValuesController < Draft::BaseController
   def new
     if(!params[:playertype].blank? and params[:playertype].to_i == DraftRankingValue::BATTER)
       @playertype = DraftRankingValue::BATTER
-      @rankingattributes = Stat::BATTING_DIRECTIONS.keys.sort
+      @rankingattributes = DefinedStat.batting_statlines.pluck(:name).sort
     else
       @playertype = DraftRankingValue::PITCHER
-      @rankingattributes = Stat::PITCHING_DIRECTIONS.keys.sort
+      @rankingattributes = DefinedStat.pitching_statlines.pluck(:name).sort
     end
     @new_rankingvalue = DraftRankingValue.new
     respond_to do |format|
@@ -62,10 +62,10 @@ class Draft::RankingValuesController < Draft::BaseController
     @new_rankingvalue = DraftRankingValue.new(:owner => @currentowner, :playertype => params[:ranking_value][:playertype] )
     if(params[:ranking_value][:playertype] == DraftRankingValue::BATTER)
       @playertype = DraftRankingValue::BATTER
-      @rankingattributes = Stat::BATTING_DIRECTIONS.keys.sort
+      @rankingattributes = DefinedStat.batting_statlines.pluck(:name).sort
     else
       @playertype = DraftRankingValue::PITCHER
-      @rankingattributes = Stat::PITCHING_DIRECTIONS.keys.sort
+      @rankingattributes = DefinedStat.pitching_statlines.pluck(:name).sort
     end
 
     if(params[:ranking_value][:label].blank?)

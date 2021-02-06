@@ -1,4 +1,4 @@
-<h2>Pitchers (<%= Pitcher.byteam(@team).count %>)</h2>
+<h2>Pitchers (<%= DraftPitcher.byteam(@team).count %>)</h2>
 
 <table class="table table-bordered ">
   <thead>
@@ -17,7 +17,7 @@
     <% @pitchers.each do |pitcher| %>
         <tr>
           <td><%= pitcher.position %></td>
-          <td><%= link_to("#{pitcher.fullname}", player_url(pitcher)) %></td>
+          <td><%= link_to("#{pitcher.fullname}", draft_player_url(pitcher)) %></td>
           <td><%= display_rankvalue(pitcher.rankvalue) %></td>
           <td><%= pitcher.statline.age %></td>
           <td><%= pitcher.statline.throws %></td>

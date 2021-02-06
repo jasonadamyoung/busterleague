@@ -29,7 +29,7 @@
     -%>
   	<tr <%= style %> id='player_<%= pitcher.id %>'>
             <td><%= pitcher.position %></td>
-            <td><%= link_to("#{pitcher.fullname}", player_url(pitcher)) %></td>
+            <td><%= link_to("#{pitcher.fullname}", draft_player_url(pitcher)) %></td>
             <td><%= pitcher.team.nil? ? '' : pitcher.team.abbrev  %></td>
             <td><%= display_rankvalue(pitcher.rankvalue) %></td>
             <td><%= pitcher.statline.age %></td>

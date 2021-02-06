@@ -16,13 +16,13 @@ class DraftPitcher < DraftPlayer
   scope :relievers, lambda { where(:position => 'RP') }
 
   scope :byrankingvalue, lambda {|rv|
-    select("#{self.table_name}.*, draft_rankings.value as rankvalue").joins(:rankings).where("rankings.draft_ranking_value_id = #{rv.id}").order("rankvalue DESC")
+    select("#{self.table_name}.*, draft_rankings.value as rankvalue").joins(:draft_rankings).where("draft_rankings.draft_ranking_value_id = #{rv.id}").order("rankvalue DESC")
   }
 
   scope :byrankingvalue_and_wantedowner, lambda {|rv,owner|
     select("#{self.table_name}.*, draft_rankings.value as rankvalue, wanteds.notes as notes, wanteds.highlight as highlight")
-    .joins([:rankings,:wantedowners])
-    .where("rankings.draft_ranking_value_id = #{rv.id} and owners.id = #{owner.id}")
+    .joins([:draft_rankings,:wantedowners])
+    .where("draft_rankings.draft_ranking_value_id = #{rv.id} and owners.id = #{owner.id}")
     .order("rankvalue DESC")
   }
 

@@ -28,7 +28,7 @@
       end
   -%>
   <tr <%= style.html_safe %>>
-      <td><%= link_to("#{fielder.fullname}", player_url(fielder)) %></td>
+      <td><%= link_to("#{fielder.fullname}", draft_player_url(fielder)) %></td>
       <td><%= link_to(fielder.position, :controller => 'players', :action => 'index', :position => fielder.position.downcase) %></td>
       <td><%= team.blank? ? '' : team.abbrev  %></td>
       <td><%= display_rankvalue(fielder.rankvalue) %></td>
@@ -37,8 +37,8 @@
         <td><%= ops_display(fielder,'left')%></td>
         <%- elsif stat == 'rops' -%>
           <td><%= ops_display(fielder,'right')%></td>
-        <%- elsif DraftBattingStatline::RATINGFIELDS.values.include?(stat) -%>
-          <td><%= position_check(fielder,stat) %></td>
+        <%- elsif DraftBattingStatline::RATINGFIELDS.values.include?(rating_field) -%>
+          <td><%= position_check(fielder,rating_field) %></td>
         <%- else -%>
           <td><%= fielder.statline.send(stat) %></td>
         <%- end -%>

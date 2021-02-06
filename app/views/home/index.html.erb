@@ -11,7 +11,7 @@
     <%- ['East','West'].each do |division| -%>
       <%- (team,record) = @team_display[league][division][index] -%>
       <div class="card">
-        <%= inline_svg(team.logo, class: 'card-img-top', size: "300px*300px") -%>
+        <%= inline_svg_tag(team.logo, class: 'card-img-top', size: "300px*300px") -%>
         <div class="card-body">
           <h5 class="card-title text-center"><%= link_to(team.name, team_path(team,season: @season)) %></h5>
           <p class="card-text">

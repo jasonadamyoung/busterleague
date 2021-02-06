@@ -21,7 +21,7 @@
 <div class="row">
   <div class='col-md-4'>
     <h3> Player Information </h3>
-    <% if @player.class.name == 'Batter' %>
+    <% if @player.class.name == 'DraftBatter' %>
       <%= render(:partial => 'player_info_batter') %>
     <% else %>
       <%= render(:partial => 'player_info_pitcher') %>
@@ -33,7 +33,7 @@
 <div class="row">
   <div class="col-md-12">
     <h3> Core Stats </h3>
-    <% if @player.class.name == 'Batter' %>
+    <% if @player.class.name == 'DraftBatter' %>
       <%= render(:partial => 'corestats_batter') %>
     <% else %>
       <%= render(:partial => 'corestats_pitcher') %>
@@ -44,7 +44,7 @@
 <div class="row">
   <div class='col-md-4'>
     <h3> Additional Stats </h3>
-    <% if @player.class.name == 'Batter' %>
+    <% if @player.class.name == 'DraftBatter' %>
       <%= render(:partial => 'otherstats_batter') %>
     <% else %>
       <%= render(:partial => 'otherstats_pitcher') %>

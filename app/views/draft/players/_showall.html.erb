@@ -25,7 +25,7 @@
         end
       -%>
     	<tr <%= style.html_safe %>>
-		    <td><%= link_to("#{showplayer.fullname}", player_url(showplayer)) %></td>
+		    <td><%= link_to("#{showplayer.fullname}", draft_player_url(showplayer)) %></td>
 			<% if (showplayer.team.nil?) %>
 				<td>N/A</td>
 			<% else %>

@@ -11,8 +11,8 @@ class DraftPlayer < ApplicationRecord
   has_many :rosters
   has_many :draft_rankings
   has_one :draft_pick
-  has_many :wanteds
-  has_many :wantedowners, :through => :wanteds, :source => :owner
+  has_many :draft_wanteds
+  has_many :wantedowners, :through => :draft_wanteds, :source => :owner
 
   # list filters
   ALL_PLAYERS = 'all'

@@ -1,4 +1,4 @@
-<h2>Batters (<%= Batter.byteam(@team).count %>)</h2>
+<h2>Batters (<%= DraftBatter.byteam(@team).count %>)</h2>
 
 <table class="table table-bordered ">
 
@@ -20,7 +20,7 @@
     <% @batters.each do |fielder| %>
         <tr>
     	    <td><%= fielder.position %></td>
-          <td><%= link_to("#{fielder.fullname}", player_url(fielder)) %></td>
+          <td><%= link_to("#{fielder.fullname}", draft_player_url(fielder)) %></td>
           <td><%= display_rankvalue(fielder.rankvalue) %></td>
           <td><%= fielder.statline.age %></td>
           <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
@@ -32,8 +32,8 @@
               <td><%= fielder.statline.send(stat) %></td>
             <%- end -%>
           <%- end -%>
-          <%- DraftBattingStatline::RATINGFIELDS.each do |pos,field| -%>
-            <td><%= position_check(fielder,field) %></td>
+          <%- DraftBattingStatline::RATINGFIELDS.each do |pos,rating_field| -%>
+            <td><%= position_check(fielder,rating_field) %></td>
           <%- end -%>
 
     </tr>
