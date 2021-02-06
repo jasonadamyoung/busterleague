@@ -26,7 +26,7 @@
 
         <div class="control-group">
           <%= submit_tag('Create',:class=>'btn btn-primary') %>
-          <%= link_to('cancel', stat_preferences_path, :class=> 'btn') %>
+          <%= link_to('cancel', draft_stat_preferences_path, :class=> 'btn') %>
         </div>
       <% end %>
     </div>
@@ -35,7 +35,7 @@
       <div>
       <h4>Available attributes</h4>
       <div class="rankingvaluecloud">
-      <ul class="list-unstyled inline"> 
+      <ul class="list-unstyled inline">
           <%- @stat_attributes.each do |attributename| -%>
             <li><%= add_statdisplay_attribute_link(attributename) %></li>
           <%- end -%>
@@ -51,7 +51,7 @@
 
  <script class="code" type="text/javascript">
    $(function () {
-     $('#stat_preference_column_list').tokenInput('<%= search_stat_preferences_path(playertype: @playertype) %>', {
+     $('#stat_preference_column_list').tokenInput('<%= search_draft_stat_preferences_path(playertype: @playertype) %>', {
        crossDomain: false,
        prePopulate: $('#stat_preference_column_list').data('pre'),
        theme: 'facebook',

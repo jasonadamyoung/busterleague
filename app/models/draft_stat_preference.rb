@@ -83,7 +83,7 @@ class DraftStatPreference < ApplicationRecord
     pitching_columns = DraftPitchingStatline.columns.map(&:name)
     batting_columns  = DraftBattingStatline.columns.map(&:name)
 
-    StatPreference.all.each do |sp|
+    DraftStatPreference.all.each do |sp|
       if(sp.playertype == PITCHER)
         dump_values = sp.column_list - pitching_columns
       else

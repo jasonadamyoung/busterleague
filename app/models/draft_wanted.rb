@@ -4,6 +4,6 @@
 # see LICENSE file
 
 class DraftWanted < ApplicationRecord
-  belongs_to :player
+  belongs_to :draft_player
   belongs_to :owner
 end

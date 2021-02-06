@@ -5,7 +5,15 @@
 
 class Draft::BaseController < ApplicationController
 
+  before_action :set_draft_mode
   before_action :check_for_draft_season
+  before_action :check_for_ranking
+  before_action :check_for_draftstatus
+  before_action :check_for_stat_preference
+
+  def set_draft_mode
+    @draftmode = true
+  end
 
   def check_for_draft_season
     @allowed_draft_seasons = [2020] unless @allowed_draft_seasons
@@ -80,50 +88,50 @@ class Draft::BaseController < ApplicationController
   def check_for_stat_preference
     # bail if no currentowner
     if(!@currentowner)
-      @psp = StatPreference.pitching.default
-      @bsp = StatPreference.batting.default
+      @psp = DraftStatPreference.pitching.default
+      @bsp = DraftStatPreference.batting.default
       return
     end
 
     # pitching
-    if(params[:psp] and (sp = StatPreference.where(id: params[:psp].to_i).first))
+    if(params[:psp] and (sp = DraftStatPreference.where(id: params[:psp].to_i).first))
       if(sp.owner == @currentowner or sp.owner == Owner.computer)
         @psp = sp
         cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
       else
-        @psp = StatPreference.pitching.default
+        @psp = DraftStatPreference.pitching.default
       end
-    elsif(cookies[:psp] and (rv = StatPreference.where(id: cookies[:psp]).first))
+    elsif(cookies[:psp] and (rv = DraftStatPreference.where(id: cookies[:psp]).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @psp = rv
         cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
       else
-        @psp = StatPreference.pitching.default
+        @psp = DraftStatPreference.pitching.default
         cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
       end
     else
-      @psp = StatPreference.pitching.default
+      @psp = DraftStatPreference.pitching.default
       cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
     end
 
     # batting
-    if(params[:bsp] and (rv = StatPreference.where(id: params[:bsp].to_i).first))
+    if(params[:bsp] and (rv = DraftStatPreference.where(id: params[:bsp].to_i).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @bsp = rv
         cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
       else
-        @bsp = StatPreference.batting.default
+        @bsp = DraftStatPreference.batting.default
       end
-    elsif(cookies[:bsp] and (rv = StatPreference.where(id: cookies[:bsp]).first))
+    elsif(cookies[:bsp] and (rv = DraftStatPreference.where(id: cookies[:bsp]).first))
       if(rv.owner == @currentowner or rv.owner == Owner.computer)
         @bsp = rv
         cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
       else
-        @bsp = StatPreference.batting.default
+        @bsp = DraftStatPreference.batting.default
         cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
       end
     else
-      @bsp = StatPreference.batting.default
+      @bsp = DraftStatPreference.batting.default
       cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
     end
     return true
@@ -138,7 +146,7 @@ class Draft::BaseController < ApplicationController
     elsif(!cookies[:draftstatus].nil?)
       @draftstatus = cookies[:draftstatus]
     else
-      @draftstatus = Player::ME_ME_ME
+      @draftstatus = DraftPlayer::ME_ME_ME
     end
     return true
   end

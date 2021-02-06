@@ -22,9 +22,9 @@
   <% playerlist.each do |fielder| %>
   <%- if !fielder.team.blank?
         style = "class = 'teamed'"
-      elsif @currentowner.wantedplayers.include?(fielder)
-        if(index =  @currentowner.wantedplayers.index(fielder))
-          wanted = @currentowner.wantedplayers[index]
+      elsif @currentowner.wanted_draft_players.include?(fielder)
+        if(index =  @currentowner.wanted_draft_players.index(fielder))
+          wanted = @currentowner.wanted_draft_players[index]
           style = ""
         else
           style = "class = 'available'"
@@ -47,7 +47,7 @@
       <td><%= position_check(fielder,'cf') %></td>
       <td><%= position_check(fielder,'rf') %></td>
       <td><%= position_check(fielder,'lf') %></td>
-	  <td><%= best_in_place(fielder, :notes, { :type => :textarea, :url => setnotes_player_path(:id => fielder.id)})%></td>
+	  <td><%= best_in_place(fielder, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => fielder.id)})%></td>
       <%- if !wanted.nil? -%>
       <td>
         <%= form_tag({:controller => "players", :action=> "sethighlight", :id => fielder.id}) do -%>

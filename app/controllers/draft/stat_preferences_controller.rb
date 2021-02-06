@@ -8,7 +8,7 @@ class Draft::StatPreferencesController < Draft::BaseController
 
 
   def search
-    if(!params[:playertype].blank? and params[:playertype].to_i == StatPreference::PITCHER)
+    if(!params[:playertype].blank? and params[:playertype].to_i == DraftStatPreference::PITCHER)
       @statattributes = Stat::PITCHING_DIRECTIONS.keys.select{|attribute| attribute =~ %r{#{Regexp.escape(params[:q])}}}
     else
       @statattributes = Stat::BATTING_DIRECTIONS.keys.select{|attribute| attribute =~ %r{#{Regexp.escape(params[:q])}}}
@@ -24,9 +24,9 @@ class Draft::StatPreferencesController < Draft::BaseController
     # redirect here - or ship ourselves over to new...
     # if that was requested
     if(!params[:psp].nil? and params[:psp] == 'new')
-      return redirect_to(new_stat_preference_url(:playertype => StatPreference::PITCHER))
+      return redirect_to(new_stat_preference_url(:playertype => DraftStatPreference::PITCHER))
     elsif(!params[:bsp].nil? and params[:bsp] == 'new')
-      return redirect_to(new_stat_preference_url(:playertype => StatPreference::BATTER))
+      return redirect_to(new_stat_preference_url(:playertype => DraftStatPreference::BATTER))
     elsif(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else
@@ -35,7 +35,7 @@ class Draft::StatPreferencesController < Draft::BaseController
   end
 
   def index
-    @stat_preferences = @currentowner.stat_preferences
+    @stat_preferences = @currentowner.draft_stat_preferences
 
     if(!params[:clearthem].nil?)
       cookies[:psp] = nil
@@ -44,22 +44,22 @@ class Draft::StatPreferencesController < Draft::BaseController
   end
 
   def new
-    if(!params[:playertype].blank? and params[:playertype].to_i == StatPreference::PITCHER)
-      @playertype = StatPreference::PITCHER
+    if(!params[:playertype].blank? and params[:playertype].to_i == DraftStatPreference::PITCHER)
+      @playertype = DraftStatPreference::PITCHER
     else
-      @playertype = StatPreference::BATTER
+      @playertype = DraftStatPreference::BATTER
     end
-    @stat_attributes = StatPreference.available_display_stats(@playertype).sort
-    @stat_preference = StatPreference.new(column_list: StatPreference.core_display_stats(@playertype))
+    @stat_attributes = DraftStatPreference.available_display_stats(@playertype).sort
+    @stat_preference = DraftStatPreference.new(column_list: DraftStatPreference.core_display_stats(@playertype))
     respond_to do |format|
       format.html # new.html.erb
     end
   end
 
   def edit
-    @stat_preference = StatPreference.find(params[:id])
+    @stat_preference = DraftStatPreference.find(params[:id])
     @playertype = @stat_preference.playertype
-    @stat_attributes = StatPreference.available_display_stats(@playertype).sort
+    @stat_attributes = DraftStatPreference.available_display_stats(@playertype).sort
 
     respond_to do |format|
       format.html
@@ -68,11 +68,11 @@ class Draft::StatPreferencesController < Draft::BaseController
 
   def create
     params.permit!
-    @stat_preference = StatPreference.new(params[:stat_preference])
+    @stat_preference = DraftStatPreference.new(params[:stat_preference])
     @stat_preference.owner = @currentowner
 
     @playertype = @stat_preference.playertype
-    @stat_attributes = StatPreference.available_display_stats(@playertype).sort
+    @stat_attributes = DraftStatPreference.available_display_stats(@playertype).sort
 
     if(@stat_preference.label.blank?)
       flash[:error] = "Please provide a label for this display preference."
@@ -95,7 +95,7 @@ class Draft::StatPreferencesController < Draft::BaseController
 
 
   def update
-    @stat_preference = StatPreference.find(params[:id])
+    @stat_preference = DraftStatPreference.find(params[:id])
     if(@stat_preference.label.blank?)
       flash[:error] = "Please provide a label for this ranking"
       return render :action => "new"
@@ -116,7 +116,7 @@ class Draft::StatPreferencesController < Draft::BaseController
   end
 
   def destroy
-    @sp = StatPreference.find(params[:id])
+    @sp = DraftStatPreference.find(params[:id])
     if(@sp.owner == @currentowner)
       @sp.destroy
       SlackIt.post(message: "#{@currentowner.nickname} deleted a stat preference")

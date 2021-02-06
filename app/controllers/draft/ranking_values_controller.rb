@@ -36,9 +36,7 @@ class Draft::RankingValuesController < Draft::BaseController
   end
 
   def index
-    # @pitching_rankingvalues = @currentowner.ranking_values.pitching
-    # @batting_rankingvalues = @currentowner.ranking_values.batting
-    @rankingvalues = @currentowner.ranking_values
+    @rankingvalues = @currentowner.draft_ranking_values
 
     if(!params[:clearthem].nil?)
       cookies[:prv] = nil

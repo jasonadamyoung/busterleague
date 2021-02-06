@@ -179,19 +179,6 @@ class Draft::PlayersController < Draft::BaseController
     return redirect_to(player_url(@player))
   end
 
-  def set_owner_rank
-    @player = DraftPlayer.find(params[:id])
-    if(owner_rank = @player.owner_ranks.where(owner_id: @currentowner.id).first and !params[:value].blank?)
-      owner_rank.update_attribute(:overall, params[:value])
-      returninformation = {'msg' => 'OK!'}
-      return render :json => returninformation.to_json, :status => 200
-    else
-      returninformation = {'msg' => 'Value is blank'}
-      return render :json => returninformation.to_json, :status => 400
-    end
-
-  end
-
   def removewant
     begin
       @player = DraftPlayer.find(params[:id])
@@ -203,7 +190,7 @@ class Draft::PlayersController < Draft::BaseController
 
     case @wantaction
     when 'no'
-      @currentowner.wantedplayers.delete(@player)
+      @currentowner.wanted_draft_players.delete(@player)
       flash[:warning] = 'Removed from wanted players'
       SlackIt.post(message: "#{@currentowner.nickname} removed a player from their wanted players list")
     else

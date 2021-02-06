@@ -17,7 +17,7 @@
       <%- end -%>
       <td><%= draftpick.overallpick %></td>
       <td>
-        <%= link_to(draftpick.team.name, team_path(draftpick.team)) %>
+        <%= link_to(draftpick.team.name, draft_team_path(draftpick.team)) %>
         <%- if draftpick.traded -%>
           <a name="traded" title="Traded from <%= draftpick.original_team.name %>">#</a>
         <%- end -%>

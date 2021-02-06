@@ -16,9 +16,9 @@
   <%- team = fielder.team -%>
   <%- if !team.blank?
         style = "class = 'teamed'"
-      elsif @currentowner.wantedplayers.include?(fielder)
-        if(index =  @currentowner.wantedplayers.index(fielder))
-          wanted = @currentowner.wantedplayers[index]
+      elsif @currentowner.wanted_draft_players.include?(fielder)
+        if(index =  @currentowner.wanted_draft_players.index(fielder))
+          wanted = @currentowner.wanted_draft_players[index]
           style = "style = 'background: ##{wanted.highlight}'"
         else
           style = "class = 'available'"

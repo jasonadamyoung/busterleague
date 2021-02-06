@@ -76,7 +76,6 @@ Rails.application.routes.draw do
     resources :ranking_values, :only => [:index,:new,:create,:destroy] do
       collection do
         get :setrv
-        get :setor
       end
     end
 

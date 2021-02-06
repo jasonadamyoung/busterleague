@@ -9,7 +9,7 @@ class DraftRanking < ApplicationRecord
 
   def self.create_or_update_from_ranking_value(draft_ranking_value)
     rankings = draft_ranking_value.rankings_distribution
-    rankings.each do |draft_player,rankvalue|
+    draft_rankings.each do |draft_player,rankvalue|
       if(ranking = self.where(draft_player_id: draft_player.id).where(draft_ranking_value_id: draft_ranking_value.id).first)
         ranking.update_column(:value,rankvalue)
       else

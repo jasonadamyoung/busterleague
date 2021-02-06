@@ -13,9 +13,9 @@
     <% for showplayer in playerlist %>
       <%- if !showplayer.team.blank?
           style = "class = 'teamed'"
-        elsif @currentowner.wantedplayers.include?(showplayer)
-          if(index =  @currentowner.wantedplayers.index(showplayer))
-            wanted = @currentowner.wantedplayers[index]
+        elsif @currentowner.wanted_draft_players.include?(showplayer)
+          if(index =  @currentowner.wanted_draft_players.index(showplayer))
+            wanted = @currentowner.wanted_draft_players[index]
             style = "style = 'background-color: ##{wanted.highlight}'"
           else
             style = "class = 'available'"

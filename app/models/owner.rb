@@ -9,10 +9,10 @@ class Owner < ApplicationRecord
   has_many :teams
   has_many :players, :through => :teams
   has_many :draft_picks, :through => :teams
-  has_many :ranking_values
-  has_many :stat_preferences
-  has_many :wanteds
-  has_many :wantedplayers,-> { select("wanteds.highlight as highlight, players.*") }, :through => :wanteds, :source => :player
+  has_many :draft_ranking_values
+  has_many :draft_stat_preferences
+  has_many :draft_wanteds
+  has_many :wanted_draft_players,-> { select("draft_wanteds.highlight as highlight, draft_players.*") }, :through => :draft_wanteds, :source => :draft_player
   belongs_to :primary_owner, :class_name => 'Owner'
 
 

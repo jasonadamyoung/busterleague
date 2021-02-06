@@ -5,9 +5,6 @@
         <th>POS</th>
         <th>TEAM</th>
         <th>RANKVALUE</th>
-        <%- if @owner_rank -%>
-        <th>OWNER RANK</th>
-        <%- end -%>
         <%- @psp.column_list.each do |stat| %>
           <th><%= stat.upcase %></th>
         <%- end -%>
@@ -18,9 +15,9 @@
     <% playerlist.each do |pitcher| %>
     <%- if !pitcher.team.blank?
           style = "class = 'teamed'"
-        elsif @currentowner.wantedplayers.include?(pitcher)
-          if(index =  @currentowner.wantedplayers.index(pitcher))
-            wanted = @currentowner.wantedplayers[index]
+        elsif @currentowner.wanted_draft_players.include?(pitcher)
+          if(index =  @currentowner.wanted_draft_players.index(pitcher))
+            wanted = @currentowner.wanted_draft_players[index]
             style = "style = 'background: ##{wanted.highlight}'"
           else
             style = "class = 'available'"

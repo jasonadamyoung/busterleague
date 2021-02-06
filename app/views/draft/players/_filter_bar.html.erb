@@ -5,10 +5,10 @@
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Filter: <%= draftstatus_label(@draftstatus) %> <b class="caret"></b></a>
     <ul class="dropdown-menu">
-      <%= draftstatus_nav_item(Player::ALL_PLAYERS) %>
-      <%= draftstatus_nav_item(Player::DRAFTED_PLAYERS) %>
-      <%= draftstatus_nav_item(Player::NOTDRAFTED_PLAYERS) %>
-      <%= draftstatus_nav_item(Player::ME_ME_ME) %>
+      <%= draftstatus_nav_item(DraftPlayer::ALL_PLAYERS) %>
+      <%= draftstatus_nav_item(DraftPlayer::DRAFTED_PLAYERS) %>
+      <%= draftstatus_nav_item(DraftPlayer::NOTDRAFTED_PLAYERS) %>
+      <%= draftstatus_nav_item(DraftPlayer::ME_ME_ME) %>
     </ul>
   </li>
   <%- end -%>
