@@ -20,7 +20,7 @@ class DraftPick < ApplicationRecord
     else
       currentpick = DraftPick.last.overallpick+1
     end
-    where(["overallpick BETWEEN #{currentpick} AND #{currentpick + limit - 1}"])
+    where(["overallpick BETWEEN #{currentpick} AND #{currentpick + limit - 1}"]).order(:overallpick)
   }
 
   scope :recent, lambda {|limit=5|
@@ -29,7 +29,7 @@ class DraftPick < ApplicationRecord
     else
       currentpick = DraftPick.last.overallpick+1
     end
-    where(["overallpick BETWEEN #{currentpick - limit} AND #{currentpick - 1}"])
+    where(["overallpick BETWEEN #{currentpick - limit} AND #{currentpick - 1}"]).order("overallpick DESC")
   }
 
   scope :picked, ->{where('draft_player_id <> ?',NOPICK)}

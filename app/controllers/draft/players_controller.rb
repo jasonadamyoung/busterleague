@@ -11,7 +11,7 @@ class Draft::PlayersController < Draft::BaseController
       @player = DraftPlayer.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       flash[:error] = 'Unable to find player.'
-      return redirect_to(root_url)
+      return redirect_to(draft_root_url)
     end
     @draftaction = params[:draftaction].nil? ? 'none' : params[:draftaction]
     @draftpick = params[:draftpick].nil? ? DraftPick::CURRENTPICK : params[:draftpick]
@@ -19,7 +19,7 @@ class Draft::PlayersController < Draft::BaseController
 
     case @draftaction
     when 'draft'
-      if(@player.draftstatus != Player::DRAFT_STATUS_NOTDRAFTED)
+      if(@player.draftstatus != DraftPlayer::DRAFT_STATUS_NOTDRAFTED)
         flash[:error] = "#{@player.fullname} is already drafted!"
       else
         @player.draftplayer(:draftpick => @draftpick)
@@ -27,7 +27,7 @@ class Draft::PlayersController < Draft::BaseController
         SlackIt.post(message: "#{@player.fullname} has been drafted")
       end
     when 'release'
-      if(@player.draftstatus != Player::DRAFT_STATUS_DRAFTED)
+      if(@player.draftstatus != DraftPlayer::DRAFT_STATUS_DRAFTED)
         flash[:error] = "#{@player.fullname} was not drafted!"
       else
         @player.returntodraft
@@ -38,7 +38,7 @@ class Draft::PlayersController < Draft::BaseController
       # do nothing
     end
 
-    return redirect_to(root_url)
+    return redirect_to(draft_root_url)
   end
 
   def setdraftstatus
@@ -48,7 +48,7 @@ class Draft::PlayersController < Draft::BaseController
     if(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else
-      return redirect_to(root_url)
+      return redirect_to(draft_root_url)
     end
   end
 
@@ -65,7 +65,7 @@ class Draft::PlayersController < Draft::BaseController
     if(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else
-      return redirect_to(root_url)
+      return redirect_to(draft_root_url)
     end
   end
 
@@ -84,7 +84,7 @@ class Draft::PlayersController < Draft::BaseController
         if(!params[:currenturi].nil?)
           return redirect_to(Base64.decode64(params[:currenturi]))
         else
-          return redirect_to(root_url)
+          return redirect_to(draft_root_url)
         end
       end
       format.json { respond_with_bip(@player) }
@@ -121,7 +121,7 @@ class Draft::PlayersController < Draft::BaseController
       @player = DraftPlayer.where(id: params[:id]).first
       if (@player.nil?)
         flash[:warning] = 'Player not found.'
-        return redirect_to(players_url)
+        return redirect_to(draft_players_url)
       else
 
         begin
@@ -144,7 +144,7 @@ class Draft::PlayersController < Draft::BaseController
         end
       end
     else
-      return redirect_to(players_url)
+      return redirect_to(draft_players_url)
     end
   end
 
@@ -184,7 +184,7 @@ class Draft::PlayersController < Draft::BaseController
       @player = DraftPlayer.find(params[:id])
     rescue ActiveRecord::RecordNotFound
       flash[:error] = 'Unable to find player.'
-      return redirect_to(root_url)
+      return redirect_to(draft_root_url)
     end
     @wantaction = params[:want].nil? ? 'none' : params[:want]
 

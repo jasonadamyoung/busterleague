@@ -30,7 +30,7 @@ class Draft::StatPreferencesController < Draft::BaseController
     elsif(!params[:currenturi].nil?)
       return redirect_to(Base64.decode64(params[:currenturi]))
     else
-      return redirect_to(root_url)
+      return redirect_to(draft_root_url)
     end
   end
 

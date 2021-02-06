@@ -36,7 +36,7 @@
       <%- if @currentowner.is_admin? and !Settings.draftcomplete -%>
       <td>
         <%- if !draftpick.draft_player.nil? %>
-          <%= link_to("Release", draft_player_path(:id => draftpick.draft_player.id, :draftaction => 'release'), {:method => :post, :class => 'btn btn-warning'}) %>
+          <%= link_to("Release", draft_draft_player_path(:id => draftpick.draft_player.id, :draftaction => 'release'), {:method => :post, :class => 'btn btn-warning'}) %>
         <%- else -%>
           &nbsp;
         <%- end -%>
