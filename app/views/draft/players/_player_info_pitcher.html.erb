@@ -5,19 +5,6 @@
           <td><%= @player.statline.age %></td>
         </tr>
         <tr>
-          <td><strong>Owner Rank</strong></td>
-          <td>
-            <a href="#" class="owner_rank"
-                        data-type="text"
-                        data-resource="put"
-                        data-name="owner_rank"
-                        data-url="/players/<%= @player.id -%>/set_owner_rank"
-                        data-original-title="Enter owner rank">
-              <%= display_owner_rankvalue(@player.owner_rank(@currentowner)) -%>
-            </a>
-          </td>
-        </tr>
-        <tr>
           <td><strong>Throws</strong></td>
           <td><%= @player.statline.throws %></td>
         </tr>

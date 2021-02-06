@@ -69,7 +69,6 @@ Rails.application.routes.draw do
         post :removewant
         post :wantplayer
         post :sethighlight
-        post :set_owner_rank
         put :setnotes
       end
     end

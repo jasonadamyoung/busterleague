@@ -30,26 +30,8 @@ class Draft::BaseController < ApplicationController
     if(!@currentowner)
       @prv = DraftRankingValue.pitching.default
       @brv = DraftRankingValue.batting.default
-      @owner_rank = false
       return
     end
-
-    # always set @owner_rank to false for now
-    @owner_rank = false
-
-    # check for owner rank cookie
-    # if(!params[:owner_rank].nil?)
-    #   @owner_rank = TRUE_VALUES.include?(params[:owner_rank])
-    #   logger.debug("params = #{params}")
-    #   logger.debug("owner_rank = #{@owner_rank}")
-    #   cookies[:owner_rank] = {:value => @owner_rank, :expires => 2.months.from_now}
-    # elsif(cookies[:owner_rank])
-    #   @owner_rank = TRUE_VALUES.include?(cookies[:owner_rank])
-    #   cookies[:owner_rank] = {:value => @owner_rank, :expires => 2.months.from_now}
-    # else
-    #   @owner_rank = false
-    #   cookies[:owner_rank] = {:value => @owner_rank, :expires => 2.months.from_now}
-    # end
 
     # pitching
     if(params[:prv] and (rv = DraftRankingValue.where(id: params[:prv].to_i).first))

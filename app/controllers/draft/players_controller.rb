@@ -95,23 +95,23 @@ class Draft::PlayersController < Draft::BaseController
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
-      @playerlist = DraftPlayer.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@brv,@prv).page(params[:page])
+      @playerlist = DraftPlayer.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv,@prv).page(params[:page])
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
-      @playerlist = Pitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@prv).includes(:statline).page(params[:page])
+      @playerlist = Pitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).includes(:statline).page(params[:page])
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
-      @playerlist = Pitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@prv).where("players.position = '#{@position}'").includes(:statline).page(params[:page])
+      @playerlist = Pitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("players.position = '#{@position}'").includes(:statline).page(params[:page])
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
-      @playerlist = Batter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@brv).includes(:statline).page(params[:page])
+      @playerlist = Batter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).includes(:statline).page(params[:page])
     else
       @showtype = 'batters'
       @position = params[:position].downcase
-      @playerlist = Batter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting({owner_rank: @owner_rank,owner: @currentowner},@brv).fieldergroup(@position).page(params[:page])
+      @playerlist = Batter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).fieldergroup(@position).page(params[:page])
     end
 
   end

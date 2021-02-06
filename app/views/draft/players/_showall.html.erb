@@ -6,9 +6,6 @@
         <th>position</th>
         <th>age</th>
         <th>rankvalue</th>
-        <%- if @owner_rank -%>
-          <th>owner rank</th>
-        <%- end -%>
     </tr>
   </thead>
   <tbody>
@@ -37,18 +34,6 @@
         <td><%= link_to(showplayer.position, :controller => 'players', :action => 'index', :position => showplayer.position.downcase) %></td>
         <td><%= showplayer.age %></td>
         <td><%= display_rankvalue(showplayer.rankvalue) %></td>
-      <%- if @owner_rank -%>
-        <td>
-          <a href="#" class="owner_rank"
-                      data-type="text"
-                      data-resource="put"
-                      data-name="owner_rank"
-                      data-url="/players/<%= showplayer.id -%>/set_owner_rank"
-                      data-original-title="Enter owner rank">
-            <%= display_owner_rankvalue(showplayer.owner_rankvalue) -%>
-          </a>
-        </td>
-      <%- end -%>
       </tr>
     <% end%>
     </tbody>
