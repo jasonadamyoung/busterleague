@@ -29,7 +29,7 @@
 			<% if (showplayer.team.nil?) %>
 				<td>N/A</td>
 			<% else %>
-      	<td><%= team_link(showplayer.team) %></td>
+      	<td><%= draft_team_link(showplayer.team) %></td>
 			<%- end -%>
         <td><%= link_to(showplayer.position, :controller => 'players', :action => 'index', :position => showplayer.position.downcase) %></td>
         <td><%= showplayer.age %></td>

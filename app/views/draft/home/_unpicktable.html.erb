@@ -17,6 +17,7 @@
       <%- end -%>
       <td><%= draftpick.overallpick %></td>
       <td>
+        <%= inline_svg_tag(draftpick.team.logo, size: "25px*25px") -%>
         <%= link_to(draftpick.team.name, draft_team_path(draftpick.team)) %>
         <%- if draftpick.traded -%>
           <a name="traded" title="Traded from <%= draftpick.original_team.name %>">#</a>

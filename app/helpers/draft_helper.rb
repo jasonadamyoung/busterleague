@@ -69,8 +69,12 @@ module DraftHelper
     if(player.team.nil?)
       'n/a'
     else
-      team_link(player.team)
+      draft_team_link(player.team)
     end
+  end
+
+  def draft_team_link(team)
+    link_to(team.name, draft_team_path(team)).html_safe
   end
 
   def humane_date(time)

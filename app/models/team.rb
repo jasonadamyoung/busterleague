@@ -27,6 +27,8 @@ class Team < ApplicationRecord
   has_many :draft_positions
   has_many :draft_picks
   has_many :draft_players
+  has_many :draft_pitchers
+  has_many :draft_batters
 
 
   scope :american, lambda { where(:league => 'American')}
