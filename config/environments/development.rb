@@ -75,4 +75,5 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   config.hosts << "busterleague.localdev"
+  config.web_console.allowed_ips = '172.0.0.0/8'
 end

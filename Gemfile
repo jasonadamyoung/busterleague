@@ -47,8 +47,8 @@ gem 'jquery-tablesorter'
 gem 'jquery-tokeninput-rails'
 
 # datatables
-gem 'ajax-datatables-rails'
-gem 'jquery-datatables'
+#gem 'ajax-datatables-rails'
+#gem 'jquery-datatables'
 
 # in place editing
 # gem "best_in_place"
