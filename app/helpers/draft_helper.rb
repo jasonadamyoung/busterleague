@@ -47,7 +47,7 @@ module DraftHelper
 
   def add_statdisplay_attribute_link(attributename)
     addhash = {'id' => attributename, 'name' => attributename}
-    link_to("#{attributename}",'#', :onclick => "$('#stat_preference_column_list').tokenInput('add',{id: \'#{attributename}\', name:\'#{attributename}\'})").html_safe
+    link_to("#{attributename}",'#', :onclick => "$('#draft_stat_preference_column_list').tokenInput('add',{id: \'#{attributename}\', name:\'#{attributename}\'})").html_safe
   end
 
   def playerwantlink(player,domcontainer,confirm=nil)

@@ -109,7 +109,7 @@ class Draft::RankingValuesController < Draft::BaseController
       @rv.destroy
       SlackIt.post(message: "#{@currentowner.nickname} deleted a ranking value")
     end
-    redirect_to(ranking_values_url)
+    redirect_to(draft_ranking_values_url)
   end
 
   private
