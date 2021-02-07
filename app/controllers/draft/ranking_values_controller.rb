@@ -59,8 +59,8 @@ class Draft::RankingValuesController < Draft::BaseController
   end
 
   def create
-    @new_rankingvalue = DraftRankingValue.new(:owner => @currentowner, :playertype => params[:ranking_value][:playertype] )
-    if(params[:ranking_value][:playertype] == DraftRankingValue::BATTER)
+    @new_rankingvalue = DraftRankingValue.new(:owner => @currentowner, :playertype => params[:draft_ranking_value][:playertype] )
+    if(params[:draft_ranking_value][:playertype] == DraftRankingValue::BATTER)
       @playertype = DraftRankingValue::BATTER
       @rankingattributes = DefinedStat.batting_statlines.pluck(:name).sort
     else
@@ -68,11 +68,11 @@ class Draft::RankingValuesController < Draft::BaseController
       @rankingattributes = DefinedStat.pitching_statlines.pluck(:name).sort
     end
 
-    if(params[:ranking_value][:label].blank?)
+    if(params[:draft_ranking_value][:label].blank?)
       flash[:error] = "Please provide a label for this ranking"
       return render :action => "new"
     else
-      @new_rankingvalue.label = params[:ranking_value][:label]
+      @new_rankingvalue.label = params[:draft_ranking_value][:label]
     end
 
     if(params[:attributes].blank?)
@@ -88,7 +88,7 @@ class Draft::RankingValuesController < Draft::BaseController
       formula << {:column => attribute, :importance => importance}
     end
 
-    if(rv = DraftRankingValue.where(:playertype => params[:ranking_value][:playertype]).where(:label => params[:ranking_value][:label]).where(:owner_id => @currentowner.id).first)
+    if(rv = DraftRankingValue.where(:playertype => params[:draft_ranking_value][:playertype]).where(:label => params[:draft_ranking_value][:label]).where(:owner_id => @currentowner.id).first)
       # already have one - let's overwrite
       rv.update_attribute(:formula, formula)
       rv.create_or_update_rankings

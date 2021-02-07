@@ -57,7 +57,7 @@ module DraftHelper
       titleattribute = 'Remove this player from the list of your wanted players'
       htmloptions = {:method => :post, :title => titleattribute, :class=> 'btn btn-primary btn-small'}
       htmloptions.merge!({:confirm => confirm}) if(!confirm.nil?)
-      return link_to(linklabel,removewant_player_path(id: player.id, domcontainer: domcontainer, want: wantaction),htmloptions).html_safe
+      return link_to(linklabel,removewant_draft_player_path(id: player.id, domcontainer: domcontainer, want: wantaction),htmloptions).html_safe
     elsif(player.teamed?)
       return ''
     else
