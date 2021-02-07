@@ -11,15 +11,17 @@
   </head>
   <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-      <%- if @draftmode -%>
+  <%- if @draftmode -%>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <%= link_to("Busterdraft",draft_root_path,:class=>'navbar-brand mb-0 h1')%>
         <%= render(:partial => 'shared/draftnav') %>
-      <%- else -%>
-        <%= link_to("Busterleague",home_path,:class=>'navbar-brand mb-0 h1')%>
-        <%= render(:partial => 'shared/navbar') %>
-      <%- end -%>
     </nav>
+ <%- else -%>
+   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <%= link_to("Busterleague",home_path,:class=>'navbar-brand mb-0 h1')%>
+      <%= render(:partial => 'shared/navbar') %>
+   </nav>
+ <%- end -%>
 
     <div class="container-fluid">
       <div id="flash">
