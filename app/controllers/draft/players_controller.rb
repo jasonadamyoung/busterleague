@@ -56,7 +56,7 @@ class Draft::PlayersController < Draft::BaseController
   def sethighlight
     @player = DraftPlayer.where(id: params[:id]).first
     if(@player)
-      @wanted = @currentowner.wanteds.where(draft_player_id: @player.id).first
+      @wanted = @currentowner.draft_wanteds.where(draft_player_id: @player.id).first
       if(@wanted)
         @wanted.update_attribute(:highlight,params[:highlight])
       end
@@ -72,9 +72,9 @@ class Draft::PlayersController < Draft::BaseController
   def setnotes
     @player = DraftPlayer.where(id: params[:id]).first
     if(@player)
-      @wanted = @currentowner.wanteds.where(draft_player_id: @player.id).first
+      @wanted = @currentowner.draft_wanteds.where(draft_player_id: @player.id).first
       if(@wanted)
-        notes = (@player.class == Pitcher) ? params[:pitcher][:notes] : params[:batter][:notes]
+        notes = (@player.class == DraftPitcher) ? params[:draft_pitcher][:notes] : params[:draft_batter][:notes]
         @wanted.update_attribute(:notes,notes)
       end
     end
@@ -149,7 +149,7 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def wanted
-    if(@currentowner.wanteds.count > 0)
+    if(@currentowner.draft_wanteds.count > 0)
       @batters = DraftBatter.byrankingvalue_and_wantedowner(@brv,@currentowner)
       @pitchers = DraftPitcher.byrankingvalue_and_wantedowner(@prv,@currentowner)
 
@@ -172,7 +172,7 @@ class Draft::PlayersController < Draft::BaseController
       flash[:warning] = 'Player not found.'
     else
       @attributes = @player.statline.attributes.sort
-      Wanted.create(:player => @player, :owner => @currentowner, :notes => params[:notes], :highlight => params[:highlight])
+      DraftWanted.create(:draft_player => @player, :owner => @currentowner, :notes => params[:notes], :highlight => params[:highlight])
       flash[:success] = 'Added to wanted players'
       SlackIt.post(message: "#{@currentowner.nickname} added a player to their wanted players list")
     end

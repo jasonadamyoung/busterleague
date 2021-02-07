@@ -43,7 +43,4 @@ module ApplicationHelper
     nav_dropdown_item(path,team.name)
   end
 
-
-
-
 end

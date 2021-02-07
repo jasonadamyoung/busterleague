@@ -68,7 +68,7 @@ class Draft::StatPreferencesController < Draft::BaseController
 
   def create
     params.permit!
-    @stat_preference = DraftStatPreference.new(params[:stat_preference])
+    @stat_preference = DraftStatPreference.new(params[:draft_stat_preference])
     @stat_preference.owner = @currentowner
 
     @playertype = @stat_preference.playertype
@@ -96,6 +96,8 @@ class Draft::StatPreferencesController < Draft::BaseController
 
   def update
     @stat_preference = DraftStatPreference.find(params[:id])
+
+    @stat_preference.assign_attributes(draft_stat_preference_params)
     if(@stat_preference.label.blank?)
       flash[:error] = "Please provide a label for this ranking"
       return render :action => "new"
@@ -107,11 +109,11 @@ class Draft::StatPreferencesController < Draft::BaseController
     end
 
     if(@stat_preference.save)
-      flash[:notice] = 'Ranking value was successfully created.'
+      flash[:notice] = 'State Preference value was successfully updated.'
       SlackIt.post(message: "#{@currentowner.nickname} updated a stat preference")
       return redirect_to :action => "index"
     else
-      return render :action => "new"
+      return render :action => "edit"
     end
   end
 
@@ -121,13 +123,13 @@ class Draft::StatPreferencesController < Draft::BaseController
       @sp.destroy
       SlackIt.post(message: "#{@currentowner.nickname} deleted a stat preference")
     end
-    redirect_to(stat_preferences_url)
+    redirect_to(draft_stat_preferences_url)
   end
 
   private
 
-  def stat_preference_params
-    params.permit!
+  def draft_stat_preference_params
+    params[:draft_stat_preference].permit!
   end
 
 end

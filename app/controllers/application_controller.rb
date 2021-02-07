@@ -5,7 +5,6 @@
 
 class ApplicationController < ActionController::Base
   include AuthenticationSystem
-  has_mobile_fu false
 
   before_action :check_for_season
   before_action :signin_optional

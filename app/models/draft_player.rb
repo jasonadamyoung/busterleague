@@ -224,7 +224,7 @@ class DraftPlayer < ApplicationRecord
 
   def scaled_stats_by_rankingvalue(ranking_value)
     stats = {}
-    playertype = (self.class == Pitcher) ? Stat::PITCHER : Stat::BATTER
+    playertype = (self.class == DraftPitcher) ? Stat::PITCHER : Stat::BATTER
     ranking_value.formula.each do |factor|
       column = factor[:column]
       stat = DraftStatDistribution.find_or_create(playertype,column)

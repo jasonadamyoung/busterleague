@@ -53,7 +53,7 @@
 					</a>
 
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-						<%= team_nav_dropdown_item(@currentowner.teams.first) -%>
+						<%= draft_team_nav_dropdown_item(@currentowner.teams.first) -%>
 						<div class="dropdown-divider"></div>
 						<%= nav_dropdown_item(draft_ranking_values_path,'Your Rankings') %>
 						<%= nav_dropdown_item(draft_stat_preferences_path,'Your Display Preferences') %>

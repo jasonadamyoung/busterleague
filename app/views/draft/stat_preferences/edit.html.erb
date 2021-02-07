@@ -1,4 +1,4 @@
-<%- @page_title = "Edit  #{StatPreference.playertype_to_s(@playertype)} Display Preference" -%>
+<%- @page_title = "Edit  #{DraftStatPreference.playertype_to_s(@playertype)} Display Preference" -%>
 
 
   <div class="row">
@@ -25,7 +25,7 @@
 
 
         <div class="control-group">
-          <%= submit_tag('Create',:class=>'btn btn-primary') %>
+          <%= submit_tag('Edit',:class=>'btn btn-primary') %>
           <%= link_to('cancel', draft_stat_preferences_path, :class=> 'btn') %>
         </div>
       <% end %>
@@ -51,9 +51,9 @@
 
  <script class="code" type="text/javascript">
    $(function () {
-     $('#stat_preference_column_list').tokenInput('<%= search_draft_stat_preferences_path(playertype: @playertype) %>', {
+     $('#draft_stat_preference_column_list').tokenInput('<%= search_draft_stat_preferences_path(playertype: @playertype) %>', {
        crossDomain: false,
-       prePopulate: $('#stat_preference_column_list').data('pre'),
+       prePopulate: $('#draft_stat_preference_column_list').data('pre'),
        theme: 'facebook',
        preventDuplicates: true
      });
