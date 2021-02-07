@@ -58,9 +58,6 @@ gem "font-awesome-sass"
 # configuration
 gem 'config'
 
-# better uri parsing
-# gem 'addressable'
-
 # bootstrappy forms
 gem 'simple_form'
 
@@ -76,21 +73,8 @@ gem 'rollbar'
 # background jobs
 gem 'sidekiq'
 
-# mobile device detection
-gem 'mobile-fu'
-
-# terse logging
-gem 'lograge'
-
-# caching
-#gem 'redis-rails'
-
 # slack integration
-#gem "slack-ruby-client"
 gem "slack-notifier"
-
-# scripts
-gem 'thor'
 
 # uploads
 gem 'mimemagic'
@@ -135,12 +119,4 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-end
-
-group :test do
-  # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '>= 2.15'
-  gem 'selenium-webdriver'
-  # Easy installation and use of chromedriver to run system tests with Chrome
-  gem 'chromedriver-helper'
 end
