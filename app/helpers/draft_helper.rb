@@ -81,8 +81,13 @@ module DraftHelper
      time.strftime("%B %e, %Y, %l:%M %p")
   end
 
-  def position_check(fielder,rating_field)
+  def position_to_rating_field(position)
+    if(position != 'dh')
+      DraftBattingStatline::RATINGFIELDS[position]
+    end
+  end
 
+  def position_check(fielder,rating_field)
     if(DraftBattingStatline::RATINGFIELDS[fielder.position] == rating_field)
       raw("<strong>#{fielder.statline.send(rating_field)}</strong>")
     else
