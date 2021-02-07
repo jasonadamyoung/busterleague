@@ -5,7 +5,7 @@ class AddDmb2020DraftPicks < ActiveRecord::Migration[5.2]
     DraftPosition.create(team: Team.where(abbrev: 'DET').first, position: 1, season: @season)
     DraftPosition.create(team: Team.where(abbrev: 'PIT').first, position: 2, season: @season)
     DraftPosition.create(team: Team.where(abbrev: 'KC').first, position: 3, season: @season)
-    DraftPosition.create(team: Team.where(abbrev: 'MYM').first, position: 4, season: @season)
+    DraftPosition.create(team: Team.where(abbrev: 'NYM').first, position: 4, season: @season)
     DraftPosition.create(team: Team.where(abbrev: 'CHC').first, position: 5, season: @season)
     DraftPosition.create(team: Team.where(abbrev: 'STL').first, position: 6, season: @season)
     DraftPosition.create(team: Team.where(abbrev: 'CWS').first, position: 7, season: @season)

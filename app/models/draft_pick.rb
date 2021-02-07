@@ -4,6 +4,8 @@
 # see LICENSE file
 
 class DraftPick < ApplicationRecord
+  include CleanupTools
+
   belongs_to :team
   belongs_to :original_team, :class_name => 'Team', optional: true
   belongs_to :draft_player, optional: true
