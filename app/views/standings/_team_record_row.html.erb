@@ -1,35 +1,43 @@
 <%- team_season = record.team_season -%>
+<%- if team_season.nil? -%>
 <tr>
-  <td>
-    <%= owner_icon(team_season) -%>
-  </td>
-  <td>
-  <%= inline_svg_tag(team.logo, size: "25px*25px") -%>
-  <%= link_to(team.name, team_path(team,season: record.season)) %>
-      <%- if team_season.lcs_win? -%>
-    <%= lcs_win_icon -%>
-    <%- end -%>
-    <%- if team_season.ws_win? -%>
-    <%= ws_win_icon -%>
-    <%- end -%>
-  </td>
-  <%- if record.nil? -%>
-  <td colspan="17"><em>no records available</em></td>
-  <%- else -%>
-  <td><%= display_wl([record.wins,record.losses]) %></td>
-  <td><%= number_with_precision(record.win_pct.to_f,:precision => 3)%></td>
-  <td><%= display_gb(record.gb) %></td>
-  <td><%= display_wl(record.last_ten) %></td>
-  <td><%= record.streak %></td>
-  <td><%= record.rf %></td>
-  <td><%= record.ra %></td>
-  <td><%= number_with_precision(record.expected_pct,:precision => 3)%></td>
-  <td><%= display_wl(record.expected_wl) %></td>
-  <td><%= display_wl(record.home_wl) %></td>
-  <td><%= display_wl(record.road_wl) %></td>
-  <td><%= display_wl(record.winners_wl) %></td>
-  <td><%= display_wl(record.losers_wl) %></td>
-  <td><%= display_gb(record.league_gb) %></td>
-  <td><%= display_gb(record.overall_gb) %></td>
-  <%- end -%>
+<td>
+  <i class="fas fa-question-circle text-muted"></i>
+</td>
 </tr>
+<%- else -%>
+  <tr>
+    <td>
+      <%= owner_icon(team_season) -%>
+    </td>
+    <td>
+    <%= inline_svg_tag(team.logo, size: "25px*25px") -%>
+    <%= link_to(team.name, team_path(team,season: record.season)) %>
+        <%- if team_season.lcs_win? -%>
+      <%= lcs_win_icon -%>
+      <%- end -%>
+      <%- if team_season.ws_win? -%>
+      <%= ws_win_icon -%>
+      <%- end -%>
+    </td>
+    <%- if record.nil? -%>
+    <td colspan="17"><em>no records available</em></td>
+    <%- else -%>
+    <td><%= display_wl([record.wins,record.losses]) %></td>
+    <td><%= number_with_precision(record.win_pct.to_f,:precision => 3)%></td>
+    <td><%= display_gb(record.gb) %></td>
+    <td><%= display_wl(record.last_ten) %></td>
+    <td><%= record.streak %></td>
+    <td><%= record.rf %></td>
+    <td><%= record.ra %></td>
+    <td><%= number_with_precision(record.expected_pct,:precision => 3)%></td>
+    <td><%= display_wl(record.expected_wl) %></td>
+    <td><%= display_wl(record.home_wl) %></td>
+    <td><%= display_wl(record.road_wl) %></td>
+    <td><%= display_wl(record.winners_wl) %></td>
+    <td><%= display_wl(record.losers_wl) %></td>
+    <td><%= display_gb(record.league_gb) %></td>
+    <td><%= display_gb(record.overall_gb) %></td>
+    <%- end -%>
+  </tr>
+<%- end -%>
