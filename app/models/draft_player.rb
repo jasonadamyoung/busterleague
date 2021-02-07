@@ -47,16 +47,16 @@ class DraftPlayer < ApplicationRecord
   scope :draftstatus, lambda {|draftstatus,team|
     case draftstatus
     when DRAFTED_PLAYERS
-      where("team_id != 0")
+      where("#{self.table_name}.team_id != 0")
     when NOTDRAFTED_PLAYERS
-      where("team_id = 0")
+      where("#{self.table_name}.team_id = 0")
     when ALL_PLAYERS
-      where("team_id = 0 or team_id != 0")
+      where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id != 0")
     else
       if(team.blank?)
-        where("team_id = 0")
+        where("#{self.table_name}.team_id = 0")
       else
-        where("team_id = 0 or team_id = #{team.id}")
+        where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id = #{team.id}")
       end
     end
   }
@@ -116,10 +116,10 @@ class DraftPlayer < ApplicationRecord
     when 'of'
       'All Outfielders'
     else
-      if(Pitcher::POSITIONS[downcased])
-        Pitcher::POSITIONS[downcased]
-      elsif(Batter::POSITIONS[downcased])
-        Batter::POSITIONS[downcased]
+      if(DraftPitcher::POSITIONS[downcased])
+        DraftPitcher::POSITIONS[downcased]
+      elsif(DraftBatter::POSITIONS[downcased])
+        DraftBatter::POSITIONS[downcased]
       else
         'Unknown'
       end
@@ -224,7 +224,7 @@ class DraftPlayer < ApplicationRecord
 
   def scaled_stats_by_rankingvalue(ranking_value)
     stats = {}
-    playertype = (self.class == Pitcher) ? Stat::PITCHER : Stat::BATTER
+    playertype = (self.class == DraftPitcher) ? Stat::PITCHER : Stat::BATTER
     ranking_value.formula.each do |factor|
       column = factor[:column]
       stat = DraftStatDistribution.find_or_create(playertype,column)

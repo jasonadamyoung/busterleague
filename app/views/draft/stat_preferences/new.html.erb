@@ -51,9 +51,9 @@
 
  <script class="code" type="text/javascript">
    $(function () {
-     $('#stat_preference_column_list').tokenInput('<%= search_draft_stat_preferences_path(playertype: @playertype) %>', {
+     $('#draft_stat_preference_column_list').tokenInput('<%= search_draft_stat_preferences_path(playertype: @playertype) %>', {
        crossDomain: false,
-       prePopulate: $('#stat_preference_column_list').data('pre'),
+       prePopulate: $('#draft_stat_preference_column_list').data('pre'),
        theme: 'facebook',
        preventDuplicates: true
      });

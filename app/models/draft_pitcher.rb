@@ -20,7 +20,7 @@ class DraftPitcher < DraftPlayer
   }
 
   scope :byrankingvalue_and_wantedowner, lambda {|rv,owner|
-    select("#{self.table_name}.*, draft_rankings.value as rankvalue, wanteds.notes as notes, wanteds.highlight as highlight")
+    select("#{self.table_name}.*, draft_rankings.value as rankvalue,draft_wanteds.notes as notes,draft_wanteds.highlight as highlight")
     .joins([:draft_rankings,:wantedowners])
     .where("draft_rankings.draft_ranking_value_id = #{rv.id} and owners.id = #{owner.id}")
     .order("rankvalue DESC")

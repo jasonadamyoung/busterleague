@@ -30,7 +30,7 @@
         <td><%= sp.playertype_to_s %></td>
         <td class="stat_preference_index">
           <%- sp.column_list.each do |column_name| -%>
-            <span><a name="<%= column_name %>"><%= column_name %></a></span>
+            <span class="badge badge-info"><a name="<%= column_name %>"><%= column_name %></a></span>
           <%- end -%>
         </td>
         <td><%= link_to 'edit', edit_draft_stat_preference_path(sp) %></td>

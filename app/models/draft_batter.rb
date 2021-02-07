@@ -15,15 +15,18 @@ class DraftBatter < DraftPlayer
     'ss' => 'Shortstops',
     'cf' => 'Center Fielders',
     'lf' => 'Left Fielders',
-    'rf' => 'Right Fielders'
+    'rf' => 'Right Fielders',
+    'dh' => 'Designated Hitters'
   }
 
   scope :fieldergroup, lambda {|position|
-    ratingfield = DraftBattingStatline::RATINGFIELDS[position]
-    if(position == 'of')
-      conditionstring = "(players.position IN ('cf','lf','rf') or draft_batting_statlines.cf != '' or draft_batting_statlines.lf != '' or draft_batting_statlines.rf != '')"
+    if(position == 'dh')
+      conditionstring = "(draft_players.position = '#{position}')"
+    elsif(position == 'of')
+      conditionstring = "(draft_players.position IN ('cf','lf','rf') or draft_batting_statlines.pos_cf != '' or draft_batting_statlines.pos_lf != '' or draft_batting_statlines.pos_rf != '')"
     else
-      conditionstring = "(players.position = '#{position}' or draft_batting_statlines.#{ratingfield} != '')"
+      ratingfield = DraftBattingStatline::RATINGFIELDS[position]
+      conditionstring = "(draft_players.position = '#{position}' or draft_batting_statlines.#{ratingfield} != '')"
     end
     joins(:statline).where(conditionstring)
   }
@@ -33,7 +36,7 @@ class DraftBatter < DraftPlayer
   }
 
   scope :byrankingvalue_and_wantedowner, lambda {|rv,owner|
-    select("#{self.table_name}.*, draft_rankings.value as rankvalue, wanteds.notes as notes, wanteds.highlight as highlight")
+    select("#{self.table_name}.*, draft_rankings.value as rankvalue,draft_wanteds.notes as notes,draft_wanteds.highlight as highlight")
     .joins([:draft_rankings,:wantedowners])
     .where("draft_rankings.draft_ranking_value_id = #{rv.id} and owners.id = #{owner.id}")
     .order("rankvalue DESC")

@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class DraftPosition < ApplicationRecord
+  include CleanupTools
 
   belongs_to :team
 

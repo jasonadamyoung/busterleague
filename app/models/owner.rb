@@ -13,7 +13,7 @@ class Owner < ApplicationRecord
   has_many :draft_stat_preferences
   has_many :draft_wanteds
   has_many :wanted_draft_players,-> { select("draft_wanteds.highlight as highlight, draft_players.*") }, :through => :draft_wanteds, :source => :draft_player
-  belongs_to :primary_owner, :class_name => 'Owner'
+  belongs_to :primary_owner, :class_name => 'Owner', optional: true
 
 
   def fullname

@@ -47,7 +47,7 @@ module DraftHelper
 
   def add_statdisplay_attribute_link(attributename)
     addhash = {'id' => attributename, 'name' => attributename}
-    link_to("#{attributename}",'#', :onclick => "$('#stat_preference_column_list').tokenInput('add',{id: \'#{attributename}\', name:\'#{attributename}\'})").html_safe
+    link_to("#{attributename}",'#', :onclick => "$('#draft_stat_preference_column_list').tokenInput('add',{id: \'#{attributename}\', name:\'#{attributename}\'})").html_safe
   end
 
   def playerwantlink(player,domcontainer,confirm=nil)
@@ -57,7 +57,7 @@ module DraftHelper
       titleattribute = 'Remove this player from the list of your wanted players'
       htmloptions = {:method => :post, :title => titleattribute, :class=> 'btn btn-primary btn-small'}
       htmloptions.merge!({:confirm => confirm}) if(!confirm.nil?)
-      return link_to(linklabel,removewant_player_path(id: player.id, domcontainer: domcontainer, want: wantaction),htmloptions).html_safe
+      return link_to(linklabel,removewant_draft_player_path(id: player.id, domcontainer: domcontainer, want: wantaction),htmloptions).html_safe
     elsif(player.teamed?)
       return ''
     else
@@ -81,8 +81,13 @@ module DraftHelper
      time.strftime("%B %e, %Y, %l:%M %p")
   end
 
-  def position_check(fielder,rating_field)
+  def position_to_rating_field(position)
+    if(position != 'dh')
+      DraftBattingStatline::RATINGFIELDS[position]
+    end
+  end
 
+  def position_check(fielder,rating_field)
     if(DraftBattingStatline::RATINGFIELDS[fielder.position] == rating_field)
       raw("<strong>#{fielder.statline.send(rating_field)}</strong>")
     else
@@ -235,6 +240,12 @@ module DraftHelper
       label = stat_preference.label
     end
     link_to(label,setsp_draft_stat_preferences_path(get_params),class: 'dropdown-item').html_safe
+  end
+
+
+  def draft_team_nav_dropdown_item(team)
+    path = draft_team_path(team)
+    nav_dropdown_item(path,team.name)
   end
 
 
