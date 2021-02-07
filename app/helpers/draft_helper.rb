@@ -243,4 +243,10 @@ module DraftHelper
   end
 
 
+  def draft_team_nav_dropdown_item(team)
+    path = draft_team_path(team)
+    nav_dropdown_item(path,team.name)
+  end
+
+
 end
