@@ -20,10 +20,12 @@ class DraftBattingStatline < ApplicationRecord
   }
 
   scope :fieldergroup, lambda {|position|
-    ratingfield = RATINGFIELDS[position]
-    if(position == 'of')
+    if(position == 'dh')
+      conditionstring = "(position = '#{position}')"
+    elsif(position == 'of')
       conditionstring = "(position IN ('cf','lf','rf') or cf != '' or lf != '' or rf != '')"
     else
+      ratingfield = RATINGFIELDS[position]
       conditionstring = "(position = '#{position}' or #{ratingfield} != '')"
     end
     {:conditions => conditionstring}

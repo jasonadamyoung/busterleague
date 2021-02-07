@@ -37,7 +37,7 @@
         <td><%= ops_display(fielder,'left')%></td>
         <%- elsif stat == 'rops' -%>
           <td><%= ops_display(fielder,'right')%></td>
-        <%- elsif DraftBattingStatline::RATINGFIELDS.values.include?(rating_field) -%>
+        <%- elsif (DraftBattingStatline::RATINGFIELDS.values.include?(stat)) -%>
           <td><%= position_check(fielder,rating_field) %></td>
         <%- else -%>
           <td><%= fielder.statline.send(stat) %></td>
