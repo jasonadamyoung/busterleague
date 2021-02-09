@@ -4,7 +4,6 @@
 # see LICENSE file
 
 class Draft::TeamsController < Draft::BaseController
-    before_action :signin_required
 
     def index
       @teams = Team.all

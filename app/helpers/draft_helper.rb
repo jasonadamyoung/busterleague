@@ -248,5 +248,12 @@ module DraftHelper
     nav_dropdown_item(path,team.name)
   end
 
+  def show_owner_name_for_team(team)
+    if(@currentowner)
+      if !team.owner.nil? and team.owner != Owner.computer
+        team.owner.fullname
+      end
+    end
+  end
 
 end
