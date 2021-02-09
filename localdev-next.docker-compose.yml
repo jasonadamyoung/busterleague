@@ -1,0 +1,98 @@
+version: '3'
+networks:
+  private:
+  public:
+    external:
+      name: traefik_webgateway
+services:
+  busterleague-next:
+    container_name: busterleague-next
+    build:
+      context: .
+      dockerfile: localdev.dockerfile
+    environment:
+      - DATABASE_POOL_SIZE=5
+      - DATABASE_NAME=${PRIVATE_DB_NAME}
+      - DATABASE_USER=${PRIVATE_DB_USER}
+      - DATABASE_PASSWORD=${PRIVATE_DB_PASSWORD}
+      - DATABASE_HOST=busterleaguedb-next
+      - DATABASE_PORT=5432
+      - BUSTERLEAGUE__WEB_REPORTS_BASE_URL=http://busterleague.localdev/dmbweb/
+      - BUSTERLEAGUE__URLWRITER_HOST=busterleague.localdev
+      - BUSTERLEAGUE__EMAIL_BCC_ADDRESS=localdev@busterleague.org
+      - BUSTERLEAGUE__EMAIL_FROM_ADDRESS=localdev@busterleague.org
+      - BUSTERLEAGUE__EMAIL_FROM_NAME='BusterLeague LocalDev Mailer'
+      - BUSTERLEAGUE__DEFAULT_SLACK_CHANNEL=${PRIVATE_SLACK_CHANNEL}
+      - BUSTERLEAGUE__SLACK_WEBHOOK=${PRIVATE_SLACK_HOOK}
+      - BUSTERLEAGUE__ROLLBAR_TOKEN=none
+      - BUSTERLEAGUE__LOCATION=busterleague-dev
+      - BUSTERLEAGUE__REDIS_URL=redis://busterleagueredis-next:6379/0
+      - BUSTERLEAGUE__UPLOAD_HASH_KEY=${PRIVATE_HASH_KEY}
+      - SMTP_RELAY_HOST=busterleaguemail
+      - SMTP_PORT=1025
+    volumes:
+      - ./:/home/app/webapp
+      - ./localdev.volumes/dmbweb:/home/app/webapp/public/dmbweb
+      - ./localdev.volumes/dmbweb:/data/dmbweb
+      - ./localdev.volumes/dmbhistorical:/data/dmbhistorical
+      - ./localdev.volumes/uploads:/home/app/webapp/public/uploads
+      - ./localdev.volumes/explore:/home/app/webapp/public/explore
+      - ./localdev.volumes/explore:/data/explore
+      - next_rvm_gems:/usr/local/rvm/gems/ruby-2.6.6@webapp
+    labels:
+      - traefik.backend=busterleague
+      - traefik.docker.network=traefik_webgateway
+      - traefik.frontend.rule=Host:busterleague-next.localdev
+      - traefik.port=80
+    networks:
+      - private
+      - public
+    links:
+      - busterleaguedb-next
+    depends_on:
+      - busterleaguedb-next
+  busterleaguedb-next:
+    container_name: busterleaguedb-next
+    image: postgres:12
+    volumes:
+      - next_data:/var/lib/postgresql/data
+      - ./localdev.volumes/db_dump:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_DB=${PRIVATE_DB_NAME}
+      - POSTGRES_USER=${PRIVATE_DB_USER}
+      - POSTGRES_PASSWORD=${PRIVATE_DB_PASSWORD}
+    labels:
+      - traefik.backend=busterleaguedb
+    ports:
+      - 25432:5432
+    networks:
+      - private
+  busterleagueredis-next:
+    container_name: busterleagueredis-next
+    image: redis:5.0-buster
+    volumes:
+      - league_redis:/data
+    labels:
+      - traefik.backend=busterleagueredis-next
+    ports:
+      - 16379:6379
+    networks:
+      - private
+  busterleaguemail-next:
+    container_name: busterleaguemail-next
+    image: mailhog/mailhog:latest
+    labels:
+      - traefik.backend=bustermail
+      - traefik.docker.network=traefik_webgateway
+      - traefik.frontend.rule=Host:bustermail-next.localdev
+      - traefik.port=8025
+    networks:
+      - private
+      - public
+    networks:
+      - private
+      - public
+volumes:
+  league_data: {}
+  league_rvm_gems: {}
+  league_redis: {}
