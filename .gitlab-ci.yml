@@ -11,7 +11,6 @@
   after_script:
     - docker logout ${CI_REGISTRY}
 
-# push strategy comes from: https://blog.callr.tech/building-docker-images-with-gitlab-ci-best-practices/
 stages:
   - build
   - push_current
@@ -24,7 +23,6 @@ Production Build:
     - busterleague
   only:
     - production
-    - development
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:production || true
     - >
@@ -38,21 +36,21 @@ Production Build:
       .
     - docker push ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
 
-Lab Build:
+Demo Build:
   <<: *docker_stages
   stage: build
   tags:
     - busterleague
   only:
-    - labdev
+    - demo
   script:
-    - docker pull ${CI_REGISTRY_IMAGE}:labdev || true
+    - docker pull ${CI_REGISTRY_IMAGE}:demo || true
     - >
       docker build
       --pull
       --build-arg VCS_REF=${CI_COMMIT_SHA}
       --build-arg VCS_URL=${CI_PROJECT_URL}
-      --cache-from ${CI_REGISTRY_IMAGE}:labdev
+      --cache-from ${CI_REGISTRY_IMAGE}:demo
       --tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
       --file cluster.dockerfile
       .
@@ -67,8 +65,7 @@ Push current:
   stage: push_current
   only:
     - production
-    - development
-    - labdev
+    - demo
   tags:
     - busterleague
   script:
@@ -79,9 +76,8 @@ Push current:
 Deployment:
   stage: deploy
   only:
-    - development
+    - demo
     - production
-    - labdev
   tags:
     - busterleague
   image: registry.gitlab.com/outfielding/ansible-deployer:latest
