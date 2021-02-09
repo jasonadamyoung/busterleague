@@ -71,7 +71,7 @@ services:
     container_name: busterleagueredis-next
     image: redis:5.0-buster
     volumes:
-      - league_redis:/data
+      - next_redis:/data
     labels:
       - traefik.backend=busterleagueredis-next
     ports:
@@ -93,6 +93,6 @@ services:
       - private
       - public
 volumes:
-  league_data: {}
-  league_rvm_gems: {}
-  league_redis: {}
+  next_data: {}
+  next_rvm_gems: {}
+  next_redis: {}
