@@ -38,7 +38,8 @@ class DraftStatDistribution < ApplicationRecord
     player_distribution = {}
     player_list.each do |player|
       if(player.statline.age != 0)
-        player_distribution[player.id] = player.statline.send(dsd.label)
+        value = player.statline.send(dsd.label)
+        player_distribution[player.id] = value if !value.nil?
       end
     end
 
