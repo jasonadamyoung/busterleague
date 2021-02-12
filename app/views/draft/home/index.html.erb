@@ -1,7 +1,7 @@
 <% @page_title = 'Busterleague' %>
 
 
-<%- if @currentowner.is_admin? and !Settings.draftcomplete-%>
+<%- if @currentowner&.is_admin? and !Settings.draftcomplete-%>
 <div class="row">
   <div class="col-md-12">
     <h2>Draft Search</h2>
