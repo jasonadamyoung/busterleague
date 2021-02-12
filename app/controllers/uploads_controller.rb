@@ -12,7 +12,7 @@ class UploadsController < ApplicationController
   end
 
   def create
-    if(!@currentowner.is_admin?)
+    if(!@currentowner&.is_admin?)
       flash[:error] = "You must be an application admin to upload archives."
       return redirect_to uploads_url
     end
