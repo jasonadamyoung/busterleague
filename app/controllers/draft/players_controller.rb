@@ -103,7 +103,7 @@ class Draft::PlayersController < Draft::BaseController
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
-      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("players.position = '#{@position}'").includes(:statline).page(params[:page])
+      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("draft_players.position = ?",@position.upcase).includes(:statline).page(params[:page])
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
