@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Draft::BaseController < ApplicationController
-  before_action :signin_optional
+  before_action :signin_required
   before_action :set_draft_mode
   before_action :check_for_draft_season
   before_action :check_for_ranking
