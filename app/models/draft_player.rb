@@ -32,7 +32,7 @@ class DraftPlayer < ApplicationRecord
     select("#{self.table_name}.*, draft_rankings.value as rankvalue")
     .joins(:draft_rankings)
     .where("draft_rankings.draft_ranking_value_id IN (#{rv1.id},#{rv2.id})")
-    .order("rankvalue DESC")
+    .order("rankvalue DESC").order("#{self.table_name}.id ASC")
   }
 
   scope :teamed, lambda { where(:draftstatus => DRAFT_STATUS_TEAMED) }
@@ -102,7 +102,7 @@ class DraftPlayer < ApplicationRecord
       select("#{self.table_name}.*, draft_rankings.value as rankvalue")
       .joins(:draft_rankings)
       .where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
-      .order("rankvalue DESC")
+      .order("rankvalue DESC").order("#{self.table_name}.id ASC")
     end
   end
 
