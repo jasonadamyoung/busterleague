@@ -4,7 +4,6 @@
 # see LICENSE file
 
 class Draft::PlayersController < Draft::BaseController
-  before_action :signin_required, only: [:draft,:sethighlight,:setnotes,:wanted,:wantplayer,:removewant]
 
   def draft
     begin
