@@ -94,23 +94,23 @@ class Draft::PlayersController < Draft::BaseController
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
-      @playerlist = DraftPlayer.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv,@prv).page(params[:page])
+      @playerlist = DraftPlayer.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(draft_owner_rank_hash,@brv,@prv).page(params[:page])
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
-      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).includes(:statline).page(params[:page])
+      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(draft_owner_rank_hash,@prv).includes(:statline).page(params[:page])
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
-      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("draft_players.position = ?",@position.upcase).includes(:statline).page(params[:page])
+      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(draft_owner_rank_hash,@prv).where("draft_players.position = ?",@position.upcase).includes(:statline).page(params[:page])
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
-      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).includes(:statline).page(params[:page])
+      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(draft_owner_rank_hash,@brv).includes(:statline).page(params[:page])
     else
       @showtype = 'batters'
       @position = params[:position].downcase
-      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).fieldergroup(@position).page(params[:page])
+      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(draft_owner_rank_hash,@brv).fieldergroup(@position).page(params[:page])
     end
 
   end
@@ -196,6 +196,28 @@ class Draft::PlayersController < Draft::BaseController
       # do nothing
     end
     return redirect_to(draft_player_url(@player))
+  end
+
+
+  def set_draft_owner_rank
+    @player = DraftPlayer.find(params[:id])
+    if(@player.nil?)
+      returninformation = {'msg' => 'Invalid Player'}
+      return render :json => returninformation.to_json, :status => 400
+    elsif(params[:value].blank?)
+      returninformation = {'msg' => 'Value is blank'}
+      return render :json => returninformation.to_json, :status => 400
+    elsif(draft_owner_rank = @player.draft_owner_ranks.where(owner_id: @currentowner.id).first)
+      draft_owner_rank.update_attribute(:overall, params[:value])
+      returninformation = {'msg' => 'OK!'}
+      return render :json => returninformation.to_json, :status => 200
+    elsif(draft_owner_rank = @player.draft_owner_ranks.create(owner_id: @currentowner.id,draft_player_id: @player.id,overall: params[:value]))
+      returninformation = {'msg' => 'OK!'}
+      return render :json => returninformation.to_json, :status => 200
+    else
+      returninformation = {'msg' => 'Unknown Error'}
+      return render :json => returninformation.to_json, :status => 400
+    end
   end
 
 end

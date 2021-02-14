@@ -13,6 +13,9 @@ class DraftPlayer < ApplicationRecord
   has_one :draft_pick
   has_many :draft_wanteds
   has_many :wantedowners, :through => :draft_wanteds, :source => :owner
+  has_many :draft_owner_ranks
+  has_many :rankingowners, :through => :draft_owner_ranks, :source => :owner
+
 
   # list filters
   ALL_PLAYERS = 'all'
@@ -95,14 +98,21 @@ class DraftPlayer < ApplicationRecord
     DraftRankingValue.rebuild
   end
 
-  def self.sorting(*ranking_values)
+  def self.sorting(draft_owner_rank_hash = {},*ranking_values)
     if(ranking_values.length == 0)
       order("last_name ASC")
-    else
+    elsif(draft_owner_rank_hash[:draft_owner_rank].nil? or draft_owner_rank_hash[:owner].nil? or !draft_owner_rank_hash[:draft_owner_rank])
       select("#{self.table_name}.*, draft_rankings.value as rankvalue")
       .joins(:draft_rankings)
       .where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
       .order("rankvalue DESC").order("#{self.table_name}.id ASC")
+    else
+      select("#{self.table_name}.*, draft_rankings.value as rankvalue, draft_owner_ranks.overall as draft_owner_rankvalue")
+      .joins(:draft_rankings,:draft_owner_ranks)
+      .where("draft_owner_ranks.owner_id = ?",draft_owner_rank_hash[:owner].id)
+      .where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
+      .order("rankvalue DESC").order("#{self.table_name}.id ASC")
+      .order("draft_owner_rankvalue ASC").order("rankvalue DESC").order("#{self.table_name}.id ASC")
     end
   end
 
@@ -234,5 +244,13 @@ class DraftPlayer < ApplicationRecord
       stats[column][:min] = stat.scaled_distribution[:values].min
     end
     stats
+  end
+
+  def owner_rank(owner)
+    if(owner_rank = self.draft_owner_ranks.where(owner: owner).first)
+      owner_rank.overall
+    else
+      'n/a'
+    end
   end
 end

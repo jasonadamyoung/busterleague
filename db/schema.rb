@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_07_212850) do
+ActiveRecord::Schema.define(version: 2021_02_14_151854) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -228,6 +228,15 @@ ActiveRecord::Schema.define(version: 2021_02_07_212850) do
     t.string "pos_cf", limit: 10
     t.string "cthr", limit: 10
     t.string "othr", limit: 10
+  end
+
+  create_table "draft_owner_ranks", id: :serial, force: :cascade do |t|
+    t.integer "owner_id", default: 0
+    t.integer "draft_player_id", default: 0
+    t.integer "overall", default: 9999
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["owner_id", "draft_player_id"], name: "draft_owner_rank_owner_player_ndx", unique: true
   end
 
   create_table "draft_picks", id: :serial, force: :cascade do |t|

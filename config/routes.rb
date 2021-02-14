@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         post :removewant
         post :wantplayer
         post :sethighlight
+        post :set_draft_owner_rank
         put :setnotes
       end
     end
@@ -30,6 +31,7 @@ Rails.application.routes.draw do
     resources :ranking_values, :only => [:index,:new,:create,:destroy] do
       collection do
         get :setrv
+        get :setor
       end
     end
 
