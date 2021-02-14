@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Draft::BaseController < ApplicationController
-  before_action :signin_optional
+  before_action :signin_required
   before_action :set_draft_mode
   before_action :check_for_draft_season
   before_action :check_for_ranking
@@ -38,8 +38,27 @@ class Draft::BaseController < ApplicationController
     if(!@currentowner)
       @prv = DraftRankingValue.pitching.default
       @brv = DraftRankingValue.batting.default
+      @draft_owner_rank = false
       return
     end
+
+    # always set @draft_owner_rank to false for now
+    @draft_owner_rank = false
+
+    # check for owner rank cookie
+    # if(!params[:draft_owner_rank].nil?)
+    #   @draft_owner_rank = TRUE_VALUES.include?(params[:draft_owner_rank])
+    #   logger.debug("params = #{params}")
+    #   logger.debug("draft_owner_rank = #{@draft_owner_rank}")
+    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
+    # elsif(cookies[:draft_owner_rank])
+    #   @draft_owner_rank = TRUE_VALUES.include?(cookies[:draft_owner_rank])
+    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
+    # else
+    #   @draft_owner_rank = false
+    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
+    # end
+
 
     # pitching
     if(params[:prv] and (rv = DraftRankingValue.where(id: params[:prv].to_i).first))
@@ -162,6 +181,11 @@ class Draft::BaseController < ApplicationController
 
   def noidletimeout
     @idletimeout = false
+  end
+
+
+  def draft_owner_rank_hash
+    {draft_owner_rank: @draft_owner_rank, owner: @currentowner}
   end
 
 end

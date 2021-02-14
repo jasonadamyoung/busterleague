@@ -17,7 +17,7 @@
     <%- elsif stat == 'rops' -%>
       <td><%= ops_display(@player,'right')%></td>
     <%- else -%>
-      <td><%= @player.statline.send(stat) %></td>
+      <td><%= display_stat(@player.statline,stat) %></td>
     <%- end -%>
   <%- end -%>
 

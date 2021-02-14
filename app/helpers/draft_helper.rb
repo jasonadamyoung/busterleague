@@ -105,10 +105,10 @@ module DraftHelper
     else
       return ''
     end
-    computer_ranks = Owner.computer.draft_ranking_values.where(:playertype => playertype)
-    owner_ranks = @currentowner.draft_ranking_values.where(:playertype => playertype)
+    computer_ranking_values = Owner.computer.draft_ranking_values.where(:playertype => playertype)
+    owner_ranking_values = @currentowner.draft_ranking_values.where(:playertype => playertype)
     nav_items = []
-    (owner_ranks + computer_ranks).each do |rankingvalue|
+    (owner_ranking_values + computer_ranking_values).each do |rankingvalue|
       nav_items << rv_nav_item(rankingvalue)
     end
     nav_items << rv_nav_item('new',rvtype)
@@ -131,6 +131,32 @@ module DraftHelper
     end
     link_to(label,setrv_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
   end
+
+  def or_nav_item
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:draft_owner_rank] = !@draft_owner_rank
+    if(@draft_owner_rank)
+      or_icon_class = "fas fa-check-square"
+    else
+      or_icon_class = "far fa-square"
+    end
+    link_text = "<i class='#{or_icon_class}'></i> Use owner rankings".html_safe
+    link_to(link_text,setor_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
+  end
+
+  def or_toggle_link
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:draft_owner_rank] = !@draft_owner_rank
+    if(@draft_owner_rank)
+      link_text = "Turn Owner Rank filter OFF"
+    else
+      link_text = "Turn Owner Rank filter ON"
+    end
+    link_to(link_text,setor_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
+  end
+
 
   def draftstatus_label(status)
     case status
@@ -169,6 +195,10 @@ module DraftHelper
 
   def display_rankvalue(rankvalue)
     number_with_precision(rankvalue*100,precision: 1)
+  end
+
+  def display_owner_rankvalue(draft_owner_rankvalue)
+    (draft_owner_rankvalue == DraftOwnerRank::DEFAULT_RANK) ? 0 : draft_owner_rankvalue
   end
 
   def directional_arrow(playertype,attribute)
