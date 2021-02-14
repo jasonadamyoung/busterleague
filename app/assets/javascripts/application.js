@@ -11,7 +11,6 @@
 //= require bootstrap-sprockets
 //= require bootstrap-editable
 //= require alerts
-//= require jquery-tablesorter
 //= require jquery.tokeninput
 //= require alerts
 //= require tables

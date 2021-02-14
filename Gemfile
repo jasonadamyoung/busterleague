@@ -42,7 +42,6 @@ gem 'bootstrap', '~> 4.2'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'jquery-migrate-rails'
-gem 'jquery-tablesorter'
 gem 'jquery-tokeninput-rails'
 
 # datatables
