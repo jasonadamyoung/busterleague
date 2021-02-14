@@ -55,7 +55,7 @@
         <%- elsif (DraftBattingStatline::RATINGFIELDS.values.include?(stat)) -%>
           <td><%= position_check(fielder,stat) %></td>
         <%- else -%>
-          <td><%= fielder.statline.send(stat) %></td>
+          <td><%= display_stat(fielder.statline,stat) %></td>
         <%- end -%>
       <%- end -%>
   </tr>
