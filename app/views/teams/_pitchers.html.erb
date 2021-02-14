@@ -27,7 +27,7 @@
             <%- elsif stat == 'rops' -%>
               <td><%= ops_display(pitcher,'right')%></td>
             <%- else -%>
-              <td><%= pitcher.statline.send(stat) %></td>
+              <td><%= display_stat(pitcher.statline,stat) %></td>
             <%- end -%>
           <%- end -%>
         </tr>

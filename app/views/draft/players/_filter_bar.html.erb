@@ -1,54 +1,68 @@
 <%- if @currentowner -%>
-<ul class="nav nav-tabs">
-
-  <%- if @draftstatus -%>
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Filter: <%= draftstatus_label(@draftstatus) %> <b class="caret"></b></a>
-    <ul class="dropdown-menu">
+<%- if @draftstatus -%>
+  <div class="btn-group">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Filter: <%= draftstatus_label(@draftstatus) %> <b class="caret"></b>
+    </button>
+    <div class="dropdown-menu">
       <%= draftstatus_nav_item(DraftPlayer::ALL_PLAYERS) %>
       <%= draftstatus_nav_item(DraftPlayer::DRAFTED_PLAYERS) %>
       <%= draftstatus_nav_item(DraftPlayer::NOTDRAFTED_PLAYERS) %>
       <%= draftstatus_nav_item(DraftPlayer::ME_ME_ME) %>
-    </ul>
-  </li>
-  <%- end -%>
+    </div>
+  </div>
+<%- end -%>
 
-  <%- if @brv -%>
-  <li class="nav-item dropdown">
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Batter Rank: <%= @brv.label %> <b class="caret"></b></a>
-    <ul class="dropdown-menu">
-      <%= rankingvalue_items('brv') %>
-    </ul>
-  </li>
-  <%- end -%>
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Owner Rank: <%= @draft_owner_rank ? "On" : "Off" %> <b class="caret"></b>
+  </button>
+  <div class="dropdown-menu">
+    <%= or_toggle_link %>
+  </div>
+</div>
 
-  <%- if @prv -%>
-  <li class="nav-item dropdown">
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pitcher Rank: <%= @prv.label %> <b class="caret"></b></a>
-    <ul class="dropdown-menu">
-      <%= rankingvalue_items('prv') %>
-    </ul>
-  </li>
-  <%- end -%>
+<%- if @brv -%>
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Batter Rank: <%= @brv.label %> <b class="caret"></b>
+  </button>
+  <div class="dropdown-menu">
+    <%= rankingvalue_items('brv') %>
+  </div>
+</div>
+<%- end -%>
 
-  <%- if @bsp -%>
-  <li class="nav-item dropdown">
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Batter Display: <%= @bsp.label %> <b class="caret"></b></a>
-    <ul class="dropdown-menu">
-      <%= statdisplay_items('bsp') %>
-    </ul>
-  </li>
-  <%- end -%>
+<%- if @prv -%>
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Pitcher Rank: <%= @prv.label %> <b class="caret"></b>
+  </button>
+  <div class="dropdown-menu">
+    <%= rankingvalue_items('prv') %>
+  </div>
+</div>
+<%- end -%>
 
-  <%- if @psp -%>
-  <li class="nav-item dropdown">
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pitcher Display: <%= @psp.label %> <b class="caret"></b></a>
-    <ul class="dropdown-menu">
+<%- if @bsp -%>
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Batter Display: <%= @bsp.label %> <b class="caret"></b>
+  </button>
+  <div class="dropdown-menu">
+    <%= statdisplay_items('bsp') %>
+  </div>
+</div>
+<%- end -%>
+
+<%- if @psp -%>
+  <div class="btn-group">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Pitcher Display: <%= @psp.label %> <b class="caret"></b>
+    </button>
+    <div class="dropdown-menu">
       <%= statdisplay_items('psp') %>
-    </ul>
-  </li>
-  <%- end -%>
-
-
-</ul>
+    </div>
+  </div>
+<%- end -%>
 <%- end -%>
