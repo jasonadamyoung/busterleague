@@ -10,15 +10,7 @@
 //= require popper
 //= require bootstrap-sprockets
 //= require bootstrap-editable
-//= require jquery.jqplot
-//= require jqplot-plugins/jqplot.dateAxisRenderer
-//= require jqplot-plugins/jqplot.highlighter
-//= require jqplot-plugins/jqplot.enhancedLegendRenderer
-//= require jqplot-plugins/jqplot.barRenderer
-//= require jqplot-plugins/jqplot.categoryAxisRenderer
-//= require jqplot-plugins/jqplot.pointLabels
 //= require alerts
-//= require jquery-tablesorter
 //= require jquery.tokeninput
 //= require alerts
 //= require tables
@@ -26,3 +18,5 @@
 //= require players
 //= require activate_editable
 //= require searchbox
+//= require chartkick
+//= require Chart.bundle
