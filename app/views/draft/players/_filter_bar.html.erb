@@ -13,15 +13,6 @@
   </div>
 <%- end -%>
 
-<div class="btn-group">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Owner Rank: <%= @draft_owner_rank ? "On" : "Off" %> <b class="caret"></b>
-  </button>
-  <div class="dropdown-menu">
-    <%= or_toggle_link %>
-  </div>
-</div>
-
 <%- if @brv -%>
 <div class="btn-group">
   <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
