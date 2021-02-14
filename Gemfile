@@ -42,13 +42,15 @@ gem 'bootstrap', '~> 4.2'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'jquery-migrate-rails'
-gem 'outfielding-jqplot-rails'
 gem 'jquery-tablesorter'
 gem 'jquery-tokeninput-rails'
 
 # datatables
 gem 'ajax-datatables-rails'
 gem 'jquery-datatables'
+
+# charts
+gem "chartkick"
 
 # in place editing
 gem "best_in_place"
