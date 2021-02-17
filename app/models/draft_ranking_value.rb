@@ -21,6 +21,11 @@ class DraftRankingValue < ApplicationRecord
   NORMALIZED_AVERAGE = 2
   NORMALIZED_NOT = 3
 
+  # positions
+  ALL_POSITIONS = ['all','sp','rp','c','1b','2b','3b','ss','lf','cf','rf','dh']
+  PITCHING_POSITIONS = ['all','sp','rp']
+  BATTING_POSITIONS = ['all','c','1b','2b','3b','ss','lf','cf','rf','dh']
+
   scope :pitching, -> { where(playertype: PITCHER) }
   scope :batting, -> { where(playertype: BATTER) }
 
@@ -33,6 +38,17 @@ class DraftRankingValue < ApplicationRecord
       'Batter'
     else
       'Unknown'
+    end
+  end
+
+  def self.position_list(playertype)
+    case playertype
+    when PITCHER
+      PITCHING_POSITIONS
+    when BATTER
+      BATTING_POSITIONS
+    else
+      ALL_POSITIONS
     end
   end
 
