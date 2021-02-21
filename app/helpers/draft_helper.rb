@@ -10,16 +10,15 @@ module DraftHelper
     returntext += '<tbody>'
 
 
-    ['SP','RP'].each do |position|
+    ['sp','rp'].each do |position|
       returntext += "<tr><td>#{position.upcase}</td><td>#{count_display(array[position])}</td></tr>"
     end
 
     DraftBattingStatline::RATINGFIELDS.keys.each do |position|
       returntext += "<tr><td>#{position.upcase}</td><td>#{count_display(array[position])}</td></tr>"
     end
-    other = array['dh'] ? array['dh'] : 0
-    other += array[''] ? array[''] : 0
-    returntext += "<tr><td>other</td><td>#{count_display(other)}</td></tr>"
+    dh = array['dh'] ? array['dh'] : 0
+    returntext += "<tr><td>DH</td><td>#{count_display(dh)}</td></tr>"
     returntext += '</tbody>'
     returntext += '</table>'
     returntext.html_safe
