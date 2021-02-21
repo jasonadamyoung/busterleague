@@ -13,7 +13,18 @@
   </div>
 <%- end -%>
 
-<%- if @brv -%>
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Owner Rank: <%= dor_label(@draft_owner_rank) %> <b class="caret"></b>
+  </button>
+  <div class="dropdown-menu">
+    <%= dor_nav_item(DraftOwnerRank::NOT_USED) %>
+    <%= dor_nav_item(DraftOwnerRank::OVERALL_RANK) %>
+    <%= dor_nav_item(DraftOwnerRank::POSITION_RANK) %>
+  </div>
+</div>
+
+<%- if ['all','batters'].include?(@showtype) -%>
 <div class="btn-group">
   <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Batter Rank: <%= @brv.label %> <b class="caret"></b>
@@ -24,7 +35,7 @@
 </div>
 <%- end -%>
 
-<%- if @prv -%>
+<%- if ['all','pitchers'].include?(@showtype)  -%>
 <div class="btn-group">
   <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Pitcher Rank: <%= @prv.label %> <b class="caret"></b>
@@ -35,7 +46,7 @@
 </div>
 <%- end -%>
 
-<%- if @bsp -%>
+<%- if ['all','batters'].include?(@showtype)  -%>
 <div class="btn-group">
   <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Batter Display: <%= @bsp.label %> <b class="caret"></b>
@@ -46,7 +57,7 @@
 </div>
 <%- end -%>
 
-<%- if @psp -%>
+<%- if ['all','pitchers'].include?(@showtype)  -%>
   <div class="btn-group">
     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Pitcher Display: <%= @psp.label %> <b class="caret"></b>

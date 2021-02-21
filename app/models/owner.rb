@@ -9,6 +9,7 @@ class Owner < ApplicationRecord
   has_many :teams
   has_many :players, :through => :teams
   has_many :draft_picks, :through => :teams
+  has_many :draft_owner_position_prefs
   has_many :draft_ranking_values
   has_many :draft_stat_preferences
   has_many :draft_wanteds

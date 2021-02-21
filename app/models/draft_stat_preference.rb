@@ -6,6 +6,8 @@
 class DraftStatPreference < ApplicationRecord
   belongs_to :owner
   serialize :column_list
+  has_many :draft_owner_position_prefs, as: :prefable, dependent: :destroy
+
 
   # player types
   PITCHER = 1
@@ -13,6 +15,7 @@ class DraftStatPreference < ApplicationRecord
 
   scope :pitching, -> { where(playertype: PITCHER) }
   scope :batting, -> { where(playertype: BATTER) }
+  scope :defaults, -> { where(:owner_id => Owner.computer.id) }
 
 
   def self.playertype_to_s(playertype)
@@ -76,7 +79,7 @@ class DraftStatPreference < ApplicationRecord
   end
 
   def self.default
-    where(:owner_id => Owner.computer.id).first
+    defaults.first
   end
 
   def self.fix_stat_preferences

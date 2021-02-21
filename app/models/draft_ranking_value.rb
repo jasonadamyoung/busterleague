@@ -6,6 +6,7 @@
 class DraftRankingValue < ApplicationRecord
   belongs_to :owner
   has_many :draft_rankings
+  has_many :draft_owner_position_prefs, as: :prefable, dependent: :destroy
   serialize :formula
 
   # player types
@@ -23,7 +24,7 @@ class DraftRankingValue < ApplicationRecord
 
   scope :pitching, -> { where(playertype: PITCHER) }
   scope :batting, -> { where(playertype: BATTER) }
-
+  scope :defaults, -> { where(:owner_id => Owner.computer.id) }
 
   def self.playertype_to_s(playertype)
     case playertype
@@ -92,7 +93,7 @@ class DraftRankingValue < ApplicationRecord
   end
 
   def self.default
-    where(:owner_id => Owner.computer.id).first
+    defaults.first
   end
 
   def self.importance_factor(importance,custom_factors = nil)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_14_151854) do
+ActiveRecord::Schema.define(version: 2021_02_21_151944) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -230,12 +230,35 @@ ActiveRecord::Schema.define(version: 2021_02_14_151854) do
     t.string "othr", limit: 10
   end
 
+  create_table "draft_owner_position_prefs", id: :serial, force: :cascade do |t|
+    t.integer "owner_id", default: 0, null: false
+    t.integer "prefable_id", null: false
+    t.string "prefable_type", null: false
+    t.integer "player_type", null: false
+    t.string "position", limit: 10, default: "default", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id", "prefable_id", "prefable_type", "player_type"], name: "dopp_reference_ndx"
+    t.index ["owner_id", "prefable_type", "position", "player_type"], name: "draft_owner_position_pref_ndx", unique: true
+  end
+
   create_table "draft_owner_ranks", id: :serial, force: :cascade do |t|
     t.integer "owner_id", default: 0
     t.integer "draft_player_id", default: 0
     t.integer "overall", default: 9999
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer "pos_sp", default: 9999
+    t.integer "pos_rp", default: 9999
+    t.integer "pos_c", default: 9999
+    t.integer "pos_1b", default: 9999
+    t.integer "pos_2b", default: 9999
+    t.integer "pos_3b", default: 9999
+    t.integer "pos_ss", default: 9999
+    t.integer "pos_lf", default: 9999
+    t.integer "pos_cf", default: 9999
+    t.integer "pos_rf", default: 9999
+    t.integer "pos_dh", default: 9999
     t.index ["owner_id", "draft_player_id"], name: "draft_owner_rank_owner_player_ndx", unique: true
   end
 
@@ -343,6 +366,7 @@ ActiveRecord::Schema.define(version: 2021_02_14_151854) do
     t.text "formula"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "position", limit: 10, default: "default"
   end
 
   create_table "draft_rankings", id: :serial, force: :cascade do |t|

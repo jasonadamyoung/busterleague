@@ -6,7 +6,10 @@ Rails.application.routes.draw do
 
   namespace :draft do
 
-    resources :owners
+
+    controller :owners do
+      simple_named_route 'set_position_pref', via: [:get, :post]
+    end
 
     resources :teams, :only => [:show, :index]  do
     end
@@ -24,6 +27,7 @@ Rails.application.routes.draw do
         post :wantplayer
         post :sethighlight
         post :set_draft_owner_rank
+        put :set_draft_owner_rank
         put :setnotes
       end
     end
