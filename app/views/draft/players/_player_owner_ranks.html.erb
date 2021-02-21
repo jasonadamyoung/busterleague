@@ -1,18 +1,22 @@
-<table class="table table-bordered ">
-  <thead>
-    <tr>
-      <th>Overall</th>
-      <%- @player.eligible_positions.each do |position| %>
-        <th><%= position.upcase %></th>
-      <%- end -%>
-    </tr>
-  </thead>
+<table class="table">
   <tbody>
     <tr>
-      <td><%= best_in_place(@player.owner_rank_or_blank(@currentowner), :overall, { :type => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => 'overall')})%></td>
-      <%- @player.eligible_positions.each do |position| %>
-        <td><%= best_in_place(@player.owner_rank_or_blank(@currentowner), "pos_#{position}", { :type => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => position)})%></td>
-      <%- end -%>
+      <td><strong>Overall</strong></td>
+      <td>
+      <button type='button' class='btn btn-info btn-lg'>
+      <%= best_in_place(@player.owner_rank_or_blank(@currentowner), :overall, {:as => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => 'overall')})%>
+      </button>
+      </td>
     </tr>
+    <%- @player.eligible_positions.each do |position| %>
+    <tr>
+      <td><strong><%= position.upcase %></strong></td>
+      <td>
+      <button type='button' class='btn btn-info btn-lg'>
+      <%= best_in_place(@player.owner_rank_or_blank(@currentowner), "pos_#{position}", { :as => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => position)})%>
+      </button>
+      </td>
+    </tr>
+    <%- end -%>
   </tbody>
 </table>
