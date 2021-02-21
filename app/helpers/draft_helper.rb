@@ -97,6 +97,8 @@ module DraftHelper
 
 
   def rankingvalue_items(rvtype)
+    position = params[:position] ? params[:position].downcase : 'all'
+    position = 'all' if ['allbatters','allpitchers'].include?(position)
     case rvtype
     when 'prv'
       playertype = DraftRankingValue::PITCHER
@@ -109,7 +111,7 @@ module DraftHelper
     owner_ranking_values = @currentowner.draft_ranking_values.where(:playertype => playertype)
     nav_items = []
     (owner_ranking_values + computer_ranking_values).each do |rankingvalue|
-      nav_items << rv_nav_item(rankingvalue)
+      nav_items << set_pref_nav_item(rankingvalue.label,rankingvalue,position)
     end
     nav_items << rv_nav_item('new',rvtype)
     nav_items.join("\n").html_safe
@@ -131,6 +133,26 @@ module DraftHelper
     end
     link_to(label,setrv_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
   end
+
+  def set_pref_nav_item(label,prefable,position='all')
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:prefable_type] = prefable.class.name
+    get_params[:prefable_id] = prefable.id
+    get_params[:player_type] = prefable.playertype
+    get_params[:position] = position
+    link_to(label,draft_owners_set_position_pref_path(get_params),class: 'dropdown-item').html_safe
+  end
+
+  def pref_positions(prefable,missing_text = 'Not Used')
+    positions = prefable.draft_owner_position_prefs.pluck("position")
+    if positions.blank?
+      missing_text.html_safe
+    else
+      positions.join(', ').html_safe
+    end
+  end
+
 
   def or_nav_item
     get_params = {}
@@ -237,6 +259,9 @@ module DraftHelper
 
 
   def statdisplay_items(display_type)
+    position = params[:position] ? params[:position].downcase : 'all'
+    position = 'all' if ['allbatters','allpitchers'].include?(position)
+
     case display_type
     when 'psp'
       playertype = DraftStatPreference::PITCHER
@@ -249,7 +274,7 @@ module DraftHelper
     owner = @currentowner.draft_stat_preferences.where(:playertype => playertype)
     nav_items = []
     (computer + owner).each do |sp|
-      nav_items << sp_nav_item(sp)
+      nav_items << set_pref_nav_item(sp.label,sp,position)
     end
     nav_items << sp_nav_item('new',display_type)
     nav_items.join("\n").html_safe

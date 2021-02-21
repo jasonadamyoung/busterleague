@@ -33,15 +33,6 @@
         		  </div>
           </div>
 
-          <div class="form-group">
-            <label class="col-md-3 control-label" for='label'>Target Position</label>
-            <div class="col-md-9">
-              <%= form.select(:position, DraftRankingValue.position_list(@playertype)) %>
-        		</div>
-          </div>
-
-
-
         	<div class="form-actions">
         		<%= submit_tag('Create',:class=>'btn btn-primary') %>
         		<%= link_to('cancel', draft_ranking_values_path, :class=> 'btn') %>

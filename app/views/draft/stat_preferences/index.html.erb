@@ -1,6 +1,41 @@
 <%- @page_title = 'Your Stat Display Preferences' -%>
 <p style="font-size:large;"><%= link_to("Create a Pitcher Stat Display Preference",new_draft_stat_preference_path(:playertype => DraftStatPreference::PITCHER))%> | <%= link_to("Create a Batter Stat Display Preference",new_draft_stat_preference_path(:playertype => DraftStatPreference::BATTER))%></p>
 
+<h2>System Defaults</h2>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>Label</th>
+      <th>Player Type</th>
+      <th>Positions</th>
+      <th>Attributes</th>
+      <th>&nbsp;</th>
+      <th>&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for sp in DraftStatPreference.defaults %>
+      <tr>
+        <td><%= render(:partial => 'position_pref_button', :locals => {:stat_preference => sp })%></td>
+        <td><%= sp.label %></td>
+        <td><%= sp.playertype_to_s %></td>
+        <td><%= pref_positions(sp,'default') %></td>
+        <td class="stat_preference_index">
+          <%- sp.column_list.each do |column_name| -%>
+            <span class="badge badge-info"><a name="<%= column_name %>"><%= column_name %></a></span>
+          <%- end -%>
+        </td>
+        <td><%= link_to 'edit', edit_draft_stat_preference_path(sp) %></td>
+        <td><%= link_to 'delete', sp, :confirm => 'Are you sure?', :method => :delete %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>Your Stat Display Preferences</h2>
+
 <%- if @stat_preferences.blank? -%>
   You haven't created any stat display preferences yet.
 <%- else -%>
@@ -10,6 +45,7 @@
       <th>&nbsp;</th>
       <th>Label</th>
       <th>Player Type</th>
+      <th>Positions</th>
       <th>Attributes</th>
       <th>&nbsp;</th>
       <th>&nbsp;</th>
@@ -17,17 +53,11 @@
   </thead>
   <tbody>
     <% for sp in @stat_preferences %>
-      <%- if [@psp,@bsp].include?(sp) -%>
-      <tr class='shaded'>
-      <%- else -%>
       <tr>
-      <%- end -%>
-        <%- useparams = {:action => :index}
-        (sp.playertype == DraftStatPreference::BATTER ? useparams[:bsp] = sp.id : useparams[:psp] = sp.id )
-        -%>
-        <td><%= link_to 'use', useparams %></td>
+        <td><%= render(:partial => 'position_pref_button', :locals => {:stat_preference => sp })%></td>
         <td><%= sp.label %></td>
         <td><%= sp.playertype_to_s %></td>
+        <td><%= pref_positions(sp) %></td>
         <td class="stat_preference_index">
           <%- sp.column_list.each do |column_name| -%>
             <span class="badge badge-info"><a name="<%= column_name %>"><%= column_name %></a></span>

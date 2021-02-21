@@ -6,7 +6,10 @@ Rails.application.routes.draw do
 
   namespace :draft do
 
-    resources :owners
+
+    controller :owners do
+      simple_named_route 'set_position_pref', via: [:get, :post]
+    end
 
     resources :teams, :only => [:show, :index]  do
     end

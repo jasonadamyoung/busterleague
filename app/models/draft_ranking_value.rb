@@ -6,6 +6,7 @@
 class DraftRankingValue < ApplicationRecord
   belongs_to :owner
   has_many :draft_rankings
+  has_many :draft_owner_position_prefs, as: :prefable, dependent: :destroy
   serialize :formula
 
   # player types
@@ -21,14 +22,9 @@ class DraftRankingValue < ApplicationRecord
   NORMALIZED_AVERAGE = 2
   NORMALIZED_NOT = 3
 
-  # positions
-  ALL_POSITIONS = ['all','sp','rp','c','1b','2b','3b','ss','lf','cf','rf','dh']
-  PITCHING_POSITIONS = ['all','sp','rp']
-  BATTING_POSITIONS = ['all','c','1b','2b','3b','ss','lf','cf','rf','dh']
-
   scope :pitching, -> { where(playertype: PITCHER) }
   scope :batting, -> { where(playertype: BATTER) }
-
+  scope :defaults, -> { where(:owner_id => Owner.computer.id) }
 
   def self.playertype_to_s(playertype)
     case playertype
@@ -38,17 +34,6 @@ class DraftRankingValue < ApplicationRecord
       'Batter'
     else
       'Unknown'
-    end
-  end
-
-  def self.position_list(playertype)
-    case playertype
-    when PITCHER
-      PITCHING_POSITIONS
-    when BATTER
-      BATTING_POSITIONS
-    else
-      ALL_POSITIONS
     end
   end
 
@@ -108,7 +93,7 @@ class DraftRankingValue < ApplicationRecord
   end
 
   def self.default
-    where(:owner_id => Owner.computer.id).first
+    defaults.first
   end
 
   def self.importance_factor(importance,custom_factors = nil)
