@@ -23,9 +23,8 @@ class DraftOwnerPositionPref < ApplicationRecord
   scope :pitching, -> { where(player_type: PITCHER) }
   scope :batting, -> { where(player_type: BATTER) }
 
-  def self.position_list(playertype,include_all = false)
+  def self.position_list(playertype)
     returnpositions = []
-    returnpositions << 'all' if include_all
     case playertype
     when PITCHER
       returnpositions += PITCHING_POSITIONS

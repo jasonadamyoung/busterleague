@@ -59,8 +59,8 @@ class Draft::BaseController < ApplicationController
     #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
     # end
 
-    position = params[:position] ? params[:position].downcase : 'all'
-    position = 'all' if ['allbatters','allpitchers'].include?(position)
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
 
     # pitching
     if(dopp = @currentowner.draft_owner_position_prefs.pitching.where(prefable_type: 'DraftRankingValue').where(position: position).first)
@@ -91,7 +91,8 @@ class Draft::BaseController < ApplicationController
       return
     end
 
-    position = params[:position] ? params[:position].downcase : 'all'
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
 
     # pitching
     if(dopp = @currentowner.draft_owner_position_prefs.pitching.where(prefable_type: 'DraftStatPreference').where(position: position).first)

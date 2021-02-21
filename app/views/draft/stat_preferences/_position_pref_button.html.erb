@@ -3,7 +3,7 @@
       use for ... <b class="caret"></b>
   </button>
   <div class="dropdown-menu">
-    <%= set_pref_nav_item('use as default',stat_preference,'all') %>
+    <%= set_pref_nav_item('use as default',stat_preference,'default') %>
     <%- DraftOwnerPositionPref.position_list(stat_preference.playertype).each do |position| -%>
       <%= set_pref_nav_item("use for position: #{position}",stat_preference,position) %>
     <%- end -%>

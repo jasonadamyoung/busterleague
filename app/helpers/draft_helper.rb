@@ -97,8 +97,8 @@ module DraftHelper
 
 
   def rankingvalue_items(rvtype)
-    position = params[:position] ? params[:position].downcase : 'all'
-    position = 'all' if ['allbatters','allpitchers'].include?(position)
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
     case rvtype
     when 'prv'
       playertype = DraftRankingValue::PITCHER
@@ -259,8 +259,8 @@ module DraftHelper
 
 
   def statdisplay_items(display_type)
-    position = params[:position] ? params[:position].downcase : 'all'
-    position = 'all' if ['allbatters','allpitchers'].include?(position)
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
 
     case display_type
     when 'psp'
