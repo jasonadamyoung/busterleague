@@ -16,9 +16,9 @@ class DraftPlayer < ApplicationRecord
   has_many :draft_owner_ranks
   has_many :rankingowners, :through => :draft_owner_ranks, :source => :owner
 
-    # player types
-    PITCHER = 1
-    BATTER = 2
+  # player types
+  PITCHER = 1
+  BATTER = 2
 
   # list filters
   ALL_PLAYERS = 'all'
