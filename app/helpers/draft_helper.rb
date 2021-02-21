@@ -154,28 +154,27 @@ module DraftHelper
   end
 
 
-  def or_nav_item
+  def dor_label(draft_owner_rank)
+    case draft_owner_rank
+    when DraftOwnerRank::NOT_USED
+      "Off"
+    when DraftOwnerRank::OVERALL_RANK
+      "Overall Owner Rank"
+    when DraftOwnerRank::POSITION_RANK
+      "Position-specific Owner Rank"
+    end
+  end
+
+  def dor_nav_item(draft_owner_rank)
     get_params = {}
     get_params[:currenturi] = Base64.encode64(request.fullpath)
-    get_params[:draft_owner_rank] = !@draft_owner_rank
-    if(@draft_owner_rank)
+    get_params[:set_draft_owner_rank] = draft_owner_rank
+    if(draft_owner_rank == @draft_owner_rank)
       or_icon_class = "fas fa-check-square"
     else
       or_icon_class = "far fa-square"
     end
-    link_text = "<i class='#{or_icon_class}'></i> Use owner rankings".html_safe
-    link_to(link_text,setor_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
-  end
-
-  def or_toggle_link
-    get_params = {}
-    get_params[:currenturi] = Base64.encode64(request.fullpath)
-    get_params[:draft_owner_rank] = !@draft_owner_rank
-    if(@draft_owner_rank)
-      link_text = "Turn Owner Rank filter OFF"
-    else
-      link_text = "Turn Owner Rank filter ON"
-    end
+    link_text = "<i class='#{or_icon_class}'></i> #{dor_label(draft_owner_rank)}".html_safe
     link_to(link_text,setor_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
   end
 

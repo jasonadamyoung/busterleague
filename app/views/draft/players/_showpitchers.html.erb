@@ -5,7 +5,7 @@
         <th>POS</th>
         <th>TEAM</th>
         <th>RANKVALUE</th>
-        <%- if @draft_owner_rank -%>
+        <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED  -%>
           <th>OWNER RANK</th>
         <%- end -%>
         <%- @psp.column_list.each do |stat| %>
@@ -34,16 +34,9 @@
         <td><%= link_to(pitcher.position, :controller => 'players', :action => 'index', :position => pitcher.position.downcase) %></td>
         <td><%= pitcher.team.nil? ? '' : pitcher.team.abbrev  %></td>
         <td><%= display_rankvalue(pitcher.rankvalue) %></td>
-        <%- if @draft_owner_rank -%>
+        <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED  -%>
           <td>
-            <a href="#" class="draft_owner_rank"
-                        data-type="text"
-                        data-resource="put"
-                        data-name="draft_owner_rank"
-                        data-url="/draft/players/<%= pitcher.id -%>/set_draft_owner_rank"
-                        data-original-title="Enter owner rank">
               <%= display_owner_rankvalue(pitcher.draft_owner_rankvalue) -%>
-            </a>
           </td>
         <%- end -%>
         <%- @psp.column_list.each do |stat| %>

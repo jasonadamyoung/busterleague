@@ -6,7 +6,7 @@
         <th>position</th>
         <th>age</th>
         <th>rankvalue</th>
-        <%- if @draft_owner_rank -%>
+        <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED -%>
           <th>owner rank</th>
         <%- end -%>
     </tr>
@@ -37,16 +37,9 @@
         <td><%= link_to(showplayer.position, :controller => 'players', :action => 'index', :position => showplayer.position.downcase) %></td>
         <td><%= showplayer.age %></td>
         <td><%= display_rankvalue(showplayer.rankvalue) %></td>
-        <%- if @draft_owner_rank -%>
+        <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED -%>
           <td>
-            <a href="#" class="draft_owner_rank"
-                        data-type="text"
-                        data-resource="put"
-                        data-name="draft_owner_rank"
-                        data-url="/draft/players/<%= showplayer.id -%>/set_draft_owner_rank"
-                        data-original-title="Enter owner rank">
-              <%= display_owner_rankvalue(showplayer.draft_owner_rankvalue) -%>
-            </a>
+            <%= display_owner_rankvalue(showplayer.draft_owner_rankvalue) -%>
           </td>
         <%- end -%>
       </tr>

@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         post :wantplayer
         post :sethighlight
         post :set_draft_owner_rank
+        put :set_draft_owner_rank
         put :setnotes
       end
     end

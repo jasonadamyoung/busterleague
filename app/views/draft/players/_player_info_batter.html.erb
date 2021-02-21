@@ -5,19 +5,6 @@
           <td><%= @player.statline.age %></td>
         </tr>
         <tr>
-          <td><strong>Owner Rank</strong></td>
-          <td>
-            <a href="#" class="draft_owner_rank"
-                        data-type="text"
-                        data-resource="put"
-                        data-name="draft_owner_rank"
-                        data-url="/draft/players/<%= @player.id -%>/set_draft_owner_rank"
-                        data-original-title="Enter owner rank">
-              <%= display_owner_rankvalue(@player.owner_rank(@currentowner)) -%>
-            </a>
-          </td>
-        </tr>
-        <tr>
           <td><strong>Injury Rating</strong></td>
           <td><%= @player.statline.injury %></td>
         </tr>

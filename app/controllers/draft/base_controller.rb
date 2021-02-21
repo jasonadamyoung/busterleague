@@ -38,26 +38,26 @@ class Draft::BaseController < ApplicationController
     if(!@currentowner)
       @prv = DraftRankingValue.pitching.default
       @brv = DraftRankingValue.batting.default
-      @draft_owner_rank = false
+      @draft_owner_rank = DraftOwnerRank::NOT_USED
       return
     end
 
     # always set @draft_owner_rank to false for now
-    @draft_owner_rank = false
+    # @draft_owner_rank = DraftOwnerRank::NOT_USED
 
     # check for owner rank cookie
-    # if(!params[:draft_owner_rank].nil?)
-    #   @draft_owner_rank = TRUE_VALUES.include?(params[:draft_owner_rank])
-    #   logger.debug("params = #{params}")
-    #   logger.debug("draft_owner_rank = #{@draft_owner_rank}")
-    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    # elsif(cookies[:draft_owner_rank])
-    #   @draft_owner_rank = TRUE_VALUES.include?(cookies[:draft_owner_rank])
-    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    # else
-    #   @draft_owner_rank = false
-    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    # end
+    if(!params[:set_draft_owner_rank].nil?)
+      @draft_owner_rank = params[:set_draft_owner_rank].to_i
+      logger.debug("params = #{params}")
+      logger.debug("draft_owner_rank = #{@draft_owner_rank}")
+      cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
+    elsif(cookies[:draft_owner_rank])
+      @draft_owner_rank = cookies[:draft_owner_rank].to_i
+      cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
+    else
+      @draft_owner_rank = DraftOwnerRank::NOT_USED
+      cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
+    end
 
     position = params[:position] ? params[:position].downcase : 'default'
     position = 'default' if ['allbatters','allpitchers','all'].include?(position)
