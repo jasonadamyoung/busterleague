@@ -38,25 +38,9 @@ class Draft::BaseController < ApplicationController
     if(!@currentowner)
       @prv = DraftRankingValue.pitching.default
       @brv = DraftRankingValue.batting.default
-      @draft_owner_rank = DraftOwnerRank::NOT_USED
+      @pdorp = false
+      @bdorp = false
       return
-    end
-
-    # always set @draft_owner_rank to false for now
-    # @draft_owner_rank = DraftOwnerRank::NOT_USED
-
-    # check for owner rank cookie
-    if(!params[:set_draft_owner_rank].nil?)
-      @draft_owner_rank = params[:set_draft_owner_rank].to_i
-      logger.debug("params = #{params}")
-      logger.debug("draft_owner_rank = #{@draft_owner_rank}")
-      cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    elsif(cookies[:draft_owner_rank])
-      @draft_owner_rank = cookies[:draft_owner_rank].to_i
-      cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    else
-      @draft_owner_rank = DraftOwnerRank::NOT_USED
-      cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
     end
 
     position = params[:position] ? params[:position].downcase : 'default'
@@ -71,6 +55,12 @@ class Draft::BaseController < ApplicationController
       @prv = DraftRankingValue.pitching.default
     end
 
+    if(dopp = @currentowner.draft_owner_position_prefs.pitching.dorp.byposition(position).first)
+      @pdorp = dopp.enabled?
+    else
+      @pdorp = false
+    end
+
     # batting
     if(dopp = @currentowner.draft_owner_position_prefs.batting.where(prefable_type: 'DraftRankingValue').where(position: position).first)
       @brv = dopp.prefable
@@ -78,6 +68,12 @@ class Draft::BaseController < ApplicationController
       @brv = dopp.prefable
     else
       @brv = DraftRankingValue.batting.default
+    end
+
+    if(dopp = @currentowner.draft_owner_position_prefs.batting.dorp.byposition(position).first)
+      @bdorp = dopp.enabled?
+    else
+      @bdorp = false
     end
 
     return true

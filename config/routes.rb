@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
     controller :owners do
       simple_named_route 'set_position_pref', via: [:get, :post]
+      simple_named_route 'set_or_position_pref', via: [:get, :post]
     end
 
     resources :teams, :only => [:show, :index]  do

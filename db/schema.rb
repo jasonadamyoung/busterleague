@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_21_151944) do
+ActiveRecord::Schema.define(version: 2021_02_22_233245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -238,6 +238,7 @@ ActiveRecord::Schema.define(version: 2021_02_21_151944) do
     t.string "position", limit: 10, default: "default", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "enabled", default: true, null: false
     t.index ["owner_id", "prefable_id", "prefable_type", "player_type"], name: "dopp_reference_ndx"
     t.index ["owner_id", "prefable_type", "position", "player_type"], name: "draft_owner_position_pref_ndx", unique: true
   end

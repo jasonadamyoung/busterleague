@@ -20,7 +20,7 @@ class Draft::OwnersController < Draft::BaseController
       end
     else
       # validate prefable
-      if(params[:prefable_type] and params[:prefable_id] and DraftOwnerPositionPref::ALLOWED_PREFABLES.include?(params[:prefable_type]))
+      if(params[:prefable_type] and params[:prefable_id] and DraftOwnerPositionPref::ALLOWED_SET_PREFABLES.include?(params[:prefable_type]))
         prefable = Object.const_get(params[:prefable_type]).find(params[:prefable_id])
         if(prefable.owner == @currentowner or prefable.owner == Owner.computer)
           if(dopp = DraftOwnerPositionPref.where(owner: @currentowner).where(prefable_type: params[:prefable_type]).where(player_type: params[:player_type]).where(position: params[:position]).first)
@@ -37,5 +37,33 @@ class Draft::OwnersController < Draft::BaseController
     end
     redirect_to_current_or_root
   end
+
+  def set_or_position_pref
+    if(params[:draft_owner_position_pref_id])
+      if(dopp = DraftOwnerPositionPref.find(params[:draft_owner_position_pref_id]))
+        if(dopp.owner_id = @currentowner.id)
+          dopp.update_attribute(:enabled, params[:enabled])
+        else
+          # no owner match, ignore
+        end
+      else
+        # couldn't find the dopp, ignore
+      end
+    else
+      if(dopp = DraftOwnerPositionPref.where(owner: @currentowner).where(prefable_type: 'DraftOwnerRank').where(player_type: params[:player_type]).where(position: params[:position]).first)
+        dopp.update_attribute(:enabled, params[:enabled])
+      else
+        # ToDo validate position
+        dopp = DraftOwnerPositionPref.create(owner: @currentowner,
+                                             prefable_type: 'DraftOwnerRank',
+                                             prefable_id: 0,
+                                             player_type: params[:player_type],
+                                             position: params[:position],
+                                             enabled: params[:enabled])
+      end
+    end
+    redirect_to_current_or_root
+  end
+
 
 end

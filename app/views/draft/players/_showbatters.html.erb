@@ -5,7 +5,7 @@
       <th>POS</th>
       <th>TEAM</th>
       <th>RANKVALUE</th>
-      <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED  -%>
+      <%- if (@bdorp) -%>
         <th>OWNER RANK</th>
       <%- end -%>
       <%- @bsp.column_list.each do |stat| %>
@@ -35,7 +35,7 @@
       <td><%= link_to(fielder.position, :controller => 'players', :action => 'index', :position => fielder.position.downcase) %></td>
       <td><%= team.blank? ? '' : team.abbrev  %></td>
       <td><%= display_rankvalue(fielder.rankvalue) %></td>
-      <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED  -%>
+      <%- if (@bdorp)  -%>
         <td>
             <%= display_owner_rankvalue(fielder.draft_owner_rankvalue) -%>
         </td>

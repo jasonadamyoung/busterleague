@@ -94,23 +94,23 @@ class Draft::PlayersController < Draft::BaseController
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
-      @playerlist = DraftPlayer.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @draft_owner_rank, ranking_values: [@brv,@prv]).page(params[:page])
+      @playerlist = DraftPlayer.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: (@bdorp and @pdorp), ranking_values: [@brv,@prv]).page(params[:page])
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
-      @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @draft_owner_rank, ranking_values: [@prv]).page(params[:page])
+      @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
-      @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @draft_owner_rank, ranking_values: [@prv]).page(params[:page])
+      @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
-      @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @draft_owner_rank, ranking_values: [@brv]).page(params[:page])
+      @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])
     else
       @showtype = 'batters'
       @position = params[:position].downcase
-      @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @draft_owner_rank, ranking_values: [@brv]).page(params[:page])
+      @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])
     end
   end
 

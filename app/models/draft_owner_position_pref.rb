@@ -5,7 +5,7 @@
 
 class DraftOwnerPositionPref < ApplicationRecord
   belongs_to :owner
-  belongs_to :prefable, polymorphic: true
+  belongs_to :prefable, polymorphic: true, optional: true
 
   before_save :set_player_type
 
@@ -18,10 +18,12 @@ class DraftOwnerPositionPref < ApplicationRecord
   BATTING_POSITIONS = ['c','1b','2b','3b','ss','lf','cf','rf','dh']
 
   # allowed prefables
-  ALLOWED_PREFABLES = ['DraftRankingValue',"DraftStatPreference"]
+  ALLOWED_SET_PREFABLES = ['DraftRankingValue',"DraftStatPreference"]
 
   scope :pitching, -> { where(player_type: PITCHER) }
   scope :batting, -> { where(player_type: BATTER) }
+  scope :byposition, lambda {|position| where(position: position.downcase)}
+  scope :dorp, ->{ where(prefable_type: 'DraftOwnerRank') }
 
   def self.position_list(playertype)
     returnpositions = []
@@ -36,8 +38,14 @@ class DraftOwnerPositionPref < ApplicationRecord
     returnpositions
   end
 
+  def self.dor_pref(player_type,position)
+    self.where(player_type: player_type).dorp.byposition(position).first
+  end
+
   def set_player_type
-    self.player_type = self.prefable.playertype
+    if(self.prefable_type != 'DraftOwnerRank')
+      self.player_type = self.prefable.playertype
+    end
   end
 
 end
