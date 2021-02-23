@@ -30,10 +30,10 @@ class DraftOwnerRank < ApplicationRecord
   ]
 
   def set_attribute(attribute,value)
-    if(value == 0)
+    if(value.to_i == 0)
       write_attribute(attribute,DEFAULT_RANK)
     else
-      write_attribute(attribute,value)
+      write_attribute(attribute,value.to_i)
     end
   end
 
