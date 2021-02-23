@@ -209,7 +209,8 @@ class Draft::PlayersController < Draft::BaseController
       returninformation = {'msg' => 'Invalid Position'}
       return render :json => returninformation.to_json, :status => 400
     elsif(draft_owner_rank = @player.draft_owner_ranks.where(owner_id: @currentowner.id).first)
-      draft_owner_rank.update_attribute(position_attribute, params[:draft_owner_rank][position_attribute])
+      draft_owner_rank.set_attribute(position_attribute, params[:draft_owner_rank][position_attribute])
+      draft_owner_rank.save
       returninformation = {'msg' => 'OK!'}
       return render :json => returninformation.to_json, :status => 200
     elsif(draft_owner_rank = @player.draft_owner_ranks.create(owner_id: @currentowner.id,draft_player_id: @player.id,position_attribute => params[:draft_owner_rank][position_attribute]))
