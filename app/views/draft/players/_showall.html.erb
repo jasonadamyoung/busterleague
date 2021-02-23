@@ -6,7 +6,7 @@
         <th>position</th>
         <th>age</th>
         <th>rankvalue</th>
-        <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED -%>
+        <%- if (@bdorp and @pdorp) -%>
           <th>owner rank</th>
         <%- end -%>
     </tr>
@@ -37,7 +37,7 @@
         <td><%= link_to(showplayer.position, :controller => 'players', :action => 'index', :position => showplayer.position.downcase) %></td>
         <td><%= showplayer.age %></td>
         <td><%= display_rankvalue(showplayer.rankvalue) %></td>
-        <%- if @draft_owner_rank != DraftOwnerRank::NOT_USED -%>
+        <%- if (@bdorp and @pdorp) -%>
           <td>
             <%= display_owner_rankvalue(showplayer.draft_owner_rankvalue) -%>
           </td>

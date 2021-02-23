@@ -106,12 +106,19 @@ module DraftHelper
     else
       return ''
     end
+    nav_items = []
     computer_ranking_values = Owner.computer.draft_ranking_values.where(:playertype => playertype)
     owner_ranking_values = @currentowner.draft_ranking_values.where(:playertype => playertype)
-    nav_items = []
     (owner_ranking_values + computer_ranking_values).each do |rankingvalue|
       nav_items << set_pref_nav_item(rankingvalue.label,rankingvalue,position)
     end
+    nav_items << '<div class="dropdown-divider"></div>'.html_safe
+    if(dopp_dor_pref = @currentowner.draft_owner_position_prefs.dor_pref(playertype,position))
+      nav_items << dor_toggle_link(dopp_dor_pref.enabled?,playertype,position)
+    else
+      nav_items << dor_toggle_link(false,playertype,position)
+    end
+    nav_items << '<div class="dropdown-divider"></div>'.html_safe
     nav_items << rv_nav_item('new',rvtype)
     nav_items.join("\n").html_safe
   end
@@ -133,7 +140,7 @@ module DraftHelper
     link_to(label,setrv_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
   end
 
-  def set_pref_nav_item(label,prefable,position='all')
+  def set_pref_nav_item(label,prefable,position='default')
     get_params = {}
     get_params[:currenturi] = Base64.encode64(request.fullpath)
     get_params[:prefable_type] = prefable.class.name
@@ -152,6 +159,22 @@ module DraftHelper
     end
   end
 
+  def dor_toggle_link(is_enabled,player_type,position='default')
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:prefable_type] = 'DraftOwnerRank'
+    get_params[:prefable_id] = 0
+    get_params[:player_type] = player_type
+    get_params[:position] = position
+    get_params[:enabled] = !is_enabled
+    if(is_enabled)
+      or_icon_class = "fas fa-check-square"
+    else
+      or_icon_class = "far fa-square"
+    end
+    link_text = "<i class='#{or_icon_class}'></i> Use Owner Rank".html_safe
+    link_to(link_text,draft_owners_set_or_position_pref_path(get_params),class: 'dropdown-item').html_safe
+  end
 
   def dor_label(draft_owner_rank)
     case draft_owner_rank
@@ -218,7 +241,11 @@ module DraftHelper
   end
 
   def display_owner_rankvalue(draft_owner_rankvalue)
-    (draft_owner_rankvalue == DraftOwnerRank::DEFAULT_RANK) ? 0 : draft_owner_rankvalue
+    if(draft_owner_rankvalue.nil?)
+      0
+    else
+      (draft_owner_rankvalue == DraftOwnerRank::DEFAULT_RANK) ? 0 : draft_owner_rankvalue
+    end
   end
 
   def directional_arrow(playertype,attribute)

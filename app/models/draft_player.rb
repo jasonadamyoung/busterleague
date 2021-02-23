@@ -83,22 +83,10 @@ class DraftPlayer < ApplicationRecord
   end
 
 
-  def self.playerlist(owner:, draftstatus:, position:, owner_rank: DraftOwnerRank::NOT_USED, ranking_values: [])
+  def self.playerlist(owner:, draftstatus:, position:, owner_rank: false, ranking_values: [])
     # sorting
     if(ranking_values.length > 0)
-      case owner_rank
-      when DraftOwnerRank::OVERALL_RANK
-        query_column = 'overall'
-        buildscope = self.select("#{self.table_name}.*, draft_rankings.value as rankvalue, draft_owner_ranks.#{query_column} as draft_owner_rankvalue")
-        buildscope = buildscope.includes(:team)
-        buildscope = buildscope.joins(:draft_rankings)
-        buildscope = buildscope.joins(:draft_owner_ranks)
-        buildscope = buildscope.where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
-        buildscope = buildscope.where("draft_owner_ranks.owner_id = #{owner.id}")
-        buildscope = buildscope.order("draft_owner_rankvalue ASC")
-        buildscope = buildscope.order("rankvalue DESC")
-        buildscope = buildscope.order("#{self.table_name}.id ASC")
-      when DraftOwnerRank::POSITION_RANK
+      if(owner_rank)
         case position.downcase
         when 'all'
           query_column = 'overall'
@@ -123,7 +111,6 @@ class DraftPlayer < ApplicationRecord
         buildscope = buildscope.order("rankvalue DESC")
         buildscope = buildscope.order("#{self.table_name}.id ASC")
       else
-        # DraftOwnerRank::NOT_USED
         buildscope = self.select("#{self.table_name}.*, draft_rankings.value as rankvalue")
         buildscope = buildscope.includes(:team)
         buildscope = buildscope.joins(:draft_rankings)
