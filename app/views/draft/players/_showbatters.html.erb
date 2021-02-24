@@ -37,7 +37,7 @@
       <td><%= display_rankvalue(fielder.rankvalue) %></td>
       <%- if (@bdorp)  -%>
         <td>
-            <%= display_owner_rankvalue(fielder.draft_owner_rankvalue) -%>
+            <%= fielder.draft_owner_rankvalue -%>
         </td>
       <%- end -%>
       <%- @bsp.column_list.each do |stat| %>

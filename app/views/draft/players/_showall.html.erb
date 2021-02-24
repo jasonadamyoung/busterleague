@@ -39,7 +39,7 @@
         <td><%= display_rankvalue(showplayer.rankvalue) %></td>
         <%- if (@bdorp and @pdorp) -%>
           <td>
-            <%= display_owner_rankvalue(showplayer.draft_owner_rankvalue) -%>
+            <%= showplayer.draft_owner_rankvalue -%>
           </td>
         <%- end -%>
       </tr>
