@@ -176,31 +176,6 @@ module DraftHelper
     link_to(link_text,draft_owners_set_or_position_pref_path(get_params),class: 'dropdown-item').html_safe
   end
 
-  def dor_label(draft_owner_rank)
-    case draft_owner_rank
-    when DraftOwnerRank::NOT_USED
-      "Off"
-    when DraftOwnerRank::OVERALL_RANK
-      "Overall Owner Rank"
-    when DraftOwnerRank::POSITION_RANK
-      "Position-specific Owner Rank"
-    end
-  end
-
-  def dor_nav_item(draft_owner_rank)
-    get_params = {}
-    get_params[:currenturi] = Base64.encode64(request.fullpath)
-    get_params[:set_draft_owner_rank] = draft_owner_rank
-    if(draft_owner_rank == @draft_owner_rank)
-      or_icon_class = "fas fa-check-square"
-    else
-      or_icon_class = "far fa-square"
-    end
-    link_text = "<i class='#{or_icon_class}'></i> #{dor_label(draft_owner_rank)}".html_safe
-    link_to(link_text,setor_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
-  end
-
-
   def draftstatus_label(status)
     case status
     when DraftPlayer::ALL_PLAYERS
@@ -238,14 +213,6 @@ module DraftHelper
 
   def display_rankvalue(rankvalue)
     number_with_precision(rankvalue*100,precision: 1)
-  end
-
-  def display_owner_rankvalue(draft_owner_rankvalue)
-    if(draft_owner_rankvalue.nil?)
-      0
-    else
-      (draft_owner_rankvalue == DraftOwnerRank::DEFAULT_RANK) ? 0 : draft_owner_rankvalue
-    end
   end
 
   def directional_arrow(playertype,attribute)

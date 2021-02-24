@@ -107,6 +107,7 @@ class DraftPlayer < ApplicationRecord
         buildscope = buildscope.joins(:draft_owner_ranks)
         buildscope = buildscope.where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
         buildscope = buildscope.where("draft_owner_ranks.owner_id = #{owner.id}")
+        buildscope = buildscope.where("draft_owner_ranks.#{query_column} IS NOT NULL")
         buildscope = buildscope.order("draft_owner_rankvalue ASC")
         buildscope = buildscope.order("rankvalue DESC")
         buildscope = buildscope.order("#{self.table_name}.id ASC")

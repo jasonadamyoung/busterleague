@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_22_233245) do
+ActiveRecord::Schema.define(version: 2021_02_23_233921) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -246,20 +246,20 @@ ActiveRecord::Schema.define(version: 2021_02_22_233245) do
   create_table "draft_owner_ranks", id: :serial, force: :cascade do |t|
     t.integer "owner_id", default: 0
     t.integer "draft_player_id", default: 0
-    t.integer "overall", default: 9999
+    t.integer "overall"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer "pos_sp", default: 9999
-    t.integer "pos_rp", default: 9999
-    t.integer "pos_c", default: 9999
-    t.integer "pos_1b", default: 9999
-    t.integer "pos_2b", default: 9999
-    t.integer "pos_3b", default: 9999
-    t.integer "pos_ss", default: 9999
-    t.integer "pos_lf", default: 9999
-    t.integer "pos_cf", default: 9999
-    t.integer "pos_rf", default: 9999
-    t.integer "pos_dh", default: 9999
+    t.integer "pos_sp"
+    t.integer "pos_rp"
+    t.integer "pos_c"
+    t.integer "pos_1b"
+    t.integer "pos_2b"
+    t.integer "pos_3b"
+    t.integer "pos_ss"
+    t.integer "pos_lf"
+    t.integer "pos_cf"
+    t.integer "pos_rf"
+    t.integer "pos_dh"
     t.index ["owner_id", "draft_player_id"], name: "draft_owner_rank_owner_player_ndx", unique: true
   end
 
