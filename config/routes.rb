@@ -18,7 +18,8 @@ Rails.application.routes.draw do
     resources :players, :only => [:show, :index] do
       collection do
         get :wanted
-        post :findplayer
+        post :search
+        get  :search
         get :setdraftstatus
       end
 

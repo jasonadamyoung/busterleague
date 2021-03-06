@@ -116,7 +116,6 @@ class Draft::BaseController < ApplicationController
     if(!params[:draftstatus].nil?)
       @draftstatus = params[:draftstatus]
       cookies[:draftstatus] = {:value => @draftstatus, :expires => 2.months.from_now}
-      ActiveRecord::Base::logger.debug "@draftstatus = #{@draftstatus}"
     elsif(!cookies[:draftstatus].nil?)
       @draftstatus = cookies[:draftstatus]
     else

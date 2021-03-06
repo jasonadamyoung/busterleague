@@ -41,8 +41,9 @@
 			</li>
 
 			<!-- Search Form -->
-			<%= form_tag(findplayer_draft_players_path, { :class => 'form-inline mly-2 mly-lg-0' }) do -%>
-				<%= text_field_tag(:q, params[:q], {:class => 'search-query form-control mr-2', placeholder: 'Find Player', autocomplete: 'off', 'aria-label': 'Find Player' }) -%>
+			<%= form_tag(search_draft_players_path, { class: 'form-inline mly-2 mly-lg-0' }) do -%>
+        <%= hidden_field_tag(:searchpage,'1') %>
+				<%= text_field_tag(:q, params[:q], {id: searchfield_dom_id, class: 'search-query form-control mr-2', placeholder: 'Find Player', autocomplete: 'off', 'aria-label': 'Find Player' }) -%>
 			<%- end -%>
 			</ul>
 

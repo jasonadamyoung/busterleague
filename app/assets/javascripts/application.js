@@ -12,10 +12,10 @@
 //= require alerts
 //= require jquery.tokeninput
 //= require alerts
-//= require tables
 //= require jscolor
 //= require players
 //= require activate_editable
 //= require searchbox
+//= require draftplayersearch
 //= require chartkick
 //= require Chart.bundle

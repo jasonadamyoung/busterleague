@@ -1,0 +1,42 @@
+<%- if is_searchpage_request? %>
+<% @page_title = "Find Results" %>
+<div id="search-results">
+<%- end -%>
+  <div class="row">
+    <div class="col-md-12">
+    <%- if not @playerlist.nil? and not @playerlist.empty? -%>
+      <h2>Search Results</h2>
+      <table class="table">
+        <tbody>
+          <% for showplayer in @playerlist %>
+          <tr <%= 'class=teamed' if !showplayer.team.nil? %>>
+            <td><%= link_to("#{showplayer.fullname}", draft_player_url(showplayer)) %></td>
+            <td><%= showplayer.position.upcase %></td>
+            <% if (showplayer.team.nil?) %>
+            <td>
+              <%- if @currentowner&.is_draft_admin? and !Settings.draftcomplete -%>
+                <%= form_tag(draft_draft_player_path(id: showplayer.id), :class => 'form-horizontal') do -%>
+                  <%= hidden_field_tag(:draftaction,'draft') %>
+                  <%= hidden_field_tag('currenturi',Base64.encode64(@returntouri)) -%>
+                  <div><%= submit_tag('Draft',:class=>'btn btn-primary') %></div>
+                <%- end -%>
+              <%- end -%>
+            </td>
+            <% else %>
+            <td><%= link_to(showplayer.team.name, showplayer.team) %></td>
+            <% end %>
+          </tr>
+          <%- end -%>
+        </tbody>
+      </table>
+    <%- elsif is_searchpage_request? -%>
+      <div class="alert alert-warning" role="alert">
+        No player was found that matches your search term
+      </div>
+    <%- end -%>
+    </div>
+  </div>
+<%- if @showlayout -%>
+<%# close results div %>
+</div>
+<%- end -%>

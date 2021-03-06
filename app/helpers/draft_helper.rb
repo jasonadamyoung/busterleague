@@ -303,4 +303,10 @@ module DraftHelper
     end
   end
 
+  def searchfield_dom_id
+    (@searchpage or @showsearchresults) ? 'dynamicsearch' : 'staticsearch'
+  end
+
+
+
 end
