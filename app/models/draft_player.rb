@@ -32,9 +32,9 @@ class DraftPlayer < ApplicationRecord
   ME_ME_ME = 'notdrafted+mine'
 
   # new draftstatus
-  DRAFT_STATUS_TEAMED = 1
   DRAFT_STATUS_NOTDRAFTED = 2
   DRAFT_STATUS_DRAFTED = 3
+  DRAFT_STATUS_TEAMED = 4
 
 
   paginates_per 50

@@ -21,6 +21,9 @@
       <div id="flash">
       <%= render(:partial => 'shared/flashmessages') %>
       </div>
+      <%- if @showsearchresults and !@searchpage-%>
+      <div id="search-results"></div>
+      <%- end -%>
       <%= yield %>
     </div>
 

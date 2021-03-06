@@ -5,7 +5,7 @@
         <th>Team</th>
         <th>Player</th>
         <th>Position</th>
-        <%- if @currentowner&.is_admin? and !Settings.draftcomplete -%>
+        <%- if @currentowner&.is_draft_admin? and !Settings.draftcomplete -%>
           <th>&nbsp;</th>
         <%- end -%>
     </tr>
@@ -33,7 +33,7 @@
         <td>&nbsp;</td>
         <td>&nbsp;</td>
       <%- end -%>
-      <%- if @currentowner&.is_admin? and !Settings.draftcomplete -%>
+      <%- if @currentowner&.is_draft_admin? and !Settings.draftcomplete -%>
       <td>
         <%- if !draftpick.draft_player.nil? %>
           <%= link_to("Release", draft_draft_player_path(:id => draftpick.draft_player.id, :draftaction => 'release'), {:method => :post, :class => 'btn btn-warning'}) %>

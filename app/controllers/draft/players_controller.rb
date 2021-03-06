@@ -4,6 +4,7 @@
 # see LICENSE file
 
 class Draft::PlayersController < Draft::BaseController
+  helper_method :is_searchpage_request?
 
   def draft
     begin
@@ -37,7 +38,11 @@ class Draft::PlayersController < Draft::BaseController
       # do nothing
     end
 
-    return redirect_to(draft_root_url)
+    if(!params[:currenturi].nil?)
+      return redirect_to(Base64.decode64(params[:currenturi]))
+    else
+      return redirect_to(draft_root_url)
+    end
   end
 
   def setdraftstatus
@@ -91,6 +96,7 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def index
+    @showsearchresults = true
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
@@ -154,14 +160,27 @@ class Draft::PlayersController < Draft::BaseController
     end
   end
 
-  def findplayer
+  def search
+    @searchpage = true
+    if(is_searchpage_request?)
+      @returntouri = request.fullpath
+    else
+      @returntouri = (request.referer.blank?) ? request.fullpath : request.referer
+    end
+    ActiveRecord::Base::logger.debug "@returntouri = #{@returntouri}"
     if (!params[:q].nil? and !params[:q].empty? and params[:q].size >= 2)
-      @playerlist = DraftPlayer.searchplayers(params[:q]).order(:last_name)
+      if(is_searchpage_request?)
+        # no limit
+        @playerlist = DraftPlayer.searchplayers(params[:q]).order(draftstatus: :asc).order(:last_name)
+      else
+        @playerlist = DraftPlayer.searchplayers(params[:q]).order(draftstatus: :asc).order(:last_name).limit(5)
+      end
+      if(!is_searchpage_request?)
+        render(:layout => false)
+      end
     end
-    respond_to do |wants|
-      wants.html { render :action => 'findplayer'}
-      wants.js { render :action => 'findplayer', :layout => false}
-    end
+
+
   end
 
   def wantplayer
@@ -220,5 +239,10 @@ class Draft::PlayersController < Draft::BaseController
       return render :json => returninformation.to_json, :status => 400
     end
   end
+
+  def is_searchpage_request?
+    !params[:searchpage].nil? and TRUE_VALUES.include?(params[:searchpage])
+  end
+
 
 end
