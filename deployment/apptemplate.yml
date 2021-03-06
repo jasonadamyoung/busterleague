@@ -37,7 +37,7 @@ metadata:
   annotations:
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-production"
-    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    traefik.ingress.kubernetes.io/redirect-entry-point: "https"
 spec:
   rules:
   - host: {{ ingress_host }}
