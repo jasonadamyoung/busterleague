@@ -19,18 +19,6 @@ class DraftBattingStatline < ApplicationRecord
     'rf' => 'pos_rf'
   }
 
-  scope :fieldergroup, lambda {|position|
-    if(position == 'dh')
-      conditionstring = "(position = '#{position}')"
-    elsif(position == 'of')
-      conditionstring = "(position IN ('cf','lf','rf') or cf != '' or lf != '' or rf != '')"
-    else
-      ratingfield = RATINGFIELDS[position]
-      conditionstring = "(position = '#{position}' or #{ratingfield} != '')"
-    end
-    {:conditions => conditionstring}
-  }
-
   def self.rebuild_from_real_stats_for_season(season)
     self.dump_data
     RealBattingStat.for_season(season).each do |rbs|

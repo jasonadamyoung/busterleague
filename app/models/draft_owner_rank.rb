@@ -7,20 +7,29 @@ class DraftOwnerRank < ApplicationRecord
   belongs_to :draft_player
   belongs_to :owner
 
-  DEFAULT_RANK = 9999
+  before_save :bounds_check_value
 
-  # override overall to change '0' to DEFAULT_RANK
-  def overall=(value)
-    if(value == 0)
-      write_attribute(:overall,DEFAULT_RANK)
-    else
-      write_attribute(:overall,value)
+  RANKING_ATTRIBUTES = [
+    :overall,
+    :pos_sp,
+    :pos_rp,
+    :pos_c,
+    :pos_1b,
+    :pos_2b,
+    :pos_3b,
+    :pos_ss,
+    :pos_lf,
+    :pos_cf,
+    :pos_rf,
+    :pos_dh
+  ]
+
+  def bounds_check_value
+    RANKING_ATTRIBUTES.each do |rva|
+      if(value = read_attribute(rva) and value <= 0 or value == 9999)
+        write_attribute(rva,nil)
+      end
     end
-  end
-
-  def overall
-    value = read_attribute(:overall)
-    (value == DEFAULT_RANK) ? 0 : value
   end
 
 end
