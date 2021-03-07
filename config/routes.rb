@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
     resources :players, :only => [:show, :index] do
       collection do
+        get :experimental
         get :wanted
         post :search
         get  :search
