@@ -1,14 +1,14 @@
-<table class="table table-bordered table-condensed">
+<table class="datatable_draftplayer_table table table-bordered table-condensed">
     <thead>
     <tr>
         <th>NAME</th>
         <th>POS</th>
         <th>TEAM</th>
-        <th>RANKVALUE</th>
         <%- if (@pdorp) -%>
           <th>OWNER RANK</th>
         <%- end -%>
-        <%- @psp.column_list.each do |stat| %>
+        <th>RANKVALUE</th>
+        <%- DefinedStat.draft_columns(DefinedStat::PITCHER).each do |stat| %>
           <th><%= stat.upcase %></th>
         <%- end -%>
     </tr>
@@ -39,7 +39,7 @@
             <%= pitcher.draft_owner_rankvalue -%>
           </td>
         <%- end -%>
-        <%- @psp.column_list.each do |stat| %>
+        <%- DefinedStat.draft_columns(DefinedStat::PITCHER).each do |stat| %>
           <%- if stat == 'l_ops' %>
           <td><%= ops_display(pitcher,'left')%></td>
           <%- elsif stat == 'r_ops' -%>

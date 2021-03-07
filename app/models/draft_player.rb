@@ -162,6 +162,8 @@ class DraftPlayer < ApplicationRecord
       'All Players'
     when 'allbatters'
       'All Batters'
+    when 'allpitchers'
+      'All Pitchers'
     when 'of'
       'All Outfielders'
     else
