@@ -17,6 +17,8 @@ services:
       - DATABASE_PASSWORD=${PRIVATE_DB_PASSWORD}
       - DATABASE_HOST=busterleaguedb
       - DATABASE_PORT=5432
+      - DATABASE_SSLMODE=disable
+      - DATABASE_SSLROOTCERT=dbprod.crt
       - BUSTERLEAGUE__WEB_REPORTS_BASE_URL=http://busterleague.localdev/dmbweb/
       - BUSTERLEAGUE__URLWRITER_HOST=busterleague.localdev
       - BUSTERLEAGUE__EMAIL_BCC_ADDRESS=localdev@busterleague.org
