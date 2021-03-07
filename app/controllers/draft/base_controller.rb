@@ -38,69 +38,44 @@ class Draft::BaseController < ApplicationController
     if(!@currentowner)
       @prv = DraftRankingValue.pitching.default
       @brv = DraftRankingValue.batting.default
-      @draft_owner_rank = false
+      @pdorp = false
+      @bdorp = false
       return
     end
 
-    # always set @draft_owner_rank to false for now
-    @draft_owner_rank = false
-
-    # check for owner rank cookie
-    # if(!params[:draft_owner_rank].nil?)
-    #   @draft_owner_rank = TRUE_VALUES.include?(params[:draft_owner_rank])
-    #   logger.debug("params = #{params}")
-    #   logger.debug("draft_owner_rank = #{@draft_owner_rank}")
-    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    # elsif(cookies[:draft_owner_rank])
-    #   @draft_owner_rank = TRUE_VALUES.include?(cookies[:draft_owner_rank])
-    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    # else
-    #   @draft_owner_rank = false
-    #   cookies[:draft_owner_rank] = {:value => @draft_owner_rank, :expires => 2.months.from_now}
-    # end
-
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
 
     # pitching
-    if(params[:prv] and (rv = DraftRankingValue.where(id: params[:prv].to_i).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @prv = rv
-        cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
-      else
-        @prv = DraftRankingValue.pitching.default
-      end
-    elsif(cookies[:prv] and (rv = DraftRankingValue.where(id: cookies[:prv]).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @prv = rv
-        cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
-      else
-        @prv = DraftRankingValue.pitching.default
-        cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
-      end
+    if(dopp = @currentowner.draft_owner_position_prefs.pitching.where(prefable_type: 'DraftRankingValue').where(position: position).first)
+      @prv = dopp.prefable
+    elsif(dopp = @currentowner.draft_owner_position_prefs.pitching.where(prefable_type: 'DraftRankingValue').where(position: 'all').first)
+      @prv = dopp.prefable
     else
       @prv = DraftRankingValue.pitching.default
-      cookies[:prv] = {:value => @prv.id, :expires => 2.months.from_now}
+    end
+
+    if(dopp = @currentowner.draft_owner_position_prefs.pitching.dorp.byposition(position).first)
+      @pdorp = dopp.enabled?
+    else
+      @pdorp = false
     end
 
     # batting
-    if(params[:brv] and (rv = DraftRankingValue.where(id: params[:brv].to_i).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @brv = rv
-        cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
-      else
-        @brv = DraftRankingValue.batting.default
-      end
-    elsif(cookies[:brv] and (rv = DraftRankingValue.where(id: cookies[:brv]).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @brv = rv
-        cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
-      else
-        @brv = DraftRankingValue.batting.default
-        cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
-      end
+    if(dopp = @currentowner.draft_owner_position_prefs.batting.where(prefable_type: 'DraftRankingValue').where(position: position).first)
+      @brv = dopp.prefable
+    elsif(dopp = @currentowner.draft_owner_position_prefs.batting.where(prefable_type: 'DraftRankingValue').where(position: 'all').first)
+      @brv = dopp.prefable
     else
       @brv = DraftRankingValue.batting.default
-      cookies[:brv] = {:value => @brv.id, :expires => 2.months.from_now}
     end
+
+    if(dopp = @currentowner.draft_owner_position_prefs.batting.dorp.byposition(position).first)
+      @bdorp = dopp.enabled?
+    else
+      @bdorp = false
+    end
+
     return true
   end
 
@@ -112,47 +87,27 @@ class Draft::BaseController < ApplicationController
       return
     end
 
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
+
     # pitching
-    if(params[:psp] and (sp = DraftStatPreference.where(id: params[:psp].to_i).first))
-      if(sp.owner == @currentowner or sp.owner == Owner.computer)
-        @psp = sp
-        cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
-      else
-        @psp = DraftStatPreference.pitching.default
-      end
-    elsif(cookies[:psp] and (rv = DraftStatPreference.where(id: cookies[:psp]).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @psp = rv
-        cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
-      else
-        @psp = DraftStatPreference.pitching.default
-        cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
-      end
+    if(dopp = @currentowner.draft_owner_position_prefs.pitching.where(prefable_type: 'DraftStatPreference').where(position: position).first)
+      @psp = dopp.prefable
+    elsif(dopp = @currentowner.draft_owner_position_prefs.pitching.where(prefable_type: 'DraftStatPreference').where(position: 'all').first)
+      @psp = dopp.prefable
     else
       @psp = DraftStatPreference.pitching.default
-      cookies[:psp] = {:value => @psp.id, :expires => 2.months.from_now}
     end
 
     # batting
-    if(params[:bsp] and (rv = DraftStatPreference.where(id: params[:bsp].to_i).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @bsp = rv
-        cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
-      else
-        @bsp = DraftStatPreference.batting.default
-      end
-    elsif(cookies[:bsp] and (rv = DraftStatPreference.where(id: cookies[:bsp]).first))
-      if(rv.owner == @currentowner or rv.owner == Owner.computer)
-        @bsp = rv
-        cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
-      else
-        @bsp = DraftStatPreference.batting.default
-        cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
-      end
+    if(dopp = @currentowner.draft_owner_position_prefs.batting.where(prefable_type: 'DraftStatPreference').where(position: position).first)
+      @bsp = dopp.prefable
+    elsif(dopp = @currentowner.draft_owner_position_prefs.batting.where(prefable_type: 'DraftStatPreference').where(position: 'all').first)
+      @bsp = dopp.prefable
     else
       @bsp = DraftStatPreference.batting.default
-      cookies[:bsp] = {:value => @bsp.id, :expires => 2.months.from_now}
     end
+
     return true
   end
 
@@ -161,7 +116,6 @@ class Draft::BaseController < ApplicationController
     if(!params[:draftstatus].nil?)
       @draftstatus = params[:draftstatus]
       cookies[:draftstatus] = {:value => @draftstatus, :expires => 2.months.from_now}
-      ActiveRecord::Base::logger.debug "@draftstatus = #{@draftstatus}"
     elsif(!cookies[:draftstatus].nil?)
       @draftstatus = cookies[:draftstatus]
     else
@@ -186,6 +140,14 @@ class Draft::BaseController < ApplicationController
 
   def draft_owner_rank_hash
     {draft_owner_rank: @draft_owner_rank, owner: @currentowner}
+  end
+
+  def redirect_to_current_or_root
+    if(!params[:currenturi].nil?)
+      return redirect_to(Base64.decode64(params[:currenturi]))
+    else
+      return redirect_to(draft_root_url)
+    end
   end
 
 end

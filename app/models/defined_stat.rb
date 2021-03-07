@@ -32,16 +32,26 @@ class DefinedStat < ApplicationRecord
 
   PRECISIONS = {
     "avg" => 3,
+    "l_avg" => 3,
+    "r_avg" => 3,
     "obp" => 3,
+    "l_obp" => 3,
+    "r_obp" => 3,
     "spc" => 3,
+    "l_spc" => 3,
+    "r_spc" => 3,
     "ops" => 3,
+    "l_ops" => 3,
+    "r_ops" => 3,
     'iso' => 3,
     'tavg' => 3,
     'sec' => 3,
     "era" => 2,
     "whip" => 2,
     "rcera" => 2,
-    "cera" => 2
+    "cera" => 2,
+    "babip" => 3,
+    "woba" => 3
   }
 
   PA_ELIGIBLE_ONLY = ['avg','obp','spc','ops','k','tavg','sec','rc27','iso']

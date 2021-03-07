@@ -26,4 +26,11 @@ class DraftPitcher < DraftPlayer
     .order("rankvalue DESC").order("#{self.table_name}.id ASC")
   }
 
+
+  def eligible_positions
+    return_positions = []
+    return_positions << self.position
+    return_positions.uniq
+  end
+
 end

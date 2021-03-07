@@ -9,14 +9,13 @@
 //= require best_in_place
 //= require popper
 //= require bootstrap-sprockets
-//= require bootstrap-editable
 //= require alerts
 //= require jquery.tokeninput
 //= require alerts
-//= require tables
 //= require jscolor
 //= require players
 //= require activate_editable
 //= require searchbox
+//= require draftplayersearch
 //= require chartkick
 //= require Chart.bundle

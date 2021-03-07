@@ -4,7 +4,7 @@
    <label class="col-md-3 control-label" for='importances[]'><span class="label label-info"><%= attributename %> <%= directional_arrow(@playertype,attributename)%></span></label>
    <div class = "col-md-6">
    <%= select_tag('importances[]',options_for_select(DraftRankingValue::IMPORTANCES, DraftRankingValue::DEFAULT_IMPORTANCE),{:id => "rankingvalue_attribute_#{attributename}_importance", :class => 'form-control'}) %>
-   <span>(importance)</span>
+   <small class="form-text text-muted">Importance for this attribute</small>
    </div>
  </div>
 </div>
