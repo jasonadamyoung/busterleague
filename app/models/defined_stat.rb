@@ -13,6 +13,10 @@ class DefinedStat < ApplicationRecord
   scope :batting_statlines, ->{batting.where(name: (RealBattingStat.column_names - ["id"]))}
   scope :pitching_statlines, ->{pitching.where(name: (RealPitchingStat.column_names - ["id"]))}
 
+  scope :draft_batting_statlines, ->{batting.where(name: (DraftBattingStatline.column_names - ["id"]))}
+  scope :draft_pitching_statlines, ->{pitching.where(name: (DraftPitchingStatline.column_names - ["id"]))}
+
+
   # player type
   PITCHER= 1
   BATTER = 2
@@ -56,6 +60,20 @@ class DefinedStat < ApplicationRecord
 
   PA_ELIGIBLE_ONLY = ['avg','obp','spc','ops','k','tavg','sec','rc27','iso']
   IP_ELIGIBLE_ONLY = ['era','bb_per_9','h_per_9','r_per_9','k_per_9','hr_per_9']
+
+
+  def self.draft_columns(player_type)
+    corelist = []
+    if(player_type == BATTER)
+      corelist += ['ab','ops','l_ops','r_ops','opsplus','war_fg','war_br']
+      otherlist = self.draft_batting_statlines.pluck(:name) - corelist
+    else
+      corelist += ['w','s','era','whip','fip']
+      corelist += ['xfip','war_fg','war_br','eraplus','hr_per_9','k_per_9','bb_per_9','l_ops','r_ops','ops']
+      otherlist = self.draft_pitching_statlines.pluck(:name) - corelist
+    end
+    corelist + otherlist
+  end
 
   def leader_order
     # pick the opposite direction to get the "top ten"

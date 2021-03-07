@@ -96,7 +96,7 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def index
-    @showsearchresults = true
+    @experimental = is_experimental? ? true : false
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
@@ -104,7 +104,11 @@ class Draft::PlayersController < Draft::BaseController
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
-      @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
+      if(@experimental)
+        @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv])
+      else
+        @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
+      end
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
@@ -112,7 +116,11 @@ class Draft::PlayersController < Draft::BaseController
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
-      @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])
+      if(@experimental)
+        @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv])
+      else
+        @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])
+      end
     else
       @showtype = 'batters'
       @position = params[:position].downcase
@@ -244,5 +252,8 @@ class Draft::PlayersController < Draft::BaseController
     !params[:searchpage].nil? and TRUE_VALUES.include?(params[:searchpage])
   end
 
+  def is_experimental?
+    !params[:experimental].nil? and TRUE_VALUES.include?(params[:experimental])
+  end
 
 end

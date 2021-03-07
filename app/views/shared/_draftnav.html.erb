@@ -37,6 +37,10 @@
 						<%= nav_dropdown_item(draft_position_players_path(position: pos),label) %>
 					<%- end -%>
 					<%= nav_dropdown_item(draft_position_players_path(position: 'of'),'All Outfielders') %>
+					<div class="dropdown-divider"></div>
+					<h6 class="dropdown-header">Experimental Views</h6>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'allbatters', experimental: true),'All Batters (Experimental)',true) %>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'allpitchers', experimental: true),'All Pitchers (Experimental)',true) %>
 				</div>
 			</li>
 
