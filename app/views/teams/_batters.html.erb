@@ -24,9 +24,9 @@
           <td><%= display_rankvalue(fielder.rankvalue) %></td>
           <td><%= fielder.statline.age %></td>
           <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
-            <%- if stat == 'lops' %>
+            <%- if stat == 'l_ops' %>
               <td><%= ops_display(fielder,'left')%></td>
-            <%- elsif stat == 'rops' -%>
+            <%- elsif stat == 'r_ops' -%>
               <td><%= ops_display(fielder,'right')%></td>
             <%- else -%>
               <td><%= display_stat(fielder.statline,stat) %></td>

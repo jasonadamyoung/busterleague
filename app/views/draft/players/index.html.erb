@@ -13,16 +13,36 @@
 
 <div class="row mt-1">
   <div class="col-md-12">
+    <%- if !@experimental -%>
     <div id="paginator_wrapper">
     <%= paginate @playerlist %>
     </div>
+    <%- end -%>
 
     <% if @showtype == 'all' %>
     	<%= render(:partial => 'showall', :locals => { :playerlist => @playerlist }) %>
     <% elsif @showtype == 'pitchers' %>
-    	<%= render(:partial => 'showpitchers', :locals => { :playerlist => @playerlist }) %>
+      <%- if @experimental -%>
+      	<%= render(:partial => 'showpitchers_experimental', :locals => { :playerlist => @playerlist }) %>
+      <%- else -%>
+      	<%= render(:partial => 'showpitchers', :locals => { :playerlist => @playerlist }) %>
+      <%- end -%>
     <% else %>
-    	<%= render(:partial => 'showbatters', :locals => { :playerlist => @playerlist }) %>
-    <% end %>
+      <%- if @experimental -%>
+      	<%= render(:partial => 'showbatters_experimental', :locals => { :playerlist => @playerlist }) %>
+      <%- else -%>
+      	<%= render(:partial => 'showbatters', :locals => { :playerlist => @playerlist }) %>
+      <%- end -%>
+    <%- end -%>
   </div>
 </div>
+
+<%- if @experimental -%>
+  <script class="code" type="text/javascript">
+  $(".datatable_draftplayer_table").dataTable( {
+        "order": [[ 3, "desc" ]],
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
+        "pageLength": 50
+    });
+  </script>
+<%- end -%>

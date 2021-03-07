@@ -4,11 +4,11 @@
       <th>NAME</th>
       <th>POS</th>
       <th>TEAM</th>
-      <th>RANKVALUE</th>
       <%- if (@bdorp) -%>
         <th>OWNER RANK</th>
       <%- end -%>
-      <%- @bsp.column_list.each do |stat| %>
+      <th>RANKVALUE</th>
+      <%- DefinedStat.draft_columns(DefinedStat::BATTER).each do |stat| %>
         <th><%= stat.upcase %></th>
       <%- end -%>
   </tr>
@@ -34,16 +34,16 @@
       <td><%= link_to("#{fielder.fullname}", draft_player_url(fielder)) %></td>
       <td><%= link_to(fielder.position, :controller => 'players', :action => 'index', :position => fielder.position.downcase) %></td>
       <td><%= team.blank? ? '' : team.abbrev  %></td>
-      <td><%= display_rankvalue(fielder.rankvalue) %></td>
       <%- if (@bdorp)  -%>
         <td>
             <%= fielder.draft_owner_rankvalue -%>
         </td>
       <%- end -%>
-      <%- @bsp.column_list.each do |stat| %>
-        <%- if stat == 'lops' %>
+      <td><%= display_rankvalue(fielder.rankvalue) %></td>
+      <%- DefinedStat.draft_columns(DefinedStat::BATTER).each do |stat| %>
+        <%- if stat == 'l_ops' %>
         <td><%= ops_display(fielder,'left')%></td>
-        <%- elsif stat == 'rops' -%>
+        <%- elsif stat == 'r_ops' -%>
           <td><%= ops_display(fielder,'right')%></td>
         <%- elsif (DraftBattingStatline::RATINGFIELDS.values.include?(stat)) -%>
           <td><%= position_check(fielder,stat) %></td>

@@ -4,11 +4,11 @@
         <th>NAME</th>
         <th>POS</th>
         <th>TEAM</th>
-        <th>RANKVALUE</th>
         <%- if (@pdorp) -%>
           <th>OWNER RANK</th>
         <%- end -%>
-        <%- @psp.column_list.each do |stat| %>
+        <th>RANKVALUE</th>
+        <%- DefinedStat.draft_columns(DefinedStat::PITCHER).each do |stat| %>
           <th><%= stat.upcase %></th>
         <%- end -%>
     </tr>
@@ -39,10 +39,10 @@
             <%= pitcher.draft_owner_rankvalue -%>
           </td>
         <%- end -%>
-        <%- @psp.column_list.each do |stat| %>
-          <%- if stat == 'lops' %>
+        <%- DefinedStat.draft_columns(DefinedStat::PITCHER).each do |stat| %>
+          <%- if stat == 'l_ops' %>
           <td><%= ops_display(pitcher,'left')%></td>
-          <%- elsif stat == 'rops' -%>
+          <%- elsif stat == 'r_ops' -%>
             <td><%= ops_display(pitcher,'right')%></td>
           <%- else -%>
             <td><%= display_stat(pitcher.statline,stat) %></td>

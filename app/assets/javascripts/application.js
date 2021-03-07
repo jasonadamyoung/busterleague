@@ -19,3 +19,4 @@
 //= require draftplayersearch
 //= require chartkick
 //= require Chart.bundle
+//= require datatables

@@ -35,7 +35,7 @@
 </div>
 <%- end -%>
 
-<%- if ['all','batters'].include?(@showtype)  -%>
+<%- if ['all','batters'].include?(@showtype) and !@experimental -%>
 <div class="btn-group">
   <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Batter Display: <%= @bsp.label %> <b class="caret"></b>
@@ -46,7 +46,7 @@
 </div>
 <%- end -%>
 
-<%- if ['all','pitchers'].include?(@showtype)  -%>
+<%- if ['all','pitchers'].include?(@showtype) and !@experimental  -%>
   <div class="btn-group">
     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Pitcher Display: <%= @psp.label %> <b class="caret"></b>

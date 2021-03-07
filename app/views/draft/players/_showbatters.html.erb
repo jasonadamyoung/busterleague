@@ -41,9 +41,9 @@
         </td>
       <%- end -%>
       <%- @bsp.column_list.each do |stat| %>
-        <%- if stat == 'lops' %>
+        <%- if stat == 'l_ops' %>
         <td><%= ops_display(fielder,'left')%></td>
-        <%- elsif stat == 'rops' -%>
+        <%- elsif stat == 'r_ops' -%>
           <td><%= ops_display(fielder,'right')%></td>
         <%- elsif (DraftBattingStatline::RATINGFIELDS.values.include?(stat)) -%>
           <td><%= position_check(fielder,stat) %></td>
