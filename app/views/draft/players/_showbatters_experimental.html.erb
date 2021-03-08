@@ -8,7 +8,7 @@
         <th>OWNER RANK</th>
       <%- end -%>
       <th>RANKVALUE</th>
-      <%- DefinedStat.draft_columns(DefinedStat::BATTER).each do |stat| %>
+      <%- @displaystats.each do |stat| %>
         <th><%= stat.upcase %></th>
       <%- end -%>
   </tr>
@@ -19,9 +19,9 @@
   <%- team = fielder.team -%>
   <%- if !team.blank?
         style = "class = 'teamed'"
-      elsif @currentowner.wanted_draft_players.include?(fielder)
-        if(index =  @currentowner.wanted_draft_players.index(fielder))
-          wanted = @currentowner.wanted_draft_players[index]
+      elsif @wanted_player_list.include?(fielder)
+        if(index =  @wanted_player_list.index(fielder))
+          wanted = @wanted_player_list[index]
           style = "style = 'background: ##{wanted.highlight}'"
         else
           style = "class = 'available'"
@@ -40,7 +40,7 @@
         </td>
       <%- end -%>
       <td><%= display_rankvalue(fielder.rankvalue) %></td>
-      <%- DefinedStat.draft_columns(DefinedStat::BATTER).each do |stat| %>
+      <%- @displaystats.each do |stat| %>
         <%- if stat == 'l_ops' %>
         <td><%= ops_display(fielder,'left')%></td>
         <%- elsif stat == 'r_ops' -%>

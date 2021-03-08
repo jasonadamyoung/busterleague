@@ -152,7 +152,7 @@ class DraftPlayer < ApplicationRecord
       buildscope = buildscope.where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id = #{filter_team.id}")
     end
 
-    buildscope
+    buildscope.includes(:statline)
   end
 
   def self.positionlabel(position)

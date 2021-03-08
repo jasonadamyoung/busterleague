@@ -18,9 +18,9 @@
     <% playerlist.each do |pitcher| %>
     <%- if !pitcher.team.blank?
           style = "class = 'teamed'"
-        elsif @currentowner.wanted_draft_players.include?(pitcher)
-          if(index =  @currentowner.wanted_draft_players.index(pitcher))
-            wanted = @currentowner.wanted_draft_players[index]
+        elsif @wanted_player_list.include?(pitcher)
+          if(index =  @wanted_player_list.index(pitcher))
+            wanted = @wanted_player_list[index]
             style = "style = 'background: ##{wanted.highlight}'"
           else
             style = "class = 'available'"
