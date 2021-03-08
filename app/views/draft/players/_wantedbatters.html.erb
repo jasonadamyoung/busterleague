@@ -22,9 +22,9 @@
   <% playerlist.each do |fielder| %>
   <%- if !fielder.team.blank?
         style = "class = 'teamed'"
-      elsif @currentowner.wanted_draft_players.include?(fielder)
-        if(index =  @currentowner.wanted_draft_players.index(fielder))
-          wanted = @currentowner.wanted_draft_players[index]
+      elsif @wanted_player_list.include?(fielder)
+        if(index =  @wanted_player_list.index(fielder))
+          wanted = @wanted_player_list[index]
           style = ""
         else
           style = "class = 'available'"
