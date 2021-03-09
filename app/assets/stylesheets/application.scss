@@ -6,8 +6,6 @@
  *= require bootstrap_overrides
  *= require custom_styles
  *= require ranking_values
- *= require jquery.jqplot
- *= require jquery-tablesorter/theme.blue
  *= require token-input-facebook
  *= require token-input-bootstrappy
  *= require uploads
@@ -15,3 +13,4 @@
 @import "bootstrap";
 @import "font-awesome-sprockets";
 @import "font-awesome";
+@import "datatables";

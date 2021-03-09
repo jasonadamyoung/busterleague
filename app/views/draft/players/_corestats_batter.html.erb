@@ -1,4 +1,4 @@
-<table class="table table-bordered">
+<table class="table table-bordered table-sm">
   <thead>
   <tr>
     <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
@@ -12,12 +12,12 @@
   <tbody>
   <tr>
     <%- DraftStatDistribution.core(DraftStatDistribution::BATTER).each do |stat| %>
-      <%- if stat == 'lops' %>
+      <%- if stat == 'l_ops' %>
         <td><%= ops_display(@player,'left')%></td>
-      <%- elsif stat == 'rops' -%>
+      <%- elsif stat == 'r_ops' -%>
         <td><%= ops_display(@player,'right')%></td>
       <%- else -%>
-        <td><%= @player.statline.send(stat) %></td>
+        <td><%= display_stat(@player.statline,stat) %></td>
       <%- end -%>
     <%- end -%>
     <%- DraftBattingStatline::RATINGFIELDS.each do |pos,rating_field| -%>

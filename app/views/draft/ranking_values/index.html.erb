@@ -1,6 +1,37 @@
 <%- @page_title = 'Your Rankings' -%>
 <p style="font-size:large;"><%= link_to("Create a Pitcher Ranking", new_draft_ranking_value_url(:playertype => DraftRankingValue::PITCHER))%> | <%= link_to("Create a Batter Ranking", new_draft_ranking_value_url(:playertype => DraftRankingValue::BATTER))%></p>
 
+<h2>System Defaults</h2>
+
+<table class="table table-bordered table-striped">
+<thead>
+  <tr>
+    <th>&nbsp;</th>
+    <th>Label</th>
+    <th>Player Type</th>
+    <th>Positions</th>
+    <th>Attributes</th>
+  </tr>
+</thead>
+<tbody>
+<% for rv in DraftRankingValue.defaults %>
+  <tr>
+    <td><%= render(:partial => 'position_pref_button', :locals => {:rankingvalue => rv })%></td>
+    <td><%= rv.label %></td>
+    <td><%= rv.playertype_to_s %></td>
+    <td><%= pref_positions(rv,'default') %></td>
+    <td class="rankingvalueindex">
+      <%- rv.formula.each do |f| -%>
+        <span><a name="<%= f[:column] %>"><%= f[:column] %><%= directional_arrow(rv.playertype,f[:column]) %><%= importance_label(f[:importance])%></a></span>
+      <%- end -%>
+    </td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+<h2>Your Rankings</h2>
+
 <%- if @rankingvalues.blank? -%>
   You haven't created any rankings yet.
 <%- else -%>
@@ -10,23 +41,18 @@
     <th>&nbsp;</th>
     <th>Label</th>
     <th>Player Type</th>
+    <th>Positions</th>
     <th>Attributes</th>
     <th>&nbsp;</th>
   </tr>
 </thead>
 <tbody>
 <% for rv in @rankingvalues %>
-  <%- if [@prv,@brv].include?(rv) -%>
-  <tr class='shaded'>
-  <%- else -%>
   <tr>
-  <%- end -%>
-    <%- useparams = {:action => :index}
-    (rv.playertype == DraftRankingValue::BATTER ? useparams[:brv] = rv.id : useparams[:prv] = rv.id )
-    -%>
-    <td><%= link_to 'use', useparams %></td>
+    <td><%= render(:partial => 'position_pref_button', :locals => {:rankingvalue => rv })%></td>
     <td><%= rv.label %></td>
     <td><%= rv.playertype_to_s %></td>
+    <td><%= pref_positions(rv) %></td>
     <td class="rankingvalueindex">
       <%- rv.formula.each do |f| -%>
         <span><a name="<%= f[:column] %>"><%= f[:column] %><%= directional_arrow(rv.playertype,f[:column]) %><%= importance_label(f[:importance])%></a></span>

@@ -1,4 +1,5 @@
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+		<%= link_to("Busterdraft",draft_root_path,:class=>'navbar-brand mb-0 h1')%>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	</button>
@@ -36,12 +37,17 @@
 						<%= nav_dropdown_item(draft_position_players_path(position: pos),label) %>
 					<%- end -%>
 					<%= nav_dropdown_item(draft_position_players_path(position: 'of'),'All Outfielders') %>
+					<div class="dropdown-divider"></div>
+					<h6 class="dropdown-header">Experimental Views</h6>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'allbatters', experimental: true),'All Batters (Experimental)',true) %>
+					<%= nav_dropdown_item(draft_position_players_path(position: 'allpitchers', experimental: true),'All Pitchers (Experimental)',true) %>
 				</div>
 			</li>
 
 			<!-- Search Form -->
-			<%= form_tag(findplayer_draft_players_path, { :class => 'form-inline mly-2 mly-lg-0' }) do -%>
-				<%= text_field_tag(:q, params[:q], {:class => 'search-query form-control mr-2', placeholder: 'Find Player', autocomplete: 'off', 'aria-label': 'Find Player' }) -%>
+			<%= form_tag(search_draft_players_path, { class: 'form-inline mly-2 mly-lg-0' }) do -%>
+        <%= hidden_field_tag(:searchpage,'1') %>
+				<%= text_field_tag(:q, params[:q], {id: searchfield_dom_id, class: 'search-query form-control mr-2', placeholder: 'Find Player', autocomplete: 'off', 'aria-label': 'Find Player' }) -%>
 			<%- end -%>
 			</ul>
 
@@ -66,5 +72,5 @@
 				<%= nav_item(login_path,'Log In') %>
 			<%- end -%>
 		</ul>
-
 	</div>
+</nav>

@@ -22,12 +22,12 @@
           <td><%= pitcher.statline.age %></td>
           <td><%= pitcher.statline.throws %></td>
           <%- DraftStatDistribution.core(DraftStatDistribution::PITCHER).each do |stat| %>
-            <%- if stat == 'lops' %>
+            <%- if stat == 'l_ops' %>
               <td><%= ops_display(pitcher,'left')%></td>
-            <%- elsif stat == 'rops' -%>
+            <%- elsif stat == 'r_ops' -%>
               <td><%= ops_display(pitcher,'right')%></td>
             <%- else -%>
-              <td><%= pitcher.statline.send(stat) %></td>
+              <td><%= display_stat(pitcher.statline,stat) %></td>
             <%- end -%>
           <%- end -%>
         </tr>

@@ -10,16 +10,15 @@ module DraftHelper
     returntext += '<tbody>'
 
 
-    ['SP','RP'].each do |position|
+    ['sp','rp'].each do |position|
       returntext += "<tr><td>#{position.upcase}</td><td>#{count_display(array[position])}</td></tr>"
     end
 
     DraftBattingStatline::RATINGFIELDS.keys.each do |position|
       returntext += "<tr><td>#{position.upcase}</td><td>#{count_display(array[position])}</td></tr>"
     end
-    other = array['dh'] ? array['dh'] : 0
-    other += array[''] ? array[''] : 0
-    returntext += "<tr><td>other</td><td>#{count_display(other)}</td></tr>"
+    dh = array['dh'] ? array['dh'] : 0
+    returntext += "<tr><td>DH</td><td>#{count_display(dh)}</td></tr>"
     returntext += '</tbody>'
     returntext += '</table>'
     returntext.html_safe
@@ -97,6 +96,8 @@ module DraftHelper
 
 
   def rankingvalue_items(rvtype)
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
     case rvtype
     when 'prv'
       playertype = DraftRankingValue::PITCHER
@@ -105,12 +106,19 @@ module DraftHelper
     else
       return ''
     end
-    computer_ranks = Owner.computer.draft_ranking_values.where(:playertype => playertype)
-    owner_ranks = @currentowner.draft_ranking_values.where(:playertype => playertype)
     nav_items = []
-    (owner_ranks + computer_ranks).each do |rankingvalue|
-      nav_items << rv_nav_item(rankingvalue)
+    computer_ranking_values = Owner.computer.draft_ranking_values.where(:playertype => playertype)
+    owner_ranking_values = @currentowner.draft_ranking_values.where(:playertype => playertype)
+    (owner_ranking_values + computer_ranking_values).each do |rankingvalue|
+      nav_items << set_pref_nav_item(rankingvalue.label,rankingvalue,position)
     end
+    nav_items << '<div class="dropdown-divider"></div>'.html_safe
+    if(dopp_dor_pref = @currentowner.draft_owner_position_prefs.dor_pref(playertype,position))
+      nav_items << dor_toggle_link(dopp_dor_pref.enabled?,playertype,position)
+    else
+      nav_items << dor_toggle_link(false,playertype,position)
+    end
+    nav_items << '<div class="dropdown-divider"></div>'.html_safe
     nav_items << rv_nav_item('new',rvtype)
     nav_items.join("\n").html_safe
   end
@@ -130,6 +138,42 @@ module DraftHelper
       label = rankingvalue.label
     end
     link_to(label,setrv_draft_ranking_values_path(get_params),class: 'dropdown-item').html_safe
+  end
+
+  def set_pref_nav_item(label,prefable,position='default')
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:prefable_type] = prefable.class.name
+    get_params[:prefable_id] = prefable.id
+    get_params[:player_type] = prefable.playertype
+    get_params[:position] = position
+    link_to(label,draft_owners_set_position_pref_path(get_params),class: 'dropdown-item').html_safe
+  end
+
+  def pref_positions(prefable,missing_text = 'Not Used')
+    positions = prefable.draft_owner_position_prefs.pluck("position")
+    if positions.blank?
+      missing_text.html_safe
+    else
+      positions.join(', ').html_safe
+    end
+  end
+
+  def dor_toggle_link(is_enabled,player_type,position='default')
+    get_params = {}
+    get_params[:currenturi] = Base64.encode64(request.fullpath)
+    get_params[:prefable_type] = 'DraftOwnerRank'
+    get_params[:prefable_id] = 0
+    get_params[:player_type] = player_type
+    get_params[:position] = position
+    get_params[:enabled] = !is_enabled
+    if(is_enabled)
+      or_icon_class = "fas fa-check-square"
+    else
+      or_icon_class = "far fa-square"
+    end
+    link_text = "<i class='#{or_icon_class}'></i> Use Owner Rank".html_safe
+    link_to(link_text,draft_owners_set_or_position_pref_path(get_params),class: 'dropdown-item').html_safe
   end
 
   def draftstatus_label(status)
@@ -207,6 +251,9 @@ module DraftHelper
 
 
   def statdisplay_items(display_type)
+    position = params[:position] ? params[:position].downcase : 'default'
+    position = 'default' if ['allbatters','allpitchers','all'].include?(position)
+
     case display_type
     when 'psp'
       playertype = DraftStatPreference::PITCHER
@@ -219,7 +266,7 @@ module DraftHelper
     owner = @currentowner.draft_stat_preferences.where(:playertype => playertype)
     nav_items = []
     (computer + owner).each do |sp|
-      nav_items << sp_nav_item(sp)
+      nav_items << set_pref_nav_item(sp.label,sp,position)
     end
     nav_items << sp_nav_item('new',display_type)
     nav_items.join("\n").html_safe
@@ -255,5 +302,11 @@ module DraftHelper
       end
     end
   end
+
+  def searchfield_dom_id
+    (@searchpage or @showsearchresults) ? 'dynamicsearch' : 'staticsearch'
+  end
+
+
 
 end

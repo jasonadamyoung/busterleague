@@ -28,8 +28,8 @@ module ApplicationHelper
     markup.html_safe
   end
 
-  def nav_dropdown_item(path,label)
-    dropdown_item_class = current_page?(path) ? 'dropdown-item active' : 'dropdown-item'
+  def nav_dropdown_item(path,label,experimental = false)
+    dropdown_item_class = current_page?(path) && !experimental ? 'dropdown-item active' : 'dropdown-item'
     link_to(label.html_safe,path,class: dropdown_item_class).html_safe
   end
 

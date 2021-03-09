@@ -1,0 +1,57 @@
+<table class="datatable_draftplayer_table table table-bordered table-condensed table-hover">
+  <thead>
+  <tr>
+      <th>NAME</th>
+      <th>POS</th>
+      <th>TEAM</th>
+      <%- if (@bdorp) -%>
+        <th>OWNER RANK</th>
+      <%- end -%>
+      <th>RANKVALUE</th>
+      <%- DefinedStat.draft_columns(DefinedStat::BATTER).each do |stat| %>
+        <th><%= stat.upcase %></th>
+      <%- end -%>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% playerlist.each do |fielder| %>
+  <%- team = fielder.team -%>
+  <%- if !team.blank?
+        style = "class = 'teamed'"
+      elsif @currentowner.wanted_draft_players.include?(fielder)
+        if(index =  @currentowner.wanted_draft_players.index(fielder))
+          wanted = @currentowner.wanted_draft_players[index]
+          style = "style = 'background: ##{wanted.highlight}'"
+        else
+          style = "class = 'available'"
+        end
+      else
+        style = "class = 'available'"
+      end
+  -%>
+  <tr <%= style.html_safe %>>
+      <td><%= link_to("#{fielder.fullname}", draft_player_url(fielder)) %></td>
+      <td><%= link_to(fielder.position, :controller => 'players', :action => 'index', :position => fielder.position.downcase) %></td>
+      <td><%= team.blank? ? '' : team.abbrev  %></td>
+      <%- if (@bdorp)  -%>
+        <td>
+            <%= fielder.draft_owner_rankvalue -%>
+        </td>
+      <%- end -%>
+      <td><%= display_rankvalue(fielder.rankvalue) %></td>
+      <%- DefinedStat.draft_columns(DefinedStat::BATTER).each do |stat| %>
+        <%- if stat == 'l_ops' %>
+        <td><%= ops_display(fielder,'left')%></td>
+        <%- elsif stat == 'r_ops' -%>
+          <td><%= ops_display(fielder,'right')%></td>
+        <%- elsif (DraftBattingStatline::RATINGFIELDS.values.include?(stat)) -%>
+          <td><%= position_check(fielder,stat) %></td>
+        <%- else -%>
+          <td><%= display_stat(fielder.statline,stat) %></td>
+        <%- end -%>
+      <%- end -%>
+  </tr>
+  <% end %>
+  </tbody>
+</table>

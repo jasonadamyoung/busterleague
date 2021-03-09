@@ -1,2 +1,2 @@
 jQuery ->
-  $('table.tablesorter').tablesorter();
+  $(".datatable_table").dataTable();

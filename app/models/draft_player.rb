@@ -13,6 +13,17 @@ class DraftPlayer < ApplicationRecord
   has_one :draft_pick
   has_many :draft_wanteds
   has_many :wantedowners, :through => :draft_wanteds, :source => :owner
+  has_many :draft_owner_ranks
+  has_many :rankingowners, :through => :draft_owner_ranks, :source => :owner
+
+  # player types
+  PITCHER = 1
+  BATTER = 2
+
+  # positions
+  PITCHING_POSITIONS = ['sp','rp']
+  BATTING_POSITIONS = ['c','1b','2b','3b','ss','lf','cf','rf','dh']
+
 
   # list filters
   ALL_PLAYERS = 'all'
@@ -21,19 +32,12 @@ class DraftPlayer < ApplicationRecord
   ME_ME_ME = 'notdrafted+mine'
 
   # new draftstatus
-  DRAFT_STATUS_TEAMED = 1
   DRAFT_STATUS_NOTDRAFTED = 2
   DRAFT_STATUS_DRAFTED = 3
+  DRAFT_STATUS_TEAMED = 4
 
 
   paginates_per 50
-
-  scope :byrankingvalues, lambda {|rv1,rv2|
-    select("#{self.table_name}.*, draft_rankings.value as rankvalue")
-    .joins(:draft_rankings)
-    .where("draft_rankings.draft_ranking_value_id IN (#{rv1.id},#{rv2.id})")
-    .order("rankvalue DESC")
-  }
 
   scope :teamed, lambda { where(:draftstatus => DRAFT_STATUS_TEAMED) }
   scope :notdrafted, lambda { where(:draftstatus => DRAFT_STATUS_NOTDRAFTED) }
@@ -44,24 +48,7 @@ class DraftPlayer < ApplicationRecord
 
   scope :byteam, lambda {|team| where(team_id: team.id)}
 
-  scope :draftstatus, lambda {|draftstatus,team|
-    case draftstatus
-    when DRAFTED_PLAYERS
-      where("#{self.table_name}.team_id != 0")
-    when NOTDRAFTED_PLAYERS
-      where("#{self.table_name}.team_id = 0")
-    when ALL_PLAYERS
-      where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id != 0")
-    else
-      if(team.blank?)
-        where("#{self.table_name}.team_id = 0")
-      else
-        where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id = #{team.id}")
-      end
-    end
-  }
-
-  scope :byposition, lambda {|position| where(position: position.upcase)}
+  scope :byposition, lambda {|position| where(position: position.downcase)}
 
 
   def self.rebuild_from_statlines
@@ -95,15 +82,77 @@ class DraftPlayer < ApplicationRecord
     DraftRankingValue.rebuild
   end
 
-  def self.sorting(*ranking_values)
-    if(ranking_values.length == 0)
-      order("last_name ASC")
+
+  def self.playerlist(owner:, draftstatus:, position:, owner_rank: false, ranking_values: [])
+    # sorting
+    if(ranking_values.length > 0)
+      if(owner_rank)
+        case position.downcase
+        when 'all'
+          query_column = 'overall'
+        when 'default'
+          query_column = 'overall'
+        when 'allbatters'
+          query_column = 'overall'
+        when 'allpitchers'
+          query_column = 'overall'
+        when 'of'
+          query_column = 'overall'
+        else
+          query_column = "pos_#{position.downcase}"
+        end
+        buildscope = self.select("#{self.table_name}.*, draft_rankings.value as rankvalue, draft_owner_ranks.#{query_column} as draft_owner_rankvalue")
+        buildscope = buildscope.includes(:team)
+        buildscope = buildscope.joins(:draft_rankings)
+        buildscope = buildscope.joins(:draft_owner_ranks)
+        buildscope = buildscope.where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
+        buildscope = buildscope.where("draft_owner_ranks.owner_id = #{owner.id}")
+        buildscope = buildscope.where("draft_owner_ranks.#{query_column} IS NOT NULL")
+        buildscope = buildscope.order("draft_owner_rankvalue ASC")
+        buildscope = buildscope.order("rankvalue DESC")
+        buildscope = buildscope.order("#{self.table_name}.id ASC")
+      else
+        buildscope = self.select("#{self.table_name}.*, draft_rankings.value as rankvalue")
+        buildscope = buildscope.includes(:team)
+        buildscope = buildscope.joins(:draft_rankings)
+        buildscope = buildscope.where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
+        buildscope = buildscope.order("rankvalue DESC")
+        buildscope = buildscope.order("#{self.table_name}.id ASC")
+      end
     else
-      select("#{self.table_name}.*, draft_rankings.value as rankvalue")
-      .joins(:draft_rankings)
-      .where("draft_rankings.draft_ranking_value_id IN (#{ranking_values.map(&:id).join(',')})")
-      .order("rankvalue DESC")
+      buildscope = self.includes(:team)
+      buildscope = buildscope.order("last_name ASC")
     end
+
+    pitching_positions = PITCHING_POSITIONS
+    batting_positions = BATTING_POSITIONS
+    case position.downcase
+    when *pitching_positions
+      buildscope = buildscope.where("(#{self.table_name}.position = '#{position}')")
+    when *batting_positions
+      if(position.downcase == 'dh')
+        buildscope = buildscope.where("(#{self.table_name}.position = '#{position}')")
+      else
+        ratingfield = DraftBattingStatline::RATINGFIELDS[position.downcase]
+        buildscope = buildscope.joins(:statline)
+        buildscope = buildscope.where("(draft_players.position = '#{position}' or draft_batting_statlines.#{ratingfield} != '')")
+      end
+    when 'of'
+      buildscope = buildscope.joins(:statline)
+      buildscope = buildscope.where("(draft_players.position IN ('cf','lf','rf') or draft_batting_statlines.pos_cf != '' or draft_batting_statlines.pos_lf != '' or draft_batting_statlines.pos_rf != '')")
+    end
+
+    case draftstatus
+    when DRAFTED_PLAYERS
+      buildscope = buildscope.where("#{self.table_name}.team_id != 0")
+    when NOTDRAFTED_PLAYERS
+      buildscope = buildscope.where("#{self.table_name}.team_id = 0")
+    when ME_ME_ME
+      filter_team = owner.team
+      buildscope = buildscope.where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id = #{filter_team.id}")
+    end
+
+    buildscope
   end
 
   def self.positionlabel(position)
@@ -113,6 +162,8 @@ class DraftPlayer < ApplicationRecord
       'All Players'
     when 'allbatters'
       'All Batters'
+    when 'allpitchers'
+      'All Pitchers'
     when 'of'
       'All Outfielders'
     else
@@ -235,4 +286,12 @@ class DraftPlayer < ApplicationRecord
     end
     stats
   end
+
+  def owner_rank_or_blank(owner)
+    if(!(dor = self.draft_owner_ranks.where(owner: owner).first))
+      dor = self.draft_owner_ranks.new(owner: owner)
+    end
+    dor
+  end
+
 end

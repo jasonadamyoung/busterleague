@@ -4,7 +4,6 @@
 # see LICENSE file
 
 class Draft::RankingValuesController < Draft::BaseController
-  before_action :signin_required
   before_action :noidletimeout
 
   def setrv

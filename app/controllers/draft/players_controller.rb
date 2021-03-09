@@ -4,7 +4,7 @@
 # see LICENSE file
 
 class Draft::PlayersController < Draft::BaseController
-  before_action :signin_required, only: [:draft,:sethighlight,:setnotes,:wanted,:wantplayer,:removewant]
+  helper_method :is_searchpage_request?
 
   def draft
     begin
@@ -38,7 +38,11 @@ class Draft::PlayersController < Draft::BaseController
       # do nothing
     end
 
-    return redirect_to(draft_root_url)
+    if(!params[:currenturi].nil?)
+      return redirect_to(Base64.decode64(params[:currenturi]))
+    else
+      return redirect_to(draft_root_url)
+    end
   end
 
   def setdraftstatus
@@ -92,28 +96,36 @@ class Draft::PlayersController < Draft::BaseController
   end
 
   def index
+    @experimental = is_experimental? ? true : false
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
-      @playerlist = DraftPlayer.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv,@prv).page(params[:page])
+      @playerlist = DraftPlayer.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: (@bdorp and @pdorp), ranking_values: [@brv,@prv]).page(params[:page])
     elsif(params[:position] == 'allpitchers')
       @showtype = 'pitchers'
       @position = 'allpitchers'
-      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).includes(:statline).page(params[:page])
+      if(@experimental)
+        @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv])
+      else
+        @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
+      end
     elsif(params[:position].downcase == 'sp' or params[:position].downcase == 'rp')
       @showtype = 'pitchers'
       @position = params[:position].downcase
-      @playerlist = DraftPitcher.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@prv).where("players.position = '#{@position}'").includes(:statline).page(params[:page])
+      @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
     elsif(params[:position] == 'allbatters')
       @position = 'allbatters'
       @showtype = 'batters'
-      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).includes(:statline).page(params[:page])
+      if(@experimental)
+        @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv])
+      else
+        @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])
+      end
     else
       @showtype = 'batters'
       @position = params[:position].downcase
-      @playerlist = DraftBatter.includes(:team).draftstatus(@draftstatus,@currentowner.team).sorting(@brv).fieldergroup(@position).page(params[:page])
+      @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])
     end
-
   end
 
   def show
@@ -156,14 +168,27 @@ class Draft::PlayersController < Draft::BaseController
     end
   end
 
-  def findplayer
+  def search
+    @searchpage = true
+    if(is_searchpage_request?)
+      @returntouri = request.fullpath
+    else
+      @returntouri = (request.referer.blank?) ? request.fullpath : request.referer
+    end
+    ActiveRecord::Base::logger.debug "@returntouri = #{@returntouri}"
     if (!params[:q].nil? and !params[:q].empty? and params[:q].size >= 2)
-      @playerlist = DraftPlayer.searchplayers(params[:q]).order(:last_name)
+      if(is_searchpage_request?)
+        # no limit
+        @playerlist = DraftPlayer.searchplayers(params[:q]).order(draftstatus: :asc).order(:last_name)
+      else
+        @playerlist = DraftPlayer.searchplayers(params[:q]).order(draftstatus: :asc).order(:last_name).limit(5)
+      end
+      if(!is_searchpage_request?)
+        render(:layout => false)
+      end
     end
-    respond_to do |wants|
-      wants.html { render :action => 'findplayer'}
-      wants.js { render :action => 'findplayer', :layout => false}
-    end
+
+
   end
 
   def wantplayer
@@ -197,6 +222,38 @@ class Draft::PlayersController < Draft::BaseController
       # do nothing
     end
     return redirect_to(draft_player_url(@player))
+  end
+
+
+  def set_draft_owner_rank
+    @player = DraftPlayer.find(params[:id])
+    position = params[:position]
+    position_attribute = (position != 'overall') ? "pos_#{position}" : position
+    if(@player.nil?)
+      returninformation = {'msg' => 'Invalid Player'}
+      return render :json => returninformation.to_json, :status => 400
+    elsif(!position or !DraftOwnerRank::RANKING_ATTRIBUTES.include?(position_attribute.to_sym) or !params[:draft_owner_rank][position_attribute])
+      returninformation = {'msg' => 'Invalid Position'}
+      return render :json => returninformation.to_json, :status => 400
+    elsif(draft_owner_rank = @player.draft_owner_ranks.where(owner_id: @currentowner.id).first)
+      draft_owner_rank.update_attribute(position_attribute, params[:draft_owner_rank][position_attribute])
+      returninformation = {'msg' => 'OK!'}
+      return render :json => returninformation.to_json, :status => 200
+    elsif(draft_owner_rank = @player.draft_owner_ranks.create(owner_id: @currentowner.id,draft_player_id: @player.id,position_attribute => params[:draft_owner_rank][position_attribute]))
+      returninformation = {'msg' => 'OK!'}
+      return render :json => returninformation.to_json, :status => 200
+    else
+      returninformation = {'msg' => 'Unknown Error'}
+      return render :json => returninformation.to_json, :status => 400
+    end
+  end
+
+  def is_searchpage_request?
+    !params[:searchpage].nil? and TRUE_VALUES.include?(params[:searchpage])
+  end
+
+  def is_experimental?
+    !params[:experimental].nil? and TRUE_VALUES.include?(params[:experimental])
   end
 
 end

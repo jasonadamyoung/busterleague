@@ -40,7 +40,6 @@
             <td>
               <%= form_tag({:controller => "players", :action=> "sethighlight", :id => pitcher.id}) do -%>
                 <%= hidden_field_tag(:id,pitcher.id) %>
-                <%= hidden_field_tag('currenturi',Base64.encode64(request.fullpath)) -%>
                 <%= text_field_tag(:highlight, wanted.highlight, {:id => "highlight_#{pitcher.id}",:size => 7, class: 'jscolor input-small'}) %><%= submit_tag('change')%>
               <%- end -%>
               <script type="text/javascript">

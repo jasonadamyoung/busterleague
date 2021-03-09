@@ -19,6 +19,19 @@ module PlayersHelper
     "#{integer}.#{number_with_precision((decimal*3),precision: 0)}"
   end
 
+  def ops_display(player,hand)
+    displaytext = ''
+    if(hand == 'left')
+      htmloptions = {:title => "At-Bats vs. Left #{player.statline.l_pa}", :rel => 'tooltip'}
+      if(!player.statline.l_pa.nil?)
+        htmloptions.merge!(:class => 'label label-warning') if (player.statline.l_pa < 75)
+      end
+      link_to(player.statline.l_ops, '#', htmloptions).html_safe
+    else
+      link_to(player.statline.r_ops, '#', :title => "At-Bats vs. Right #{player.statline.r_pa}", :rel => 'tooltip').html_safe
+    end
+  end
+
   def display_stat(stat_object,stat_name)
     if(stat = stat_object.send(stat_name))
       if(stat_name == 'ip')

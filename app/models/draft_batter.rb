@@ -19,27 +19,27 @@ class DraftBatter < DraftPlayer
     'dh' => 'Designated Hitters'
   }
 
-  scope :fieldergroup, lambda {|position|
-    if(position == 'dh')
-      conditionstring = "(draft_players.position = '#{position}')"
-    elsif(position == 'of')
-      conditionstring = "(draft_players.position IN ('cf','lf','rf') or draft_batting_statlines.pos_cf != '' or draft_batting_statlines.pos_lf != '' or draft_batting_statlines.pos_rf != '')"
-    else
-      ratingfield = DraftBattingStatline::RATINGFIELDS[position]
-      conditionstring = "(draft_players.position = '#{position}' or draft_batting_statlines.#{ratingfield} != '')"
-    end
-    joins(:statline).where(conditionstring)
-  }
-
   scope :byrankingvalue, lambda {|rv|
-    select("#{self.table_name}.*, draft_rankings.value as rankvalue").joins(:draft_rankings).where("draft_rankings.draft_ranking_value_id = #{rv.id}").order("rankvalue DESC")
+    select("#{self.table_name}.*, draft_rankings.value as rankvalue").joins(:draft_rankings).where("draft_rankings.draft_ranking_value_id = #{rv.id}").order("rankvalue DESC,#{self.table_name}.id ASC").order("#{self.table_name}.id ASC")
   }
 
   scope :byrankingvalue_and_wantedowner, lambda {|rv,owner|
     select("#{self.table_name}.*, draft_rankings.value as rankvalue,draft_wanteds.notes as notes,draft_wanteds.highlight as highlight")
     .joins([:draft_rankings,:wantedowners])
     .where("draft_rankings.draft_ranking_value_id = #{rv.id} and owners.id = #{owner.id}")
-    .order("rankvalue DESC")
+    .order("rankvalue DESC").order("#{self.table_name}.id ASC")
   }
+
+  def eligible_positions
+    return_positions = []
+    DraftBattingStatline::RATINGFIELDS.each do |pos,rating_field|
+      if(has_rating = self.statline.send(rating_field))
+        return_positions << pos
+      end
+    end
+    return_positions << self.position
+    return_positions << 'dh'
+    return_positions.uniq
+  end
 
 end

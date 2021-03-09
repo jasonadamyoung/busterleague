@@ -12,7 +12,7 @@ class StatSheetsController < ApplicationController
   end
 
   def create
-    if(!@currentowner.is_admin?)
+    if(!@currentowner&.is_admin?)
       flash[:error] = "You must be an application admin to upload stat sheets."
       return redirect_to stat_sheets_url
     end

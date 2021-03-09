@@ -6,15 +6,21 @@ Rails.application.routes.draw do
 
   namespace :draft do
 
-    resources :owners
+
+    controller :owners do
+      simple_named_route 'set_position_pref', via: [:get, :post]
+      simple_named_route 'set_or_position_pref', via: [:get, :post]
+    end
 
     resources :teams, :only => [:show, :index]  do
     end
 
     resources :players, :only => [:show, :index] do
       collection do
+        get :experimental
         get :wanted
-        post :findplayer
+        post :search
+        get  :search
         get :setdraftstatus
       end
 
@@ -23,6 +29,8 @@ Rails.application.routes.draw do
         post :removewant
         post :wantplayer
         post :sethighlight
+        post :set_draft_owner_rank
+        put :set_draft_owner_rank
         put :setnotes
       end
     end
@@ -30,6 +38,7 @@ Rails.application.routes.draw do
     resources :ranking_values, :only => [:index,:new,:create,:destroy] do
       collection do
         get :setrv
+        get :setor
       end
     end
 

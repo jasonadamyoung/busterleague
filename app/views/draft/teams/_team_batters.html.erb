@@ -27,12 +27,12 @@
           <%- if(fielder.statline.send(stat).blank?) -%>
             <td>n/a</td>
           <%- else -%>
-            <%- if stat == 'lops' %>
+            <%- if stat == 'l_ops' %>
               <td><%= ops_display(fielder,'left')%></td>
-            <%- elsif stat == 'rops' -%>
+            <%- elsif stat == 'r_ops' -%>
               <td><%= ops_display(fielder,'right')%></td>
             <%- else -%>
-              <td><%= fielder.statline.send(stat) %></td>
+              <td><%= display_stat(fielder.statline,stat) %></td>
             <%- end -%>
           <%- end -%>
         <%- end -%>

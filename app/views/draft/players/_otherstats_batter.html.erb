@@ -3,7 +3,7 @@
     <%- (DefinedStat.batting_statlines.pluck(:name) - DraftStatDistribution.core(DraftStatDistribution::BATTER) - ['age']).sort.each do |stat| -%>
 	    <tr>
 		    <td><%= stat %></td>
-		    <td><%= @player.statline.send(stat) %></td>
+		    <td><%= display_stat(@player.statline,stat) %></td>
 	    </tr>
 	  <%- end -%>
  </tbody>

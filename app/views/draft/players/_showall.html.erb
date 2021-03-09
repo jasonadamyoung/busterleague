@@ -6,6 +6,9 @@
         <th>position</th>
         <th>age</th>
         <th>rankvalue</th>
+        <%- if (@bdorp and @pdorp) -%>
+          <th>owner rank</th>
+        <%- end -%>
     </tr>
   </thead>
   <tbody>
@@ -34,6 +37,11 @@
         <td><%= link_to(showplayer.position, :controller => 'players', :action => 'index', :position => showplayer.position.downcase) %></td>
         <td><%= showplayer.age %></td>
         <td><%= display_rankvalue(showplayer.rankvalue) %></td>
+        <%- if (@bdorp and @pdorp) -%>
+          <td>
+            <%= showplayer.draft_owner_rankvalue -%>
+          </td>
+        <%- end -%>
       </tr>
     <% end%>
     </tbody>

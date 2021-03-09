@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_07_212850) do
+ActiveRecord::Schema.define(version: 2021_03_06_194756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -230,6 +230,39 @@ ActiveRecord::Schema.define(version: 2021_02_07_212850) do
     t.string "othr", limit: 10
   end
 
+  create_table "draft_owner_position_prefs", id: :serial, force: :cascade do |t|
+    t.integer "owner_id", default: 0, null: false
+    t.integer "prefable_id", null: false
+    t.string "prefable_type", null: false
+    t.integer "player_type", null: false
+    t.string "position", limit: 10, default: "default", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "enabled", default: true, null: false
+    t.index ["owner_id", "prefable_id", "prefable_type", "player_type"], name: "dopp_reference_ndx"
+    t.index ["owner_id", "prefable_type", "position", "player_type"], name: "draft_owner_position_pref_ndx", unique: true
+  end
+
+  create_table "draft_owner_ranks", id: :serial, force: :cascade do |t|
+    t.integer "owner_id", default: 0
+    t.integer "draft_player_id", default: 0
+    t.integer "overall"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer "pos_sp"
+    t.integer "pos_rp"
+    t.integer "pos_c"
+    t.integer "pos_1b"
+    t.integer "pos_2b"
+    t.integer "pos_3b"
+    t.integer "pos_ss"
+    t.integer "pos_lf"
+    t.integer "pos_cf"
+    t.integer "pos_rf"
+    t.integer "pos_dh"
+    t.index ["owner_id", "draft_player_id"], name: "draft_owner_rank_owner_player_ndx", unique: true
+  end
+
   create_table "draft_picks", id: :serial, force: :cascade do |t|
     t.integer "season", limit: 2, null: false
     t.integer "team_id", default: 0, null: false
@@ -334,6 +367,7 @@ ActiveRecord::Schema.define(version: 2021_02_07_212850) do
     t.text "formula"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string "position", limit: 10, default: "default"
   end
 
   create_table "draft_rankings", id: :serial, force: :cascade do |t|
@@ -498,6 +532,7 @@ ActiveRecord::Schema.define(version: 2021_02_07_212850) do
     t.integer "primary_owner_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_draft_admin", default: false, null: false
     t.index ["email"], name: "index_owners_on_email", unique: true
   end
 
