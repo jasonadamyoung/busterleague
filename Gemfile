@@ -5,6 +5,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'rails', '~> 6.1'
 # Use postgres as the database for Active Record
 gem 'pg'
+# install webpacker
+gem 'webpacker'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
