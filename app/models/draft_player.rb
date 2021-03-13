@@ -129,9 +129,11 @@ class DraftPlayer < ApplicationRecord
     case position.downcase
     when *pitching_positions
       buildscope = buildscope.where("(#{self.table_name}.position = '#{position}')")
+      buildscope = buildscope.includes(:statline)
     when *batting_positions
       if(position.downcase == 'dh')
         buildscope = buildscope.where("(#{self.table_name}.position = '#{position}')")
+        buildscope = buildscope.includes(:statline)
       else
         ratingfield = DraftBattingStatline::RATINGFIELDS[position.downcase]
         buildscope = buildscope.joins(:statline)
@@ -140,6 +142,8 @@ class DraftPlayer < ApplicationRecord
     when 'of'
       buildscope = buildscope.joins(:statline)
       buildscope = buildscope.where("(draft_players.position IN ('cf','lf','rf') or draft_batting_statlines.pos_cf != '' or draft_batting_statlines.pos_lf != '' or draft_batting_statlines.pos_rf != '')")
+    else
+      buildscope = buildscope.includes(:statline)
     end
 
     case draftstatus
@@ -152,7 +156,9 @@ class DraftPlayer < ApplicationRecord
       buildscope = buildscope.where("#{self.table_name}.team_id = 0 or #{self.table_name}.team_id = #{filter_team.id}")
     end
 
-    buildscope.includes(:statline)
+    # we can go back and do includes when we go to rails6
+    # https://github.com/rails/rails/issues/34889
+    buildscope
   end
 
   def self.positionlabel(position)
