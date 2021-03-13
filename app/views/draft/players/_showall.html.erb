@@ -1,4 +1,4 @@
-<table class="table table-bordered table-condensed">
+<table class="table table-bordered table-sm">
   <thead>
     <tr>
         <th>name</th>
@@ -16,9 +16,9 @@
     <% for showplayer in playerlist %>
       <%- if !showplayer.team.blank?
           style = "class = 'teamed'"
-        elsif @currentowner.wanted_draft_players.include?(showplayer)
-          if(index =  @currentowner.wanted_draft_players.index(showplayer))
-            wanted = @currentowner.wanted_draft_players[index]
+        elsif @wanted_player_list.include?(showplayer)
+          if(index =  @wanted_player_list.index(showplayer))
+            wanted = @wanted_player_list[index]
             style = "style = 'background-color: ##{wanted.highlight}'"
           else
             style = "class = 'available'"
