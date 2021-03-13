@@ -6,6 +6,7 @@
 class Draft::PlayersController < Draft::BaseController
   helper_method :is_searchpage_request?
 
+
   def draft
     begin
       @player = DraftPlayer.find(params[:id])
@@ -97,6 +98,7 @@ class Draft::PlayersController < Draft::BaseController
 
   def index
     @experimental = is_experimental? ? true : false
+
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'
       @showtype = 'all'
@@ -105,6 +107,7 @@ class Draft::PlayersController < Draft::BaseController
       @showtype = 'pitchers'
       @position = 'allpitchers'
       if(@experimental)
+        @displaystats = DefinedStat.draft_columns(DefinedStat::PITCHER)
         @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv])
       else
         @playerlist = DraftPitcher.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @pdorp, ranking_values: [@prv]).page(params[:page])
@@ -117,6 +120,7 @@ class Draft::PlayersController < Draft::BaseController
       @position = 'allbatters'
       @showtype = 'batters'
       if(@experimental)
+        @displaystats = DefinedStat.draft_columns(DefinedStat::BATTER)
         @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv])
       else
         @playerlist = DraftBatter.playerlist(owner: @currentowner, draftstatus: @draftstatus, position: @position, owner_rank: @bdorp, ranking_values: [@brv]).page(params[:page])

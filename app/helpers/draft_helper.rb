@@ -50,7 +50,7 @@ module DraftHelper
   end
 
   def playerwantlink(player,domcontainer,confirm=nil)
-    if(@currentowner.wanted_draft_players.include?(player))
+    if(@wanted_player_list.include?(player))
       wantaction = 'no'
       linklabel = '<i class="fa fa-minus white"></i> Remove from Wanted'.html_safe
       titleattribute = 'Remove this player from the list of your wanted players'
