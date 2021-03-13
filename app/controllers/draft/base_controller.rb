@@ -10,6 +10,7 @@ class Draft::BaseController < ApplicationController
   before_action :check_for_ranking
   before_action :check_for_draftstatus
   before_action :check_for_stat_preference
+  before_action :get_wanted_player_list
 
   def set_draft_mode
     @draftmode = true
@@ -149,5 +150,10 @@ class Draft::BaseController < ApplicationController
       return redirect_to(draft_root_url)
     end
   end
+
+  def get_wanted_player_list
+    @wanted_player_list = (@currentowner) ? @currentowner.wanted_draft_players.all : []
+  end
+
 
 end
