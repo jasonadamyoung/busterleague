@@ -42,6 +42,7 @@ class DraftPick < ApplicationRecord
     joins(:team).where("teams.owner_id != #{Owner.computer_id}").where("overallpick >= #{currentpick}").first
   end
 
+
   def self.current_pick
     maxpick = DraftPick.picked.maximum(:overallpick)
     maxpick = maxpick.nil? ? 1 : maxpick+1
@@ -65,4 +66,5 @@ class DraftPick < ApplicationRecord
       dp.save
     end
   end
+
 end
