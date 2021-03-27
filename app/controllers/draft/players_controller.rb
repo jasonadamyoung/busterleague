@@ -6,6 +6,7 @@
 class Draft::PlayersController < Draft::BaseController
   helper_method :is_searchpage_request?
 
+
   def draft
     begin
       @player = DraftPlayer.find(params[:id])
@@ -97,7 +98,6 @@ class Draft::PlayersController < Draft::BaseController
 
   def index
     @experimental = is_experimental? ? true : false
-    @wanted_player_list = @currentowner.wanted_draft_players.all
 
     if (params[:position].blank? or params[:position] == 'all')
       @position = 'all'

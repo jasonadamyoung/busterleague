@@ -11,7 +11,7 @@ Shrine.plugin :cached_attachment_data # for retaining the cached file across for
 Shrine.plugin :restore_cached_data # re-extract metadata when attaching a cached file
 Shrine.plugin :validation_helpers
 Shrine.plugin :determine_mime_type, analyzer: -> (io, analyzers) do
-    analyzers[:mimemagic].call(io) || analyzers[:file].call(io)
+  mime_type = analyzers[:marcel].call(io, filename_fallback: true)
 end
 Shrine.plugin :signature
 Shrine.plugin :add_metadata

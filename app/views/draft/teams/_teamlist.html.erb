@@ -8,7 +8,9 @@
         <%- end -%>
             <td><%= inline_svg_tag(team.logo, size: "25px*25px") -%><%= link_to(team.name, draft_team_path(team)) %></td>
             <td><%= team.draft_players.count %> (<%= team.draft_batters.count %>/<%= team.draft_pitchers.count %>)</td>
+            <%- if @currentowner -%>
             <td><%= show_owner_name_for_team(team) -%></td>
+            <%- end -%>
         </tr>
     <%- end -%>
     </tbody>
