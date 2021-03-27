@@ -156,4 +156,9 @@ class Draft::BaseController < ApplicationController
   end
 
 
+  def draft_pick_notify
+    ActionCable.server.broadcast('notify_draft_pick_channel', picked_count: DraftPick.picked.count )
+  end
+
+
 end

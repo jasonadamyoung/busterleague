@@ -24,6 +24,7 @@ class Draft::PlayersController < Draft::BaseController
         flash[:error] = "#{@player.fullname} is already drafted!"
       else
         @player.draftplayer(:draftpick => @draftpick)
+        draft_pick_notify
         flash[:success] = "Drafted #{@player.fullname}"
         SlackIt.post(message: "#{@player.fullname} has been drafted")
       end
@@ -32,6 +33,7 @@ class Draft::PlayersController < Draft::BaseController
         flash[:error] = "#{@player.fullname} was not drafted!"
       else
         @player.returntodraft
+        draft_pick_notify
         flash[:warning] = "Returned #{@player.fullname} to draft"
         SlackIt.post(message: "#{@player.fullname} has returned to the draft")
       end
