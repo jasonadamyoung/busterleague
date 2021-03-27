@@ -50,6 +50,7 @@ RUN mkdir $APP_HOME
 ENV RAILS_ENV production
 # extra nginx configuration
 ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
+ADD ./build/actioncable.conf /etc/nginx/sites-extra.d/actioncable.conf
 ADD ./build/ignorehealthcheck.conf /etc/nginx/sites-extra.d/ignorehealthcheck.conf
 # bundle install
 WORKDIR /tmp

@@ -50,6 +50,7 @@ WORKDIR $APP_HOME
 
 # extra nginx configuration
 ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
+ADD ./build/actioncable.conf /etc/nginx/sites-extra.d/actioncable.conf
 # application
 COPY --chown=app:app . $APP_HOME
 # check bundle on startup
