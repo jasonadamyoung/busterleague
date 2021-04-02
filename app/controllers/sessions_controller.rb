@@ -22,6 +22,10 @@ class SessionsController < ApplicationController
   end
 
   def token
+    if(request.head?)
+      return render(status: 400, template: 'sessions/invalid_token')
+    end
+
     if(params[:token].blank?)
       return render(template: 'sessions/invalid_token')
     end
