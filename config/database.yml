@@ -8,7 +8,6 @@ default: &default
   host: <%= ENV.fetch("DATABASE_HOST") %>
   port: <%= ENV.fetch("DATABASE_PORT") %>
   sslmode: <%= ENV.fetch("DATABASE_SSLMODE") %>
-  sslrootcert: <%= Rails.root.join('config', ENV.fetch("DATABASE_SSLROOTCERT") ) %>
 
 
 development:
