@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagi
 
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN apt-get update && apt-get install -y nodejs
+RUN apt-get update && apt-get install -y npm
 
 # yarn setup
 RUN npm install -g yarn
@@ -50,6 +50,7 @@ RUN mkdir $APP_HOME
 ENV RAILS_ENV production
 # extra nginx configuration
 ADD ./build/staticfiles.conf /etc/nginx/sites-extra.d/staticfiles.conf
+ADD ./build/actioncable.conf /etc/nginx/sites-extra.d/actioncable.conf
 ADD ./build/ignorehealthcheck.conf /etc/nginx/sites-extra.d/ignorehealthcheck.conf
 # bundle install
 WORKDIR /tmp
