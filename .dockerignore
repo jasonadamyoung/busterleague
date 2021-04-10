@@ -23,3 +23,6 @@ localdev.getdata.sh
 localdev.resetdb.sh
 /deployment
 /uploads
+/.bundle
+/node_modules
+/tmp/**
