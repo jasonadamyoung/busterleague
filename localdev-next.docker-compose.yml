@@ -40,7 +40,7 @@ services:
       - ./localdev.volumes/uploads:/home/app/webapp/public/uploads
       - ./localdev.volumes/explore:/home/app/webapp/public/explore
       - ./localdev.volumes/explore:/data/explore
-      - next_rvm_gems:/usr/local/rvm/gems/ruby-2.6.6@webapp
+      - next_rvm_gems:/usr/local/rvm/gems/ruby-2.7.2@webapp
     labels:
       - traefik.backend=busterleague-next
       - traefik.docker.network=traefik_webgateway
