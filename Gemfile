@@ -78,7 +78,6 @@ gem 'sidekiq'
 gem "slack-notifier"
 
 # uploads
-gem 'mimemagic'
 gem 'rubyzip'
 gem "shrine", "~> 3.0"
 
