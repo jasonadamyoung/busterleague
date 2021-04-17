@@ -2,9 +2,17 @@
   "name": "busterleague",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@rails/actioncable": "^6.1.3-1",
+    "@rails/ujs": "^6.1.3-1",
     "@rails/webpacker": "5.2.1",
-    "core-js": "^3.9.1",
-    "regenerator-runtime": "^0.13.7"
+    "bootstrap": "^4.6.0",
+    "core-js": "^3.10.1",
+    "jquery": "^3.6.0",
+    "popper.js": "^1.16.1",
+    "regenerator-runtime": "^0.13.7",
+    "stimulus": "^2.0.0",
+    "turbolinks": "^5.2.0"
   },
   "devDependencies": {
     "webpack-dev-server": "^3.11.2"
