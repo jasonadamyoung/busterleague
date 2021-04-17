@@ -1,4 +1,4 @@
-FROM phusion/passenger-ruby26
+FROM phusion/passenger-ruby27
 LABEL maintainer="jay@outfielding.net"
 
 # update OS
@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagi
 
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN apt-get update && apt-get install -y nodejs
+RUN apt-get update && apt-get install -y npm
 
 # yarn setup
 RUN npm install -g yarn
