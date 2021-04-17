@@ -41,6 +41,7 @@ services:
       - ./localdev.volumes/explore:/home/app/webapp/public/explore
       - ./localdev.volumes/explore:/data/explore
       - next_rvm_gems:/usr/local/rvm/gems/ruby-2.7.2@webapp
+      - next_node_modules:/home/app/webapp/node_modules
     labels:
       - traefik.backend=busterleague-next
       - traefik.docker.network=traefik_webgateway
@@ -98,3 +99,4 @@ volumes:
   next_data: {}
   next_rvm_gems: {}
   next_redis: {}
+  next_node_modules: {}
