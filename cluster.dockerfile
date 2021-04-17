@@ -64,7 +64,8 @@ COPY --chown=app:app . $APP_HOME
 ARG VCS_REF=""
 ENV SHA=${VCS_REF}
 # assets
-RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
+RUN RAILS_ENV=production bundle exec rake assets:precompile
+#RUN sudo -u app RAILS_ENV=production bundle exec rake assets:precompile
 # pv symlinks
 RUN rm -rfv $APP_HOME/public/dmbweb && ln -s /data/dmbweb $APP_HOME/public/dmbweb
 RUN rm -rfv $APP_HOME/public/uploads && ln -s /data/uploads $APP_HOME/public/uploads
