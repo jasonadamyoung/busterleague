@@ -13,7 +13,6 @@
 // or the `imagePath` JavaScript helper below.
 //
 require("@rails/ujs").start()
-require("turbolinks").start()
 import 'bootstrap';
 import "../stylesheets/application"
 import "@fortawesome/fontawesome-free/js/all"
