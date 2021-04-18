@@ -99,6 +99,10 @@ gem 'pry-rails'
 gem 'state_machines'
 gem 'state_machines-activerecord'
 
+# hotwire & stimulus
+gem 'hotwire-rails'
+gem 'stimulus-rails'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
