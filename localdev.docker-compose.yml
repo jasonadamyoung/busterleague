@@ -40,7 +40,8 @@ services:
       - ./localdev.volumes/uploads:/home/app/webapp/public/uploads
       - ./localdev.volumes/explore:/home/app/webapp/public/explore
       - ./localdev.volumes/explore:/data/explore
-      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.6.6@webapp
+      - league_rvm_gems:/usr/local/rvm/gems/ruby-2.7.2@webapp
+      - league_node_modules:/home/app/webapp/node_modules
     labels:
       - traefik.backend=busterleague
       - traefik.docker.network=traefik_webgateway
@@ -101,3 +102,4 @@ volumes:
   league_data: {}
   league_rvm_gems: {}
   league_redis: {}
+  league_node_modules: {}

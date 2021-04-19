@@ -2,26 +2,28 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.5'
+gem 'rails', '~> 6.1'
 # Use postgres as the database for Active Record
 gem 'pg'
+# install webpacker
+gem 'webpacker', '~> 5.0'
 
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
-gem 'sassc', '~> 2.4.0'
+# gem 'sass-rails', '~> 5.0'
+# gem 'sassc', '~> 2.4.0'
 # Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
+# gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'mini_racer', platforms: :ruby
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
+
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
+gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -35,7 +37,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', '>= 1.1.0', require: false
 
 # ui framework
-gem 'bootstrap', '~> 4.2'
+# gem 'bootstrap', '~> 4.2'
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
@@ -43,16 +45,14 @@ gem 'jquery-migrate-rails'
 gem 'jquery-tokeninput-rails'
 
 # datatables
-gem 'ajax-datatables-rails'
-gem 'jquery-datatables'
+#gem 'ajax-datatables-rails'
+#gem 'jquery-datatables'
 
 # charts
 gem "chartkick"
 
 # in place editing
-gem "best_in_place"
-# move to font-awesome
-gem "font-awesome-sass"
+# gem "best_in_place"
 
 # configuration
 gem 'config'
@@ -98,6 +98,10 @@ gem 'pry-rails'
 # state machine
 gem 'state_machines'
 gem 'state_machines-activerecord'
+
+# hotwire & stimulus
+gem 'hotwire-rails'
+gem 'stimulus-rails'
 
 
 group :development, :test do

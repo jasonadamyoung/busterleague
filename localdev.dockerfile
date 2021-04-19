@@ -1,15 +1,15 @@
-FROM phusion/passenger-ruby26
+FROM phusion/passenger-ruby27
 LABEL maintainer="jay@outfielding.net"
 
 # update OS
 COPY build/localdev.aptproxy /etc/apt/apt.conf.d/00proxy
 RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 # make sure there's tz data
-RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick dnsutils iputils-ping postgresql-client
+RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagick dnsutils iputils-ping postgresql-client libffi-dev
 
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN apt-get update && apt-get install -y nodejs
+RUN apt-get update && apt-get install -y npm
 
 # yarn setup
 RUN npm install -g yarn

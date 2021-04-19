@@ -4,7 +4,7 @@
       <td><strong>Overall</strong></td>
       <td>
       <button type='button' class='btn btn-info btn-lg'>
-      <%= best_in_place(@player.owner_rank_or_blank(@currentowner), :overall, {:as => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => 'overall')})%>
+      <%# = best_in_place(@player.owner_rank_or_blank(@currentowner), :overall, {:as => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => 'overall')}) %>
       </button>
       </td>
     </tr>
@@ -13,7 +13,7 @@
       <td><strong><%= position.upcase %></strong></td>
       <td>
       <button type='button' class='btn btn-info btn-lg'>
-      <%= best_in_place(@player.owner_rank_or_blank(@currentowner), "pos_#{position}", { :as => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => position)})%>
+      <%# = best_in_place(@player.owner_rank_or_blank(@currentowner), "pos_#{position}", { :as => :input, :url => set_draft_owner_rank_draft_player_path(:id => @player.id, :position => position)}) %>
       </button>
       </td>
     </tr>

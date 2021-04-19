@@ -9,4 +9,4 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Busterleague::Application.config.secret_key_base = Settings.session_token
+Rails.application.config.secret_key_base = Settings.session_token

@@ -6,7 +6,6 @@
 //
 //= require jquery3
 //= require jquery_ujs
-//= require best_in_place
 //= require popper
 //= require bootstrap-sprockets
 //= require alerts
@@ -20,5 +19,5 @@
 //= require draftplayersearch
 //= require chartkick
 //= require Chart.bundle
-//= require datatables
+// require datatables
 //= require cable

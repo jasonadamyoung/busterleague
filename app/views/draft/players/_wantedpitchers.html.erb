@@ -8,7 +8,7 @@
         <th>AGE</th>
         <th>T</th>
         <th>GS</th>
-        <th>Notes</th>
+        <%# <th>Notes</th> %>
         <th>Highlight</th>
     </tr>
 </thead>
@@ -35,7 +35,7 @@
             <td><%= pitcher.statline.age %></td>
             <td><%= pitcher.statline.throws %></td>
             <td><%= pitcher.statline.gs %></td>
-			<td><%= best_in_place(pitcher, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => pitcher.id)})%></td>
+			<%# <td>= best_in_place(pitcher, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => pitcher.id)}) </td> %>
             <%- if !wanted.nil? -%>
             <td>
               <%= form_tag({:controller => "players", :action=> "sethighlight", :id => pitcher.id}) do -%>

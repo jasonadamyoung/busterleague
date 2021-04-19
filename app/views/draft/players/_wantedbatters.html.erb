@@ -14,7 +14,7 @@
       <th>cf</th>
       <th>rf</th>
       <th>lf</th>
-      <th>Notes</th>
+      <%# <th>Notes</th> %>
       <th>Highlight</th>
   </tr>
 </thead>
@@ -47,7 +47,7 @@
       <td><%= position_check(fielder,'pos_cf') %></td>
       <td><%= position_check(fielder,'pos_rf') %></td>
       <td><%= position_check(fielder,'pos_lf') %></td>
-	  <td><%= best_in_place(fielder, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => fielder.id)})%></td>
+	  <%# <td>= best_in_place(fielder, :notes, { :type => :textarea, :url => setnotes_draft_player_path(:id => fielder.id)}) </td> %>
       <%- if !wanted.nil? -%>
       <td>
         <%= form_tag({:controller => "players", :action=> "sethighlight", :id => fielder.id}) do -%>
