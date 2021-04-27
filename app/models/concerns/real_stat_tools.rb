@@ -20,7 +20,7 @@ module RealStatTools
 
   module ClassMethods
     def create_or_update_stat(statdata)
-      allowed_attributes = self.column_names
+      allowed_attributes = self.column_names.dup
       allowed_attributes.delete_if {|name| name == 'id'}
       # loop through the stats and set values if there's a matching attribute
       save_stats = {}
