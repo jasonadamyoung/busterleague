@@ -238,9 +238,7 @@ class Team < ApplicationRecord
                                                 season: season,
                                                 name: name,
                                                 player_id: roster.player_id,
-                                                age: roster.age,
-                                                first_name: roster.first_name,
-                                                last_name: roster.last_name)
+                                                age: roster.age)
         else
           batting_stat = self.batting_stats.new(roster_id: roster_id, season: season, name: name)
         end
@@ -281,9 +279,7 @@ class Team < ApplicationRecord
                                                   season: season,
                                                   name: name,
                                                   player_id: roster.player_id,
-                                                  age: roster.age,
-                                                  first_name: roster.first_name,
-                                                  last_name: roster.last_name)
+                                                  age: roster.age)
         else
           pitching_stat = self.pitching_stats.new(roster_id: roster_id, season: season, name: name)
         end
