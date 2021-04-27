@@ -87,10 +87,21 @@ module ParserUtils
   def more_mass_name_nonsense(string)
     # replace all "Jackson.A" strings with "Jackson,A"
     # I mean, seriously WTF
-    if(string =~ %r{Jackson\.A})
-      string.gsub(%r{Jackson\.A},'Jackson,A')
-    elsif(string =~ %r{Kennedy\.A})
-      string.gsub(%r{Kennedy\.A},'Kennedy,A')
+    bullshit_regex_list = []
+    bullshit_regex_list << %r{Jackson\.A}
+    bullshit_regex_list << %r{Kennedy\.A}
+    bullshit_regex_list << %r{Gurriel\.L}
+    bullshit_regex_list << %r{Gurriel\.Y}
+
+    new_string = string.dup
+
+    if(string =~ Regexp.union(bullshit_regex_list))
+      # replace them all for now until I think of a better way.
+      new_string.gsub!(%r{Jackson\.A},'Jackson,A')
+      new_string.gsub!(%r{Kennedy\.A},'Kennedy,A')
+      new_string.gsub!(%r{Gurriel\.L},'Gurriel,L')
+      new_string.gsub!(%r{Gurriel\.Y},'Gurriel,Y')
+      new_string
     else
       string
     end
