@@ -312,7 +312,7 @@ class Roster < ApplicationRecord
       rp.assign_attributes(roster_attributes)
       rp.save!
     else
-      rp.update_attributes(roster_attributes)
+      rp.update(roster_attributes)
     end
     rp
   end

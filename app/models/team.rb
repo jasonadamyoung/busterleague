@@ -356,7 +356,7 @@ class Team < ApplicationRecord
         player_details['trade_status'] = Roster::TRADED
         player_details['trade_team_id'] = self.id
         orp = Roster.create_or_update_roster_player_for_season_by_team(season,traded_from_team,player_details)
-        rp.update_attributes(:trade_status => Roster::ACQUIRED_TRADE, :trade_team_id => traded_from_team.id, original_roster_id: orp.id)
+        rp.update(:trade_status => Roster::ACQUIRED_TRADE, :trade_team_id => traded_from_team.id, original_roster_id: orp.id)
       end
     end
   end

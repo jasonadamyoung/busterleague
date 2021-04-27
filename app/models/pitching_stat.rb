@@ -69,7 +69,7 @@ class PitchingStat < ApplicationRecord
                                                                  self.position,
                                                                  self.team_id,
                                                                  self.season))
-      self.update_attributes(roster_id: roster.id, player_id: roster.player_id, age: roster.age)
+      self.update(roster_id: roster.id, player_id: roster.player_id, age: roster.age)
     end
   end
 
