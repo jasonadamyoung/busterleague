@@ -201,17 +201,17 @@ class DraftPlayer < ApplicationRecord
 
   def releaseplayer
     current_team_id = self.team_id
-    self.update_attributes({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED, :original_team_id => current_team_id})
+    self.update({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED, :original_team_id => current_team_id})
   end
 
   def returntodraft
     return if(self.draftstatus != DRAFT_STATUS_DRAFTED)
     if(!self.draft_pick.nil?)
       dp = DraftPick.where(draft_player_id: self.id).first
-      dp.update_attributes({:draft_player_id =>  DraftPick::NOPICK})
+      dp.update({:draft_player_id =>  DraftPick::NOPICK})
     end
     current_team = self.team
-    self.update_attributes({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED})
+    self.update({:team_id => Team::NO_TEAM, :draftstatus => DRAFT_STATUS_NOTDRAFTED})
   end
 
   def draftplayer(options = {})
@@ -229,8 +229,8 @@ class DraftPlayer < ApplicationRecord
     end
 
     if(team)
-      self.update_attributes({:team_id => team.id, :draftstatus => DRAFT_STATUS_DRAFTED})
-      pick.update_attributes({:draft_player_id => self.id, :team_id => team.id})
+      self.update({:team_id => team.id, :draftstatus => DRAFT_STATUS_DRAFTED})
+      pick.update({:draft_player_id => self.id, :team_id => team.id})
     end
   end
 
