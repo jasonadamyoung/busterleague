@@ -301,7 +301,7 @@ class Roster < ApplicationRecord
     player = Player.find_by_player_details(season,player_details)
     roster_attributes = player.attributes.merge(player_details)
 
-    allowed_attributes = self.column_names
+    allowed_attributes = self.column_names.dup
     allowed_attributes.delete_if {|name| name == 'id'}
     roster_attributes.select!{|name,value| allowed_attributes.include?(name)}
 
