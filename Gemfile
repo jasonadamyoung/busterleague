@@ -83,7 +83,7 @@ gem "shrine", "~> 3.0"
 gem 'roo', '~> 2'
 
 # nice emails
-gem 'bootstrap-email'
+gem 'bootstrap-email', '~> 1.0.0.alpha2.1'
 
 # inline svg for team logos
 gem 'inline_svg'

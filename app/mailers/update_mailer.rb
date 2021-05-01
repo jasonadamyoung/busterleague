@@ -3,7 +3,7 @@ class UpdateMailer < ApplicationMailer
   helper :teams
 
   def create_mail(options = {})
-    make_bootstrap_mail(options) do |format|
+    bootstrap_mail(options) do |format|
       format.html
       # format.text
     end
