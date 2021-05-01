@@ -1,1 +1,1 @@
-Acquire::http::Proxy "http://proxy.yakslab.net:3142";
+Acquire::http::Proxy "http://proxy.yaks.run:3142";
