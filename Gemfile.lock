@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/jasonadamyoung/bootstrap-email.git
+  revision: 5f367037f7394625136253763b5753942bfa1a1a
+  specs:
+    bootstrap-email (1.0.0.alpha2.1)
+      nokogiri (~> 1.6)
+      premailer (~> 1.7)
+      sassc (~> 2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -71,10 +80,6 @@ GEM
       debug_inspector (>= 0.0.1)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
-    bootstrap-email (1.0.0.alpha2.1)
-      nokogiri (~> 1.6)
-      premailer (~> 1.7)
-      sassc (~> 2.0)
     builder (3.2.4)
     byebug (11.1.3)
     chartkick (4.0.3)
@@ -328,7 +333,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   bootsnap (>= 1.1.0)
-  bootstrap-email (~> 1.0.0.alpha2.1)
+  bootstrap-email!
   byebug
   chartkick
   coffee-rails (~> 4.2)
