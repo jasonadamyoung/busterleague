@@ -64,7 +64,7 @@ module RealStatTools
 
     def set_roster_ids_from_players_for_season(season)
       self.where(season: season).find_each do |realstat|
-        realstat.set_roster_id_from_player(season)
+        realstat.set_roster_id_from_player_for_season(season)
       end
     end
   end
