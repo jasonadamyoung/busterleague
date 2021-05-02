@@ -6,7 +6,6 @@
 module RealStatTools
   extend ActiveSupport::Concern
 
-
   def create_or_update_player
     # create/match to player
     player_details = {}
@@ -17,6 +16,11 @@ module RealStatTools
     end
   end
 
+  def set_roster_id_from_player_for_season(season)
+    if(roster = Roster.where(season: season).where(player_id: self.player_id).first)
+      self.update_attribute("roster_id",roster.id)
+    end
+  end
 
   module ClassMethods
     def create_or_update_stat(statdata)
@@ -56,6 +60,12 @@ module RealStatTools
       stat.assign_attributes(save_stats)
       stat.save!
       stat
+    end
+
+    def set_roster_ids_from_players_for_season(season)
+      self.where(season: season).find_each do |realstat|
+        realstat.set_roster_id_from_player(season)
+      end
     end
   end
 end
