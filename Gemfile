@@ -84,7 +84,7 @@ gem 'roo', '~> 2'
 
 # nice emails
 # gem 'bootstrap-email', '~> 1.0.0.alpha2.1'
-gem 'bootstrap-email', git: 'https://github.com/jasonadamyoung/bootstrap-email.git'
+gem 'bootstrap-email', github: 'bootstrap-email/bootstrap-email', branch: 'master'
 
 # inline svg for team logos
 gem 'inline_svg'
