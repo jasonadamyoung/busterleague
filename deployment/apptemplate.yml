@@ -77,7 +77,7 @@ spec:
       containers:
       - name: {{ kube_resource_name }}-app
         image: {{ image_repository }}:{{ image_tag }}
-        imagePullPolicy: {{ image_pull_policy }}
+        imagePullPolicy: IfNotPresent
         ports:
           - name: http
             containerPort: 80

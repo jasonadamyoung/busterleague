@@ -56,14 +56,14 @@ spec:
             claimName: "{{ kube_resource_name }}-redis-pvc"
       initContainers:
         - name: disable-thp
-          image: "{{ redis_image }}"
+          image: redis:6.2-buster
           volumeMounts:
             - name: host-sys
               mountPath: /host-sys
           command: ["sh", "-c", "echo never > /host-sys/kernel/mm/transparent_hugepage/enabled"]
       containers:
       - name: redis
-        image: "{{ redis_image }}"
+        image: redis:6.2-buster
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 1001
