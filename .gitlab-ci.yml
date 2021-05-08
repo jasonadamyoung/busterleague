@@ -20,7 +20,7 @@ Production Build:
   <<: *docker_stages
   stage: build
   tags:
-    - busterleague
+    - gitlab-org-docker 
   only:
     - production
   script:
@@ -40,7 +40,7 @@ Demo Build:
   <<: *docker_stages
   stage: build
   tags:
-    - busterleague
+    - gitlab-org-docker 
   only:
     - demo
   script:
@@ -67,7 +67,7 @@ Push current:
     - production
     - demo
   tags:
-    - busterleague
+    - gitlab-org-docker 
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA}
     - docker tag ${CI_REGISTRY_IMAGE}:git-${CI_COMMIT_SHORT_SHA} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
