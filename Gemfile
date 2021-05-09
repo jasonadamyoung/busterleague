@@ -83,8 +83,8 @@ gem "shrine", "~> 3.0"
 gem 'roo', '~> 2'
 
 # nice emails
-# gem 'bootstrap-email', '~> 1.0.0.alpha2.1'
-gem 'bootstrap-email', github: 'bootstrap-email/bootstrap-email', branch: 'master'
+gem 'bootstrap-email', '~> 1.0.0.alpha3'
+#gem 'bootstrap-email', github: 'bootstrap-email/bootstrap-email', branch: 'master'
 
 # inline svg for team logos
 gem 'inline_svg'
