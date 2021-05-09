@@ -25,18 +25,6 @@
       tags:
         - secrets
           
-    - name: "deploy {{application_location}} redis"
-      k8s:
-        kubeconfig: "./.kubeconfig"
-        state: present
-        namespace: "{{ kube_namespace }}"
-        definition: "{{ lookup('template', './redistemplate.yml') }}"
-        validate:
-          fail_on_error: no
-          strict: yes
-      tags:
-        - redis
-
     - name: "deploy {{application_location}} application"
       k8s:
         kubeconfig: "./.kubeconfig"
