@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_25_184321) do
+ActiveRecord::Schema.define(version: 2021_05_25_232608) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -418,7 +418,7 @@ ActiveRecord::Schema.define(version: 2021_05_25_184321) do
   end
 
   create_table "game_batting_stats", force: :cascade do |t|
-    t.integer "boxscore_id", limit: 2
+    t.integer "boxscore_id"
     t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
@@ -454,7 +454,7 @@ ActiveRecord::Schema.define(version: 2021_05_25_184321) do
   end
 
   create_table "game_pitching_stats", force: :cascade do |t|
-    t.integer "boxscore_id", limit: 2
+    t.integer "boxscore_id"
     t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
@@ -830,7 +830,7 @@ ActiveRecord::Schema.define(version: 2021_05_25_184321) do
   end
 
   create_table "rosters", force: :cascade do |t|
-    t.integer "player_id", limit: 2
+    t.integer "player_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
