@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_06_194756) do
+ActiveRecord::Schema.define(version: 2021_05_25_184321) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "batter_playing_times", force: :cascade do |t|
     t.integer "season", limit: 2, null: false
-    t.integer "roster_id", limit: 2, null: false
+    t.integer "roster_id", null: false
     t.integer "total_games"
     t.integer "actual_ab"
     t.integer "qualifying_ab"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
   end
 
   create_table "batting_stats", force: :cascade do |t|
-    t.integer "roster_id", limit: 2, null: false
+    t.integer "roster_id", null: false
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
@@ -171,7 +171,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
   end
 
   create_table "draft_batting_statlines", force: :cascade do |t|
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
@@ -277,7 +277,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
   end
 
   create_table "draft_pitching_statlines", force: :cascade do |t|
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
@@ -419,7 +419,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
 
   create_table "game_batting_stats", force: :cascade do |t|
     t.integer "boxscore_id", limit: 2
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.integer "opposing_team_id", limit: 2, null: false
@@ -455,7 +455,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
 
   create_table "game_pitching_stats", force: :cascade do |t|
     t.integer "boxscore_id", limit: 2
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.integer "opposing_team_id", limit: 2, null: false
@@ -538,7 +538,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
 
   create_table "pitcher_playing_times", force: :cascade do |t|
     t.integer "season", limit: 2, null: false
-    t.integer "roster_id", limit: 2, null: false
+    t.integer "roster_id", null: false
     t.integer "total_games"
     t.float "actual_ip"
     t.integer "qualifying_ip"
@@ -548,7 +548,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
   end
 
   create_table "pitching_stats", force: :cascade do |t|
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2, null: false
     t.string "name", limit: 255, default: "", null: false
@@ -686,7 +686,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
   end
 
   create_table "real_batting_stats", force: :cascade do |t|
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
@@ -747,7 +747,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_194756) do
   end
 
   create_table "real_pitching_stats", force: :cascade do |t|
-    t.integer "roster_id", limit: 2
+    t.integer "roster_id"
     t.integer "season", limit: 2, null: false
     t.integer "team_id", limit: 2
     t.string "first_name", limit: 255, default: "", null: false
