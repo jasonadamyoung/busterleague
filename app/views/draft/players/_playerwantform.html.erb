@@ -12,10 +12,16 @@
        <label class="control-label" for='highlight'>Highlight:</label>
     </div>
      <div class="col-md-4">
-			<%= text_field_tag(:highlight, 'ffff00', class: 'jscolor') %>
+			<%= text_field_tag(:highlight, 'ffff00', id: 'color-picker') %>
 	  	<div id="colorpicker"></div>
 		</div>
 	</div>
 		<%= submit_tag('Add',:class=>'btn btn-primary') %>
 		<%= link_to('cancel', '#', :class=> 'btn', :id => 'playerwantcancel' ) %>
 <%- end -%>
+
+<script class="code" type="text/javascript">
+$('#color-picker').spectrum({
+  type: "component"
+});
+</script>
