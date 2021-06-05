@@ -17,6 +17,7 @@ import 'bootstrap';
 import "../stylesheets/application"
 import "@fortawesome/fontawesome-free/js/all"
 
+
 import "controllers"
 import "core-js/stable"
 import "regenerator-runtime/runtime"
@@ -27,3 +28,25 @@ const imagePath = (name) => images(name, true)
 $(function () {
   console.log('Hello World from Webpacker');
 });
+
+// datatables
+import dt from "datatables.net";
+
+document.addEventListener("turbolinks:load", () => {
+    dt(window, $);
+});
+
+
+// custom
+// require("custom/cable")
+// require("custom/activate_editable")
+// require("custom/datatables")
+require("custom/draftplayersearch")
+require("custom/js_cookie")
+require("custom/players")
+require("custom/searchbox")
+require("custom/tables")
+require("custom/uploads")
+
+
+// import "spectrum-colorpicker2/dist/spectrum"
