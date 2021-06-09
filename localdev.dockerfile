@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y sudo tzdata libmagickwand-dev imagemagi
 
 # node setup
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN apt-get update && apt-get install -y npm
+RUN apt-get update && apt-get install -y nodejs
 
 # yarn setup
 RUN npm install -g yarn

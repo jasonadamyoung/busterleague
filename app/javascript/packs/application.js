@@ -12,30 +12,23 @@
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
 // or the `imagePath` JavaScript helper below.
 //
+
+var jQuery = require('jquery')
+// include jQuery in global and window scope (so you can access it globally)
+// in your web browser, when you type $('.div'), it is actually refering to global.$('.div')
+global.$ = global.jQuery = jQuery;
+window.$ = window.jQuery = jQuery;
+
 require("@rails/ujs").start()
 import 'bootstrap';
 import "../stylesheets/application"
 import "@fortawesome/fontawesome-free/js/all"
-
-
 import "controllers"
 import "core-js/stable"
 import "regenerator-runtime/runtime"
-
 const images = require.context('../images', true)
 const imagePath = (name) => images(name, true)
-
-$(function () {
-  console.log('Hello World from Webpacker');
-});
-
-// datatables
-import dt from "datatables.net";
-
-document.addEventListener("turbolinks:load", () => {
-    dt(window, $);
-});
-
+require('datatables.net-bs4')
 
 // custom
 // require("custom/cable")
@@ -50,3 +43,7 @@ require("custom/uploads")
 
 
 // import "spectrum-colorpicker2/dist/spectrum"
+
+$(function () {
+  console.log('Hello World from Webpacker');
+});
