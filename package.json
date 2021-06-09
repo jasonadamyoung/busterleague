@@ -9,7 +9,6 @@
     "@rails/webpacker": "5.2.1",
     "bootstrap": "^4.6.0",
     "core-js": "^3.10.1",
-    "datatables.net": "^1.10.25",
     "datatables.net-bs4": "^1.10.25",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
