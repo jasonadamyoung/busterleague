@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_25_232608) do
+ActiveRecord::Schema.define(version: 2021_06_24_001238) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1127,7 +1127,6 @@ ActiveRecord::Schema.define(version: 2021_05_25_232608) do
   end
 
   add_foreign_key "batting_stats", "players"
-  add_foreign_key "batting_stats", "rosters"
   add_foreign_key "boxscores", "games"
   add_foreign_key "game_batting_stats", "boxscores"
   add_foreign_key "game_batting_stats", "games"
@@ -1142,7 +1141,6 @@ ActiveRecord::Schema.define(version: 2021_05_25_232608) do
   add_foreign_key "innings", "boxscores"
   add_foreign_key "innings", "games"
   add_foreign_key "pitching_stats", "players"
-  add_foreign_key "pitching_stats", "rosters"
   add_foreign_key "rosters", "players"
   add_foreign_key "rosters", "teams"
   add_foreign_key "team_batting_stats", "teams"
