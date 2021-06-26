@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busterleague
+  labels:
+    app: "busterleague"
+spec:
+  selector:
+    matchLabels:
+      app: "busterleague"
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "busterleague"
+    spec:
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "status.localhost"
+      containers:
+      - name: busterleague-app
+        image: registry.gitlab.com/rambleon/busterleague:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthcheck/all
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /healthcheck/all
+            port: http
+        startupProbe:
+          httpGet:
+            path: /healthcheck/all
+            port: http
+          failureThreshold: 30
+          periodSeconds: 10
+        envFrom:
+          - secretRef:
+              name: busterleague-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /data
+          name: busterleague-pv
+      volumes:
+      - name: busterleague-pv
+        persistentVolumeClaim:
+          claimName: "busterleague-pvc"
