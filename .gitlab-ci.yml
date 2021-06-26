@@ -75,16 +75,29 @@ Push current:
 
 Deployment:
   stage: deploy
-  only:
-    - demo
-    - production
-  tags:
-    - busterleague
-  image: registry.gitlab.com/rambleon/ansible-deployer:latest
+  image: registry.gitlab.com/rambleon/kustomize-image:latest
   before_script:
-    - ansible --version
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - git config --global user.name "GitLab Runner"
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - cd deployment
-    - export vars_file_var="ANSIBLE_${CI_COMMIT_REF_NAME^^}_VARS"
-    - export ANSIBLE_DEPLOYMENT_VARS=${!vars_file_var}
-    - ansible-playbook deploy.yml
+    - git config --list
+    - git clone --recurse-submodules -j8 git@gitlab.com:rambleon/kas-deploy.git /tmp/kas-deploy
+    - pushd .
+    - cd deploy/overlays/production
+    - kustomize edit set image registry.gitlab.com/rambleon/busterleague=registry.gitlab.com/rambleon/busterleague:git-${CI_COMMIT_SHORT_SHA}
+    - popd
+    - kustomize build deploy/overlays/production > /tmp/kas-deploy/busterleague.yml
+    - cd /tmp/kas-deploy
+    - git add busterleague.yml
+    - git commit -m "Updated busterleague manifest" || echo "No changes, nothing to commit!"
+    - git push origin main
+  tags:
+    - gitlab-org-docker 
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: always

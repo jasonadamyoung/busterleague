@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: busterleague
+  labels:
+    app: "busterleague"
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/redirect-entry-point: "https"
+spec:
+  rules:
+  - host: busterleague.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "busterleague"
+          servicePort: http
+  tls:
+    - hosts:
+      - busterleague.org
+      secretName: busterleague.local-tls
