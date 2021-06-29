@@ -1,3 +1,6 @@
+include:
+  - template: Security/License-Scanning.gitlab-ci.yml
+
 .docker_stages: &docker_stages
   image: docker:stable
   variables:
@@ -12,6 +15,7 @@
     - docker logout ${CI_REGISTRY}
 
 stages:
+  - test
   - build
   - push_current
   - deploy
