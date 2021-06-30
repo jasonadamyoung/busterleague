@@ -1,6 +1,10 @@
 include:
   - template: Security/License-Scanning.gitlab-ci.yml
 
+license_scanning:
+  variables:
+    SETUP_CMD: sh build/license_compliance.sh
+
 .docker_stages: &docker_stages
   image: docker:stable
   variables:
